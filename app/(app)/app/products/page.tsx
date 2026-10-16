@@ -4,6 +4,7 @@ import { ActionForm } from "@/components/ActionForm";
 import { PageTitle } from "@/components/Headline";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ProductForm } from "@/components/pos/ProductForm";
+import { DataImporter } from "@/components/pos/DataImporter";
 import { ui } from "@/components/ui";
 import { deleteCategory, saveCategory } from "@/app/actions/pos";
 import { canManage, requireSession } from "@/lib/auth/session";
@@ -118,6 +119,13 @@ export default async function ProductsPage({
           <details className={`${ui.card} p-6`}>
             <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">Add a product</summary>
             <div className="pt-6"><ProductForm categories={categories} /></div>
+          </details>
+
+          <details className={`${ui.card} p-6`}>
+            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">Import Catalog (JSON / Excel)</summary>
+            <div className="pt-6">
+              <DataImporter />
+            </div>
           </details>
 
           <section className="space-y-4">
