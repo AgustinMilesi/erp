@@ -5,16 +5,16 @@ import { ui } from "@/components/ui";
 
 const points = [
   {
-    label: "Forms",
-    text: "Put a contact form on any website, or just share the link.",
+    label: "Point of sale",
+    text: "Fast barcode scanner till with cash, card, transfer and split payments.",
   },
   {
-    label: "Inbox",
-    text: "Read, answer and archive messages without digging through email.",
+    label: "Cash shifts",
+    text: "Strict register openings, real-time balance tracking and closing audit logs.",
   },
   {
-    label: "Contacts",
-    text: "Everyone who writes to you is saved, and ready to connect to your ERP.",
+    label: "Inventory ledger",
+    text: "Automatic stock deductions on checkout, restocks, and gap-free sale numbers.",
   },
 ];
 
@@ -23,7 +23,7 @@ export default function Home() {
     <main className="min-h-screen flex items-center justify-center p-6 md:p-12">
       <div className="w-full max-w-6xl grid md:grid-cols-5 gap-12 md:gap-20">
         <div className="md:col-span-3 space-y-8">
-          <Headline light={["Every message", "from your customers,"]} bold="in one place." />
+          <Headline light={["Modern retail", "point of sale,"]} bold="built for speed." />
           <div className="pt-6 flex flex-wrap items-center gap-6">
             <Link href="/register" className={ui.button}>
               Create account

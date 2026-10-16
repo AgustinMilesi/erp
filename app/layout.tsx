@@ -7,8 +7,8 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "Contact", template: "%s · Contact" },
-  description: "Collect your customers' messages in one inbox and keep every contact organized.",
+  title: { default: "ERP & POS", template: "%s · ERP" },
+  description: "Point of sale, inventory control, cash shifts and customer management.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
