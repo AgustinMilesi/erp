@@ -153,3 +153,80 @@ export function ResetForm({ token }: { token: string }) {
     </form>
   );
 }
+
+export function AcceptInviteForm({
+  token,
+  email,
+  isExistingUser,
+}: {
+  token: string;
+  email: string;
+  isExistingUser: boolean;
+}) {
+  const handle = useResult();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<{ token: string; name?: string; password?: string }>({
+    defaultValues: { token },
+  });
+
+  return (
+    <form
+      onSubmit={handleSubmit(async (data) => {
+        const { acceptInvitationAction } = await import("@/app/actions/auth");
+        handle(await acceptInvitationAction(data));
+      })}
+      className="space-y-4"
+    >
+      <input type="hidden" {...register("token")} />
+
+      <div>
+        <label className={ui.label}>Email</label>
+        <input
+          value={email}
+          disabled
+          readOnly
+          className={`${ui.input} !opacity-70 !cursor-not-allowed`}
+        />
+      </div>
+
+      {!isExistingUser && (
+        <>
+          <Field error={errors.name?.message}>
+            <label className={ui.label}>Your full name</label>
+            <input
+              {...register("name", { required: "Please enter your name" })}
+              type="text"
+              placeholder="Your name"
+              autoComplete="name"
+              className={ui.input}
+            />
+          </Field>
+
+          <Field error={errors.password?.message}>
+            <label className={ui.label}>Create a password</label>
+            <input
+              {...register("password", {
+                required: "Please choose a password",
+                minLength: { value: 10, message: "Use at least 10 characters" },
+              })}
+              type="password"
+              placeholder="At least 10 characters"
+              autoComplete="new-password"
+              className={ui.input}
+            />
+          </Field>
+        </>
+      )}
+
+      <div className="pt-4">
+        <button type="submit" disabled={isSubmitting} className={`${ui.button} w-full`}>
+          {isSubmitting ? "Joining workspace..." : "Accept & join workspace"}
+        </button>
+      </div>
+    </form>
+  );
+}
+

@@ -71,6 +71,30 @@ export const settingsSchema = z.object({
   webhookUrl: z.string().trim().max(500, "That's too long").optional(),
 });
 
+export const inviteMemberSchema = z.object({
+  email,
+  role: z.enum(["ADMIN", "MEMBER"]),
+});
+
+export const acceptInviteSchema = z.object({
+  token: z.string().min(20).max(100),
+  name: z.string().trim().min(2, "Please enter your name").max(80, "That's too long").optional(),
+  password: password.optional(),
+});
+
+export const updateMemberRoleSchema = z.object({
+  membershipId: z.string().min(1).max(40),
+  role: z.enum(["ADMIN", "MEMBER"]),
+});
+
+export const removeMemberSchema = z.object({
+  membershipId: z.string().min(1).max(40),
+});
+
+export const cancelInvitationSchema = z.object({
+  invitationId: z.string().min(1).max(128),
+});
+
 export const messageStatusSchema = z.object({
   id: z.string().min(1).max(40),
   status: z.enum(["NEW", "READ", "ARCHIVED"]),

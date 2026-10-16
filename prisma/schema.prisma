@@ -121,6 +121,7 @@ model Organization {
   cashSessions   CashSession[]
   cashMovements  CashMovement[]
   sales          Sale[]
+  invitations    Invitation[]
 }
 
 model Membership {
@@ -135,6 +136,21 @@ model Membership {
 
   @@unique([userId, organizationId])
   @@index([organizationId])
+}
+
+// Invitations to join an organization. Only SHA-256 of the token is stored.
+model Invitation {
+  id             String   @id
+  organizationId String
+  email          String
+  role           Role     @default(MEMBER)
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, email])
+  @@index([expiresAt])
 }
 
 model Form {

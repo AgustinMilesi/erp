@@ -137,7 +137,7 @@ How the money and the stock are kept honest:
 
 ## Not included yet
 
-Team invitations (a workspace has one owner for now, so there are no separate cashiers yet), email verification, two-factor login, billing and plans, and a strict Content-Security-Policy with nonces.
+Email verification, two-factor login, billing and plans, and a strict Content-Security-Policy with nonces.
 
 In the point of sale: electronic invoicing (the receipt says it is not a tax invoice), products sold by weight (quantities are whole units), refunds after a register is closed, several registers at the same time, thermal printer support, and purchases and suppliers. Each fits on top of the current structure.
 

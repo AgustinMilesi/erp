@@ -228,3 +228,130 @@ export async function revokeApiKey(formData: FormData): Promise<ActionResult> {
   refresh();
   return ok("Key revoked.");
 }
+
+export async function inviteMember(formData: FormData): Promise<ActionResult> {
+  const { organization, role } = await requireSession();
+  if (!canManage(role)) return fail(ONLY_ADMINS);
+
+  const emailRaw = String(formData.get("email") ?? "").trim().toLowerCase();
+  const roleRaw = String(formData.get("role") ?? "MEMBER");
+
+  const emailCheck = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailCheck.test(emailRaw)) return fail("Please enter a valid email address.");
+  if (roleRaw !== "ADMIN" && roleRaw !== "MEMBER") return fail("Invalid role.");
+
+  // Check if already a member
+  const existingUser = await db.user.findUnique({
+    where: { email: emailRaw },
+    select: {
+      id: true,
+      memberships: { where: { organizationId: organization.id }, select: { id: true } },
+    },
+  });
+
+  if (existingUser && existingUser.memberships.length > 0) {
+    return fail("This user is already a member of this workspace.");
+  }
+
+  const { randomBytes } = await import("node:crypto");
+  const { sha256 } = await import("@/lib/ids");
+  const { sendMail } = await import("@/lib/mail");
+  const { env } = await import("@/lib/env");
+  const { escapeHtml } = await import("@/lib/escape-html");
+
+  const token = randomBytes(32).toString("base64url");
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+  // Upsert invitation: delete existing pending for this org+email if any
+  await db.invitation.deleteMany({
+    where: { organizationId: organization.id, email: emailRaw },
+  });
+
+  await db.invitation.create({
+    data: {
+      id: sha256(token),
+      organizationId: organization.id,
+      email: emailRaw,
+      role: roleRaw,
+      expiresAt,
+    },
+  });
+
+  const inviteUrl = `${env.APP_URL}/invite/${token}`;
+
+  await sendMail({
+    to: emailRaw,
+    subject: `You've been invited to join ${organization.name}`,
+    html: `<p>Hello,</p><p>You have been invited to join <strong>${escapeHtml(organization.name)}</strong> as a <strong>${roleRaw.toLowerCase()}</strong>.</p><p><a href="${inviteUrl}">Click here to accept the invitation</a></p><p>This link expires in 7 days.</p>`,
+  });
+
+  refresh();
+  return ok(`Invitation sent to ${emailRaw}.`);
+}
+
+export async function cancelInvitation(formData: FormData): Promise<ActionResult> {
+  const { organization, role } = await requireSession();
+  if (!canManage(role)) return fail(ONLY_ADMINS);
+
+  const invitationId = String(formData.get("invitationId") ?? "").trim();
+  if (!invitationId) return fail("Missing invitation id.");
+
+  const deleted = await db.invitation.deleteMany({
+    where: { id: invitationId, organizationId: organization.id },
+  });
+
+  if (deleted.count === 0) return fail(NOT_FOUND);
+  refresh();
+  return ok("Invitation cancelled.");
+}
+
+export async function updateMemberRole(formData: FormData): Promise<ActionResult> {
+  const { organization, role, user } = await requireSession();
+  if (role !== "OWNER") return fail("Only the workspace owner can change roles.");
+
+  const membershipId = String(formData.get("membershipId") ?? "").trim();
+  const newRole = String(formData.get("role") ?? "").trim();
+  if (newRole !== "ADMIN" && newRole !== "MEMBER") return fail("Invalid role.");
+
+  const target = await db.membership.findFirst({
+    where: { id: membershipId, organizationId: organization.id },
+    select: { userId: true, role: true },
+  });
+
+  if (!target) return fail("Member not found.");
+  if (target.userId === user.id) return fail("You cannot change your own owner role.");
+  if (target.role === "OWNER") return fail("Cannot change owner role.");
+
+  await db.membership.update({
+    where: { id: membershipId },
+    data: { role: newRole as "ADMIN" | "MEMBER" },
+  });
+
+  refresh();
+  return ok("Role updated.");
+}
+
+export async function removeMember(formData: FormData): Promise<ActionResult> {
+  const { organization, role, user } = await requireSession();
+  if (!canManage(role)) return fail(ONLY_ADMINS);
+
+  const membershipId = String(formData.get("membershipId") ?? "").trim();
+
+  const target = await db.membership.findFirst({
+    where: { id: membershipId, organizationId: organization.id },
+    select: { userId: true, role: true },
+  });
+
+  if (!target) return fail("Member not found.");
+  if (target.userId === user.id) return fail("You cannot remove yourself.");
+  if (target.role === "OWNER") return fail("Cannot remove the owner.");
+  if (role !== "OWNER" && target.role === "ADMIN") {
+    return fail("Only the owner can remove administrators.");
+  }
+
+  await db.membership.delete({ where: { id: membershipId } });
+
+  refresh();
+  return ok("Member removed from workspace.");
+}
+

@@ -5,7 +5,15 @@ import { CopyButton } from "@/components/CopyButton";
 import { PageTitle } from "@/components/Headline";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ui } from "@/components/ui";
-import { revokeApiKey, rotateWebhookSecret, saveSettings } from "@/app/actions/dashboard";
+import {
+  cancelInvitation,
+  inviteMember,
+  removeMember,
+  revokeApiKey,
+  rotateWebhookSecret,
+  saveSettings,
+  updateMemberRole,
+} from "@/app/actions/dashboard";
 import { savePosSettings } from "@/app/actions/pos";
 import { canManage, requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -15,7 +23,7 @@ import { CURRENCIES } from "@/lib/validation";
 export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
-  const { organization, role } = await requireSession();
+  const { organization, role, user } = await requireSession();
 
   if (!canManage(role)) {
     return (
@@ -26,7 +34,7 @@ export default async function SettingsPage() {
     );
   }
 
-  const [org, keys] = await Promise.all([
+  const [org, keys, members, pendingInvites] = await Promise.all([
     db.organization.findUniqueOrThrow({
       where: { id: organization.id },
       select: { name: true, notifyEmail: true, webhookUrl: true, webhookSecret: true, currency: true, allowNegativeStock: true },
@@ -35,6 +43,21 @@ export default async function SettingsPage() {
       where: { organizationId: organization.id, revokedAt: null },
       orderBy: { createdAt: "desc" },
       select: { id: true, name: true, prefix: true, lastUsedAt: true, createdAt: true },
+    }),
+    db.membership.findMany({
+      where: { organizationId: organization.id },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        role: true,
+        createdAt: true,
+        user: { select: { id: true, name: true, email: true } },
+      },
+    }),
+    db.invitation.findMany({
+      where: { organizationId: organization.id, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, email: true, role: true, expiresAt: true },
     }),
   ]);
 
@@ -125,6 +148,110 @@ export default async function SettingsPage() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="space-y-6">
+        <div className="space-y-2">
+          <p className={ui.label}>Team & Cashiers</p>
+          <p className={ui.muted}>
+            Invite cashiers and administrators to this workspace. Members can operate the POS and record sales. Owners and admins can manage stock, prices, voids and settings.
+          </p>
+        </div>
+
+        <ActionForm action={inviteMember} className="space-y-4">
+          <div className="grid sm:grid-cols-[1fr_160px_auto] gap-3 items-end">
+            <div>
+              <label className={ui.label} htmlFor="inviteEmail">Email address</label>
+              <input
+                id="inviteEmail"
+                name="email"
+                type="email"
+                required
+                placeholder="colleague@store.com"
+                className={ui.input}
+              />
+            </div>
+            <div>
+              <label className={ui.label} htmlFor="inviteRole">Role</label>
+              <select id="inviteRole" name="role" defaultValue="MEMBER" className={ui.input}>
+                <option value="MEMBER">Member (Cashier)</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+            </div>
+            <SubmitButton pendingText="Inviting...">Invite</SubmitButton>
+          </div>
+        </ActionForm>
+
+        {pendingInvites.length > 0 && (
+          <div className="space-y-3 pt-4">
+            <p className={ui.label}>Pending invitations</p>
+            <ul className="divide-y divide-white/10 border-y border-white/10">
+              {pendingInvites.map((inv) => (
+                <li key={inv.id} className="flex flex-wrap items-center justify-between gap-4 py-3">
+                  <div>
+                    <span className="text-white text-sm">{inv.email}</span>
+                    <span className="ml-2 text-xs uppercase tracking-wider text-slate-400">({inv.role.toLowerCase()})</span>
+                    <span className="block text-xs text-slate-500">Expires {formatDate(inv.expiresAt)}</span>
+                  </div>
+                  <ActionForm action={cancelInvitation} confirm="Cancel this invitation?">
+                    <input type="hidden" name="invitationId" value={inv.id} />
+                    <SubmitButton variant="ghost" pendingText="...">Cancel</SubmitButton>
+                  </ActionForm>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="space-y-3 pt-4">
+          <p className={ui.label}>Active members ({members.length})</p>
+          <ul className="divide-y divide-white/10 border-y border-white/10">
+            {members.map((m) => {
+              const isMe = m.user.id === user.id;
+              const isOwner = m.role === "OWNER";
+              return (
+                <li key={m.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
+                  <div className="min-w-0">
+                    <p className="text-white">
+                      {m.user.name} {isMe && <span className="text-xs text-rose-400 font-semibold">(You)</span>}
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      {m.user.email} · joined {formatDate(m.createdAt)}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs uppercase tracking-wider text-slate-300 font-mono bg-white/5 px-2.5 py-1 rounded">
+                      {m.role}
+                    </span>
+
+                    {!isOwner && !isMe && role === "OWNER" && (
+                      <ActionForm action={updateMemberRole}>
+                        <input type="hidden" name="membershipId" value={m.id} />
+                        <select
+                          name="role"
+                          defaultValue={m.role}
+                          onChange={(e) => e.target.form?.requestSubmit()}
+                          className="bg-transparent border border-white/10 text-xs text-slate-300 rounded px-2 py-1 outline-none focus:border-rose-400"
+                        >
+                          <option value="MEMBER">MEMBER</option>
+                          <option value="ADMIN">ADMIN</option>
+                        </select>
+                      </ActionForm>
+                    )}
+
+                    {!isOwner && !isMe && (
+                      <ActionForm action={removeMember} confirm={`Remove ${m.user.name} from this workspace?`}>
+                        <input type="hidden" name="membershipId" value={m.id} />
+                        <SubmitButton variant="danger" pendingText="...">Remove</SubmitButton>
+                      </ActionForm>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </section>
     </div>
   );

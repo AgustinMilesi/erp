@@ -104,6 +104,74 @@ export async function logoutAction() {
   redirect("/login");
 }
 
+export async function acceptInvitationAction(input: unknown): Promise<ActionResult> {
+  const ip = await getClientIp();
+  if (!(await rateLimit(`accept-invite:${ip}`, 10, 60 * 60)).ok) return fail(TOO_MANY);
+
+  const { acceptInviteSchema } = await import("@/lib/validation");
+  const parsed = acceptInviteSchema.safeParse(input);
+  if (!parsed.success) return fail(firstIssue(parsed.error));
+
+  const { token, name, password } = parsed.data;
+  const { sha256 } = await import("@/lib/ids");
+  const tokenHash = sha256(token);
+
+  const invite = await db.invitation.findUnique({
+    where: { id: tokenHash },
+    include: { organization: { select: { id: true, name: true } } },
+  });
+
+  if (!invite || invite.expiresAt < new Date()) {
+    return fail("This invitation link is invalid or has expired.");
+  }
+
+  // Check if user already exists
+  let existingUser = await db.user.findUnique({
+    where: { email: invite.email },
+  });
+
+  if (!existingUser) {
+    if (!name || !password) {
+      return fail("Please enter your name and a password to create your account.");
+    }
+    const passwordHash = await hashPassword(password);
+    existingUser = await db.user.create({
+      data: {
+        name,
+        email: invite.email,
+        passwordHash,
+      },
+    });
+  }
+
+  // Create or update membership
+  await db.membership.upsert({
+    where: {
+      userId_organizationId: {
+        userId: existingUser.id,
+        organizationId: invite.organizationId,
+      },
+    },
+    create: {
+      userId: existingUser.id,
+      organizationId: invite.organizationId,
+      role: invite.role,
+    },
+    update: {
+      role: invite.role,
+    },
+  });
+
+  // Delete used invitation
+  await db.invitation.delete({ where: { id: tokenHash } });
+
+  // Log the user in
+  await createSession(existingUser.id);
+
+  return ok("Invitation accepted! Welcome to the team.", { redirectTo: "/app" });
+}
+
+
 export async function forgotPasswordAction(input: unknown): Promise<ActionResult> {
   const parsed = forgotSchema.safeParse(input);
   if (!parsed.success) return fail(firstIssue(parsed.error));
