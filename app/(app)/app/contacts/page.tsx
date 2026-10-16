@@ -7,6 +7,7 @@ import { ui } from "@/components/ui";
 import { saveContact } from "@/app/actions/dashboard";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Contacts" };
 
@@ -17,7 +18,10 @@ export default async function ContactsPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  const { organization } = await requireSession();
+  const [{ organization }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const query = await searchParams;
   const q = query.q?.trim().slice(0, 100);
   const page = Math.max(1, Number(query.page) || 1);
@@ -49,20 +53,27 @@ export default async function ContactsPage({
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number) => `/app/contacts?${new URLSearchParams({ ...(q ? { q } : {}), page: String(p) })}`;
 
+  const titleWords = t.yourContacts.split(" ");
+  const titleLight = titleWords[0];
+  const titleBold = titleWords.slice(1).join(" ") ? `${titleWords.slice(1).join(" ")}.` : ".";
+
   return (
     <div className="space-y-10">
-      <PageTitle light="Your" bold="contacts." />
+      <div>
+        <PageTitle light={titleLight} bold={titleBold} />
+        <p className={`${ui.muted} mt-2`}>{t.contactsSubtitle}</p>
+      </div>
 
       <form action="/app/contacts" className="flex items-end gap-4">
         <div className="flex-1">
-          <label htmlFor="q" className={ui.label}>Search</label>
-          <input id="q" name="q" defaultValue={q} placeholder="Name, email or company" className={ui.input} />
+          <label htmlFor="q" className={ui.label}>{t.search}</label>
+          <input id="q" name="q" defaultValue={q} placeholder={t.searchContactsPlaceholder} className={ui.input} />
         </div>
-        <button type="submit" className={ui.ghost}>Search</button>
+        <button type="submit" className={ui.ghost}>{t.search}</button>
       </form>
 
       {contacts.length === 0 ? (
-        <p className={ui.muted}>{q ? "No contacts match that search." : "No contacts yet. Anyone who writes through a form shows up here."}</p>
+        <p className={ui.muted}>{q ? t.noContactsMatch : t.noContactsYet}</p>
       ) : (
         <ul className="divide-y divide-white/10 border-y border-white/10">
           {contacts.map((c) => (
@@ -81,20 +92,20 @@ export default async function ContactsPage({
 
       {pages > 1 && (
         <div className="flex items-center gap-4 text-sm">
-          {page > 1 && <Link href={href(page - 1)} className={ui.ghost}>Previous</Link>}
-          <span className={ui.muted}>Page {page} of {pages}</span>
-          {page < pages && <Link href={href(page + 1)} className={ui.ghost}>Next</Link>}
+          {page > 1 && <Link href={href(page - 1)} className={ui.ghost}>{t.previous}</Link>}
+          <span className={ui.muted}>{t.page} {page} {t.of} {pages}</span>
+          {page < pages && <Link href={href(page + 1)} className={ui.ghost}>{t.next}</Link>}
         </div>
       )}
 
       <details className={`${ui.card} p-6`}>
-        <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">Add a contact</summary>
+        <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">{t.addContactTitle}</summary>
         <ActionForm action={saveContact} className="space-y-2 pt-6">
-          <input name="name" required minLength={2} maxLength={120} placeholder="Name" aria-label="Name" className={ui.input} />
-          <input name="email" type="email" required placeholder="Email" aria-label="Email" className={ui.input} />
-          <input name="phone" maxLength={40} placeholder="Phone (optional)" aria-label="Phone" className={ui.input} />
-          <input name="company" maxLength={120} placeholder="Company (optional)" aria-label="Company" className={ui.input} />
-          <div className="pt-6"><SubmitButton>Add contact</SubmitButton></div>
+          <input name="name" required minLength={2} maxLength={120} placeholder={t.contactNameLabel} aria-label={t.contactNameLabel} className={ui.input} />
+          <input name="email" type="email" required placeholder={t.contactEmailLabel} aria-label={t.contactEmailLabel} className={ui.input} />
+          <input name="phone" maxLength={40} placeholder={t.contactPhoneLabel} aria-label={t.contactPhoneLabel} className={ui.input} />
+          <input name="company" maxLength={120} placeholder={t.contactCompanyLabel} aria-label={t.contactCompanyLabel} className={ui.input} />
+          <div className="pt-6"><SubmitButton>{t.saveContactBtn}</SubmitButton></div>
         </ActionForm>
       </details>
     </div>

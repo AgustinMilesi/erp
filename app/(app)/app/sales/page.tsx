@@ -7,26 +7,31 @@ import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Sales" };
 
 const PAGE_SIZE = 25;
-const FILTERS = [
-  { label: "All", value: "" },
-  { label: "Completed", value: "COMPLETED" },
-  { label: "Voided", value: "VOIDED" },
-] as const;
 
 export default async function SalesPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string; page?: string }>;
 }) {
-  const { organization } = await requireSession();
+  const [{ organization }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const query = await searchParams;
   const status: SaleStatus | undefined =
     query.status === "COMPLETED" ? "COMPLETED" : query.status === "VOIDED" ? "VOIDED" : undefined;
   const page = Math.max(1, Number(query.page) || 1);
+
+  const filters = [
+    { label: t.all, value: "" },
+    { label: t.filterCompleted, value: "COMPLETED" },
+    { label: t.filterVoided, value: "VOIDED" },
+  ] as const;
 
   const where = { organizationId: organization.id, ...(status ? { status } : {}) };
 
@@ -52,14 +57,21 @@ export default async function SalesPage({
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const href = (p: number, s = status) => `/app/sales?${new URLSearchParams({ ...(s ? { status: s } : {}), page: String(p) })}`;
 
+  const titleWords = t.yourSales.split(" ");
+  const titleLight = titleWords[0];
+  const titleBold = titleWords.slice(1).join(" ") ? `${titleWords.slice(1).join(" ")}.` : ".";
+
   return (
     <div className="space-y-10">
-      <PageTitle light="Your" bold="sales." />
+      <div>
+        <PageTitle light={titleLight} bold={titleBold} />
+        <p className={`${ui.muted} mt-2`}>{t.salesSubtitle}</p>
+      </div>
 
       <div className="flex flex-wrap gap-3">
-        {FILTERS.map((filter) => (
+        {filters.map((filter) => (
           <Link
-            key={filter.label}
+            key={filter.value}
             href={href(1, filter.value || undefined)}
             className={`${ui.ghost} ${(status ?? "") === filter.value ? "!border-rose-400 !text-rose-400" : ""}`}
           >
@@ -70,7 +82,10 @@ export default async function SalesPage({
 
       {sales.length === 0 ? (
         <p className={ui.muted}>
-          No sales yet. Open the <Link href="/pos" className={ui.link}>point of sale</Link> to make the first one.
+          {t.noSalesEmpty}{" "}
+          <Link href="/pos" className={ui.link}>
+            {t.openPosFirst}
+          </Link>
         </p>
       ) : (
         <ul className="divide-y divide-white/10 border-y border-white/10">
@@ -79,8 +94,8 @@ export default async function SalesPage({
               <Link href={`/app/sales/${sale.id}`} className="flex items-center justify-between gap-4 py-4 hover:text-rose-400 transition">
                 <span className="min-w-0">
                   <span className={`block truncate ${sale.status === "VOIDED" ? "text-slate-500 line-through" : "text-white"}`}>
-                    Sale #{sale.number}
-                    {sale.status === "VOIDED" && <span className="ml-2 text-xs uppercase tracking-wider no-underline">Voided</span>}
+                    {t.saleNumber}{sale.number}
+                    {sale.status === "VOIDED" && <span className="ml-2 text-xs uppercase tracking-wider text-rose-400 no-underline font-mono">{t.voidedBadge}</span>}
                   </span>
                   <span className="block text-sm text-slate-500 truncate">
                     {formatDate(sale.createdAt)} · {sale.cashier.name}
@@ -98,9 +113,9 @@ export default async function SalesPage({
 
       {pages > 1 && (
         <div className="flex items-center gap-4 text-sm">
-          {page > 1 && <Link href={href(page - 1)} className={ui.ghost}>Previous</Link>}
-          <span className={ui.muted}>Page {page} of {pages}</span>
-          {page < pages && <Link href={href(page + 1)} className={ui.ghost}>Next</Link>}
+          {page > 1 && <Link href={href(page - 1)} className={ui.ghost}>{t.previous}</Link>}
+          <span className={ui.muted}>{t.page} {page} {t.of} {pages}</span>
+          {page < pages && <Link href={href(page + 1)} className={ui.ghost}>{t.next}</Link>}
         </div>
       )}
     </div>

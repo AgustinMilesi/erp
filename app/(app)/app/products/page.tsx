@@ -10,6 +10,7 @@ import { deleteCategory, saveCategory } from "@/app/actions/pos";
 import { canManage, requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatMoney } from "@/lib/money";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Products" };
 
@@ -20,7 +21,10 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ q?: string; page?: string; low?: string }>;
 }) {
-  const { organization, role } = await requireSession();
+  const [{ organization, role }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const query = await searchParams;
   const q = query.q?.trim().slice(0, 100);
   const low = query.low === "1";
@@ -61,24 +65,31 @@ export default async function ProductsPage({
     `/app/products?${new URLSearchParams({ ...(q ? { q } : {}), ...(low ? { low: "1" } : {}), page: String(p) })}`;
   const manage = canManage(role);
 
+  const titleWords = t.yourProducts.split(" ");
+  const titleLight = titleWords[0];
+  const titleBold = titleWords.slice(1).join(" ") ? `${titleWords.slice(1).join(" ")}.` : ".";
+
   return (
     <div className="space-y-10">
-      <PageTitle light="Your" bold="products." />
+      <div>
+        <PageTitle light={titleLight} bold={titleBold} />
+        <p className={`${ui.muted} mt-2`}>{t.productsSubtitle}</p>
+      </div>
 
       <form action="/app/products" className="flex flex-wrap items-end gap-4">
         <div className="flex-1 min-w-48">
-          <label htmlFor="q" className={ui.label}>Search</label>
-          <input id="q" name="q" defaultValue={q} placeholder="Name, SKU or barcode" className={ui.input} />
+          <label htmlFor="q" className={ui.label}>{t.search}</label>
+          <input id="q" name="q" defaultValue={q} placeholder={t.searchProductsPlaceholder} className={ui.input} />
         </div>
         {low && <input type="hidden" name="low" value="1" />}
-        <button type="submit" className={ui.ghost}>Search</button>
+        <button type="submit" className={ui.ghost}>{t.search}</button>
         <Link href={low ? `/app/products${q ? `?q=${encodeURIComponent(q)}` : ""}` : `/app/products?${new URLSearchParams({ ...(q ? { q } : {}), low: "1" })}`} className={ui.ghost}>
-          {low ? "Show all" : "Low stock only"}
+          {low ? t.showAll : t.lowStockOnly}
         </Link>
       </form>
 
       {products.length === 0 ? (
-        <p className={ui.muted}>{q || low ? "No products match." : "No products yet. Add the first one below."}</p>
+        <p className={ui.muted}>{q || low ? t.noProductsMatchFilter : t.noProductsYetCatalog}</p>
       ) : (
         <ul className="divide-y divide-white/10 border-y border-white/10">
           {products.map((p) => {
@@ -89,14 +100,14 @@ export default async function ProductsPage({
                   <span className="min-w-0">
                     <span className={`block truncate ${p.active ? "text-white" : "text-slate-500"}`}>
                       {p.name}
-                      {!p.active && <span className="ml-2 text-xs uppercase tracking-wider text-slate-500">Hidden</span>}
+                      {!p.active && <span className="ml-2 text-xs uppercase tracking-wider text-slate-500 font-mono">{t.hidden}</span>}
                     </span>
                     <span className="block text-sm text-slate-500 truncate">{p.sku}</span>
                   </span>
                   <span className="text-right whitespace-nowrap">
                     <span className="block text-white">{formatMoney(p.priceCents, organization.currency)}</span>
                     <span className={`block text-sm ${isLow ? "text-rose-400" : "text-slate-500"}`}>
-                      {p.trackStock ? `${p.stock} in stock` : "No stock tracking"}
+                      {p.trackStock ? `${p.stock} ${t.inStock}` : t.noStockTracking}
                     </span>
                   </span>
                 </Link>
@@ -108,28 +119,28 @@ export default async function ProductsPage({
 
       {pages > 1 && (
         <div className="flex items-center gap-4 text-sm">
-          {page > 1 && <Link href={href(page - 1)} className={ui.ghost}>Previous</Link>}
-          <span className={ui.muted}>Page {page} of {pages}</span>
-          {page < pages && <Link href={href(page + 1)} className={ui.ghost}>Next</Link>}
+          {page > 1 && <Link href={href(page - 1)} className={ui.ghost}>{t.previous}</Link>}
+          <span className={ui.muted}>{t.page} {page} {t.of} {pages}</span>
+          {page < pages && <Link href={href(page + 1)} className={ui.ghost}>{t.next}</Link>}
         </div>
       )}
 
       {manage && (
         <>
           <details className={`${ui.card} p-6`}>
-            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">Add a product</summary>
+            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">{t.addAProduct}</summary>
             <div className="pt-6"><ProductForm categories={categories} /></div>
           </details>
 
           <details className={`${ui.card} p-6`}>
-            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">Import Catalog (JSON / Excel)</summary>
+            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">{t.importCatalogTitle}</summary>
             <div className="pt-6">
               <DataImporter />
             </div>
           </details>
 
           <section className="space-y-4">
-            <p className={ui.label}>Categories</p>
+            <p className={ui.label}>{t.categories}</p>
             {categories.length > 0 && (
               <ul className="divide-y divide-white/10 border-y border-white/10">
                 {categories.map((category) => (
@@ -137,9 +148,9 @@ export default async function ProductsPage({
                     <span className="text-slate-200 truncate">
                       {category.name} <span className="text-slate-500 text-sm">· {category._count.products}</span>
                     </span>
-                    <ActionForm action={deleteCategory} confirm="Delete this category? Its products stay without a category.">
+                    <ActionForm action={deleteCategory} confirm={t.deleteCategoryConfirm}>
                       <input type="hidden" name="id" value={category.id} />
-                      <SubmitButton variant="danger" pendingText="...">Delete</SubmitButton>
+                      <SubmitButton variant="danger" pendingText="...">{t.delete}</SubmitButton>
                     </ActionForm>
                   </li>
                 ))}
@@ -147,10 +158,10 @@ export default async function ProductsPage({
             )}
             <ActionForm action={saveCategory} className="flex items-end gap-4">
               <div className="flex-1">
-                <label htmlFor="category-name" className={ui.label}>New category</label>
-                <input id="category-name" name="name" required maxLength={60} placeholder="Drinks, Dairy..." className={ui.input} />
+                <label htmlFor="category-name" className={ui.label}>{t.newCategory}</label>
+                <input id="category-name" name="name" required maxLength={60} placeholder={t.newCategoryPlaceholder} className={ui.input} />
               </div>
-              <SubmitButton variant="ghost" pendingText="...">Add</SubmitButton>
+              <SubmitButton variant="ghost" pendingText="...">{t.add}</SubmitButton>
             </ActionForm>
           </section>
         </>

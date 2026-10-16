@@ -10,19 +10,23 @@ import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
 import { sessionSummary } from "@/lib/pos/cash";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Cash" };
 
-const METHODS = [
-  { key: "CASH", label: "Cash" },
-  { key: "CARD", label: "Card" },
-  { key: "TRANSFER", label: "Transfer" },
-  { key: "OTHER", label: "Other" },
-] as const;
-
 export default async function CashPage() {
-  const { organization } = await requireSession();
+  const [{ organization }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const money = (cents: number | bigint) => formatMoney(cents, organization.currency);
+
+  const methods = [
+    { key: "CASH", label: t.methodCash },
+    { key: "CARD", label: t.methodCard },
+    { key: "TRANSFER", label: t.methodTransfer },
+    { key: "OTHER", label: t.methodOther },
+  ] as const;
 
   const [open, history] = await Promise.all([
     db.cashSession.findFirst({
@@ -42,34 +46,42 @@ export default async function CashPage() {
 
   const summary = open ? await sessionSummary(db, organization.id, open.id) : null;
 
+  const titleWords = t.yourCash.split(" ");
+  const titleLight = titleWords[0];
+  const titleBold = titleWords.slice(1).join(" ") ? `${titleWords.slice(1).join(" ")}.` : ".";
+
   return (
     <div className="space-y-14">
-      <PageTitle light="Your" bold="cash." />
+      <div>
+        <PageTitle light={titleLight} bold={titleBold} />
+        <p className={`${ui.muted} mt-2`}>{t.cashSubtitle}</p>
+      </div>
 
       {open && summary ? (
         <>
           <section className="space-y-6">
             <div className="space-y-1">
-              <p className={ui.label}>Open register</p>
+              <p className={ui.label}>{t.openRegisterSection}</p>
               <p className={ui.muted}>
-                Opened {formatDate(open.openedAt)} by {open.openedBy.name}. <Link href="/pos" className={ui.link}>Go to the till</Link>
+                {t.openedByLabel} {formatDate(open.openedAt)} {t.by} {open.openedBy.name}.{" "}
+                <Link href="/pos" className={ui.link}>{t.goToTheTill}</Link>
               </p>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className={`${ui.card} p-6`}>
-                <p className={ui.label}>Sales</p>
+                <p className={ui.label}>{t.salesLabel}</p>
                 <p className="text-3xl font-light text-white">{money(summary.totalSalesCents)}</p>
-                <p className="text-sm text-slate-500">{summary.salesCount} sold{summary.voidedCount > 0 ? `, ${summary.voidedCount} voided` : ""}</p>
+                <p className="text-sm text-slate-500">{summary.salesCount} {t.soldCount}{summary.voidedCount > 0 ? `, ${summary.voidedCount} ${t.voidedCount}` : ""}</p>
               </div>
               <div className={`${ui.card} p-6`}>
-                <p className={ui.label}>Cash expected</p>
+                <p className={ui.label}>{t.cashExpected}</p>
                 <p className="text-3xl font-light text-white">{money(summary.expectedCashCents)}</p>
-                <p className="text-sm text-slate-500">Opening {money(summary.openingCents)}</p>
+                <p className="text-sm text-slate-500">{t.openingLabel} {money(summary.openingCents)}</p>
               </div>
               <div className={`${ui.card} p-6 space-y-1`}>
-                <p className={ui.label}>By method</p>
-                {METHODS.map((m) => (
+                <p className={ui.label}>{t.byMethod}</p>
+                {methods.map((m) => (
                   <p key={m.key} className="flex justify-between text-sm text-slate-300">
                     <span>{m.label}</span>
                     <span>{money(summary.byMethod[m.key])}</span>
@@ -80,26 +92,26 @@ export default async function CashPage() {
           </section>
 
           <section className="space-y-6">
-            <p className={ui.label}>Money in and out</p>
+            <p className={ui.label}>{t.actions}</p>
             <ActionForm action={moveCash} className="space-y-2">
               <div className="grid sm:grid-cols-3 gap-x-6">
                 <div>
-                  <label className={ui.label} htmlFor="m-type">Type</label>
+                  <label className={ui.label} htmlFor="m-type">{t.actions}</label>
                   <select id="m-type" name="type" defaultValue="OUT" className={ui.input}>
-                    <option value="OUT">Taken out</option>
-                    <option value="IN">Put in</option>
+                    <option value="OUT">− {t.delete}</option>
+                    <option value="IN">+ {t.add}</option>
                   </select>
                 </div>
                 <div>
-                  <label className={ui.label} htmlFor="m-amount">Amount</label>
+                  <label className={ui.label} htmlFor="m-amount">{t.amount}</label>
                   <input id="m-amount" name="amount" required inputMode="decimal" placeholder="0,00" className={ui.input} />
                 </div>
                 <div>
-                  <label className={ui.label} htmlFor="m-reason">What for</label>
-                  <input id="m-reason" name="reason" required minLength={3} maxLength={120} placeholder="Change, supplier, ice..." className={ui.input} />
+                  <label className={ui.label} htmlFor="m-reason">{t.notes}</label>
+                  <input id="m-reason" name="reason" required minLength={3} maxLength={120} placeholder="..." className={ui.input} />
                 </div>
               </div>
-              <div className="pt-6"><SubmitButton variant="ghost">Add movement</SubmitButton></div>
+              <div className="pt-6"><SubmitButton variant="ghost">{t.add}</SubmitButton></div>
             </ActionForm>
 
             {open.movements.length > 0 && (
@@ -120,40 +132,40 @@ export default async function CashPage() {
           </section>
 
           <section className="space-y-6">
-            <p className={ui.label}>Close the register</p>
-            <p className={ui.muted}>Count the cash in the drawer. We compare it with the {money(summary.expectedCashCents)} we expect.</p>
-            <ActionForm action={closeRegister} confirm="Close the register? Nobody can sell until a new one is opened." className="space-y-2">
+            <p className={ui.label}>{t.closeRegisterTitle}</p>
+            <p className={ui.muted}>{t.countedCashLabel}. {t.cashExpected}: {money(summary.expectedCashCents)}.</p>
+            <ActionForm action={closeRegister} confirm={t.closeRegisterTitle + "?"} className="space-y-2">
               <input type="hidden" name="id" value={open.id} />
               <div>
-                <label className={ui.label} htmlFor="c-counted">Cash counted</label>
+                <label className={ui.label} htmlFor="c-counted">{t.countedCashLabel}</label>
                 <input id="c-counted" name="counted" required inputMode="decimal" placeholder="0,00" className={ui.input} />
               </div>
               <div>
-                <label className={ui.label} htmlFor="c-note">Note (optional)</label>
-                <input id="c-note" name="note" maxLength={200} className={ui.input} />
+                <label className={ui.label} htmlFor="c-note">{t.notes}</label>
+                <input id="c-note" name="note" maxLength={200} placeholder={t.closeNotesPlaceholder} className={ui.input} />
               </div>
-              <div className="pt-6"><SubmitButton variant="danger" pendingText="Closing...">Close register</SubmitButton></div>
+              <div className="pt-6"><SubmitButton variant="danger" pendingText="...">{t.closeRegisterBtn}</SubmitButton></div>
             </ActionForm>
           </section>
         </>
       ) : (
         <section className="space-y-6 max-w-xl">
-          <p className={ui.label}>No register open</p>
-          <p className={ui.muted}>Open one to start selling.</p>
+          <p className={ui.label}>{t.openRegisterTitle}</p>
+          <p className={ui.muted}>{t.openRegisterSubtitle}</p>
           <ActionForm action={openRegister} className="space-y-2">
             <div>
-              <label className={ui.label} htmlFor="o-opening">Cash in the drawer</label>
+              <label className={ui.label} htmlFor="o-opening">{t.initialCashLabel}</label>
               <input id="o-opening" name="opening" inputMode="decimal" placeholder="0,00" className={ui.input} />
             </div>
-            <div className="pt-6"><SubmitButton pendingText="Opening...">Open register</SubmitButton></div>
+            <div className="pt-6"><SubmitButton pendingText="...">{t.openRegisterAction}</SubmitButton></div>
           </ActionForm>
         </section>
       )}
 
       <section className="space-y-4">
-        <p className={ui.label}>Closed registers</p>
+        <p className={ui.label}>{t.shiftHistoryTitle}</p>
         {history.length === 0 ? (
-          <p className={ui.muted}>Nothing closed yet.</p>
+          <p className={ui.muted}>{t.noShiftHistory}</p>
         ) : (
           <ul className="divide-y divide-white/10 border-y border-white/10">
             {history.map((session) => {
@@ -161,15 +173,15 @@ export default async function CashPage() {
               return (
                 <li key={session.id} className="flex items-center justify-between gap-4 py-4">
                   <span className="min-w-0">
-                    <span className="block text-slate-200">{session.closedAt ? formatDate(session.closedAt) : ""}</span>
+                    <span className="block text-slate-200">{session.closedAt ? `${t.closedBy} ${formatDate(session.closedAt)}` : ""}</span>
                     <span className="block text-sm text-slate-500 truncate">
-                      Opened {formatDate(session.openedAt)} · {session.openedBy.name}
+                      {t.openedByLabel} {formatDate(session.openedAt)} · {session.openedBy.name}
                     </span>
                   </span>
                   <span className="text-right text-sm whitespace-nowrap">
-                    <span className="block text-slate-300">Counted {money(session.countedCents ?? 0)}</span>
+                    <span className="block text-slate-300">{t.counted} {money(session.countedCents ?? 0)}</span>
                     <span className={`block ${difference === 0 ? "text-slate-500" : "text-rose-400"}`}>
-                      {difference === 0 ? "Matched" : `${difference > 0 ? "+" : "−"} ${money(Math.abs(difference))}`}
+                      {difference === 0 ? t.exactAmount : `${difference > 0 ? "+" : "−"} ${money(Math.abs(difference))}`}
                     </span>
                   </span>
                 </li>

@@ -9,14 +9,23 @@ import { canManage, requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Sale" };
 
-const METHOD_LABEL = { CASH: "Cash", CARD: "Card", TRANSFER: "Transfer", OTHER: "Other" } as const;
-
 export default async function SalePage({ params }: { params: Promise<{ id: string }> }) {
-  const { organization, role } = await requireSession();
+  const [{ organization, role }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const { id } = await params;
+
+  const methodLabel: Record<string, string> = {
+    CASH: t.methodCash,
+    CARD: t.methodCard,
+    TRANSFER: t.methodTransfer,
+    OTHER: t.methodOther,
+  };
 
   const sale = await db.sale.findFirst({
     where: { id, organizationId: organization.id },
@@ -37,13 +46,13 @@ export default async function SalePage({ params }: { params: Promise<{ id: strin
   return (
     <div className="space-y-12">
       <Link href="/app/sales" className={`${ui.muted} text-sm hover:text-rose-400 transition`}>
-        ← Back to sales
+        ← {t.backToSales}
       </Link>
 
       <div className="space-y-2">
         <h1 className="text-4xl font-black text-white leading-tight">
-          Sale #{sale.number}
-          {sale.status === "VOIDED" && <span className="ml-3 text-lg font-normal text-rose-400 uppercase tracking-wider">Voided</span>}
+          {t.saleNumber}{sale.number}
+          {sale.status === "VOIDED" && <span className="ml-3 text-lg font-normal text-rose-400 uppercase tracking-wider">{t.voidedBadge}</span>}
         </h1>
         <p className={ui.muted}>
           {formatDate(sale.createdAt)} · {sale.cashier.name}
@@ -57,7 +66,7 @@ export default async function SalePage({ params }: { params: Promise<{ id: strin
       </div>
 
       <section className="space-y-4">
-        <p className={ui.label}>Items</p>
+        <p className={ui.label}>{t.items}</p>
         <ul className="divide-y divide-white/10 border-y border-white/10">
           {sale.items.map((item) => (
             <li key={item.id} className="flex items-start justify-between gap-4 py-3">
@@ -73,31 +82,30 @@ export default async function SalePage({ params }: { params: Promise<{ id: strin
         <div className="space-y-2 pt-2">
           {Number(sale.discountCents) > 0 && (
             <>
-              <div className="flex justify-between text-slate-400"><span>Subtotal</span><span>{money(sale.subtotalCents)}</span></div>
-              <div className="flex justify-between text-slate-400"><span>Discount</span><span>− {money(sale.discountCents)}</span></div>
+              <div className="flex justify-between text-slate-400"><span>{t.subtotal}</span><span>{money(sale.subtotalCents)}</span></div>
+              <div className="flex justify-between text-slate-400"><span>{t.discount}</span><span>− {money(sale.discountCents)}</span></div>
             </>
           )}
-          <div className="flex justify-between text-2xl text-white font-black"><span>Total</span><span>{money(sale.totalCents)}</span></div>
-          <div className="flex justify-between text-sm text-slate-500"><span>Tax included</span><span>{money(sale.taxCents)}</span></div>
+          <div className="flex justify-between text-2xl text-white font-black"><span>{t.total}</span><span>{money(sale.totalCents)}</span></div>
         </div>
       </section>
 
       <section className="space-y-4">
-        <p className={ui.label}>Payments</p>
+        <p className={ui.label}>{t.payments}</p>
         <ul className="divide-y divide-white/10 border-y border-white/10">
           {sale.payments.map((payment) => (
             <li key={payment.id} className="flex justify-between py-3 text-slate-200">
-              <span>{METHOD_LABEL[payment.method]}</span>
+              <span>{methodLabel[payment.method] || payment.method}</span>
               <span>{money(payment.amountCents)}</span>
             </li>
           ))}
         </ul>
-        {Number(sale.changeCents) > 0 && <p className={ui.muted}>Change given: {money(sale.changeCents)}</p>}
+        {Number(sale.changeCents) > 0 && <p className={ui.muted}>{t.giveBack}: {money(sale.changeCents)}</p>}
       </section>
 
       {sale.status === "VOIDED" && (
         <section className={`${ui.card} p-6 space-y-1`}>
-          <p className={ui.label}>Why it was voided</p>
+          <p className={ui.label}>{t.voidedBadge}</p>
           <p className="text-slate-200">{sale.voidReason}</p>
           <p className="text-sm text-slate-500">
             {sale.voidedAt ? formatDate(sale.voidedAt) : ""}
@@ -107,20 +115,20 @@ export default async function SalePage({ params }: { params: Promise<{ id: strin
       )}
 
       <div className="flex flex-wrap gap-3">
-        <Link href={`/pos/receipt/${sale.id}`} target="_blank" className={ui.ghost}>Receipt</Link>
+        <Link href={`/pos/receipt/${sale.id}`} target="_blank" className={ui.ghost}>{t.receipt}</Link>
       </div>
 
       {canVoid && (
         <section className="space-y-4">
-          <p className={ui.label}>Void this sale</p>
-          <p className={ui.muted}>The stock goes back on the shelf. This can only be done while the register it was made in is still open.</p>
-          <ActionForm action={voidSaleAction} confirm="Void this sale? This can't be undone." className="space-y-2">
+          <p className={ui.label}>{t.voidSale}</p>
+          <p className={ui.muted}>{t.confirmVoidSale}</p>
+          <ActionForm action={voidSaleAction} confirm={t.confirmVoidSale} className="space-y-2">
             <input type="hidden" name="id" value={sale.id} />
             <div>
-              <label className={ui.label} htmlFor="void-reason">Reason</label>
+              <label className={ui.label} htmlFor="void-reason">{t.notes}</label>
               <input id="void-reason" name="reason" required minLength={3} maxLength={200} className={ui.input} />
             </div>
-            <div className="pt-6"><SubmitButton variant="danger" pendingText="Voiding...">Void sale</SubmitButton></div>
+            <div className="pt-6"><SubmitButton variant="danger" pendingText="...">{t.voidSale}</SubmitButton></div>
           </ActionForm>
         </section>
       )}

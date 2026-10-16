@@ -13,19 +13,13 @@ import {
 } from "@/app/actions/pos";
 import { centsToInput, formatMoney, parseMoney } from "@/lib/money";
 import { allocatePayments, computeTotals, type PaymentMethodName } from "@/lib/pos/sale-math";
+import { usePreferences } from "@/components/PreferencesProvider";
 
 type Line = TillProduct & { quantity: number };
 type PayRow = { id: number; method: PaymentMethodName; amount: string };
 type Customer = { id: string; name: string };
 type CustomerHit = Customer & { email: string };
 type Done = { id: string; number: string; changeCents: number; totalCents: number };
-
-const METHODS: { value: PaymentMethodName; label: string }[] = [
-  { value: "CASH", label: "Cash" },
-  { value: "CARD", label: "Card" },
-  { value: "TRANSFER", label: "Transfer" },
-  { value: "OTHER", label: "Other" },
-];
 
 const newKey = () => crypto.randomUUID().replace(/-/g, "");
 
@@ -38,7 +32,15 @@ export function PosTerminal({
   allowNegativeStock: boolean;
   canDiscount: boolean;
 }) {
+  const { t } = usePreferences();
   const money = (cents: number) => formatMoney(cents, currency);
+
+  const methods: { value: PaymentMethodName; label: string }[] = [
+    { value: "CASH", label: t.methodCash },
+    { value: "CARD", label: t.methodCard },
+    { value: "TRANSFER", label: t.methodTransfer },
+    { value: "OTHER", label: t.methodOther },
+  ];
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<TillProduct[]>([]);
@@ -215,7 +217,7 @@ export function PosTerminal({
       <section className="p-4 md:p-8 space-y-6 lg:border-r border-white/10">
         <form onSubmit={submitSearch} className="flex items-end gap-4">
           <div className="flex-1">
-            <label htmlFor="till-search" className={ui.label}>Scan or search</label>
+            <label htmlFor="till-search" className={ui.label}>{t.scanOrSearch}</label>
             <input
               id="till-search"
               ref={searchBox}
@@ -224,15 +226,15 @@ export function PosTerminal({
               autoFocus
               autoComplete="off"
               maxLength={100}
-              placeholder="Barcode, SKU or name"
+              placeholder={t.barcodeSkuName}
               className={ui.input}
             />
           </div>
-          <button type="submit" className={ui.ghost}>Add</button>
+          <button type="submit" className={ui.ghost}>{t.add}</button>
         </form>
 
         {results.length === 0 ? (
-          <p className={ui.muted}>{query ? "No products match." : "No products yet. Add some from the Products page."}</p>
+          <p className={ui.muted}>{query ? t.noProductsMatch : t.noProductsYetPos}</p>
         ) : (
           <ul className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
             {results.map((product) => {
@@ -251,7 +253,7 @@ export function PosTerminal({
                       <span className="text-lg text-white font-semibold">{money(product.priceCents)}</span>
                       {product.trackStock && (
                         <span className={`text-xs ${out ? "text-rose-400" : "text-slate-500"}`}>
-                          {out ? "Out of stock" : `${product.stock} in stock`}
+                          {out ? t.outOfStock : `${product.stock} ${t.inStock}`}
                         </span>
                       )}
                     </span>
@@ -267,27 +269,27 @@ export function PosTerminal({
         {stage === "done" && done ? (
           <div className="space-y-8">
             <div className="space-y-2">
-              <p className={ui.label}>Sale recorded</p>
+              <p className={ui.label}>{t.saleRecorded}</p>
               <p className="text-5xl font-light text-white">#{done.number}</p>
               <p className="text-xl text-white">{money(done.totalCents)}</p>
             </div>
             {done.changeCents > 0 && (
               <div className={`${ui.card} p-6`}>
-                <p className={ui.label}>Give back</p>
+                <p className={ui.label}>{t.giveBack}</p>
                 <p className="text-4xl font-black text-rose-400">{money(done.changeCents)}</p>
               </div>
             )}
             <div className="flex flex-wrap gap-3">
-              <button type="button" onClick={newSale} className={ui.button}>New sale</button>
+              <button type="button" onClick={newSale} className={ui.button}>{t.newSale}</button>
               {done.id && (
-                <Link href={`/pos/receipt/${done.id}`} target="_blank" className={ui.ghost}>Receipt</Link>
+                <Link href={`/pos/receipt/${done.id}`} target="_blank" className={ui.ghost}>{t.receipt}</Link>
               )}
             </div>
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between">
-              <p className={ui.label}>{stage === "pay" ? "Payment" : "Cart"}</p>
+              <p className={ui.label}>{stage === "pay" ? t.payment : t.cart}</p>
               {lines.length > 0 && stage === "cart" && (
                 <button
                   type="button"
@@ -297,13 +299,13 @@ export function PosTerminal({
                     setLines([]);
                   }}
                 >
-                  Clear
+                  {t.clear}
                 </button>
               )}
             </div>
 
             {lines.length === 0 ? (
-              <p className={ui.muted}>Scan a product or pick one from the list to start.</p>
+              <p className={ui.muted}>{t.scanToStart}</p>
             ) : (
               <ul className="divide-y divide-white/10 border-y border-white/10">
                 {lines.map((line) => (
@@ -313,10 +315,10 @@ export function PosTerminal({
                       <span className="text-white whitespace-nowrap">{money(line.priceCents * line.quantity)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm text-slate-500">{money(line.priceCents)} each</span>
+                      <span className="text-sm text-slate-500">{money(line.priceCents)} {t.each}</span>
                       {stage === "cart" ? (
                         <span className="flex items-center gap-2">
-                          <button type="button" aria-label="One less" className={`${ui.ghost} !px-3`} onClick={() => (line.quantity > 1 ? setQuantity(line.id, line.quantity - 1) : remove(line.id))}>−</button>
+                          <button type="button" aria-label={t.oneLess} className={`${ui.ghost} !px-3`} onClick={() => (line.quantity > 1 ? setQuantity(line.id, line.quantity - 1) : remove(line.id))}>−</button>
                           <input
                             type="number"
                             inputMode="numeric"
@@ -326,8 +328,8 @@ export function PosTerminal({
                             onChange={(e) => setQuantity(line.id, Number(e.target.value))}
                             className="w-16 bg-transparent border-b border-white/10 text-center text-white outline-none focus:border-rose-400"
                           />
-                          <button type="button" aria-label="One more" className={`${ui.ghost} !px-3`} onClick={() => setQuantity(line.id, line.quantity + 1)}>+</button>
-                          <button type="button" aria-label={`Remove ${line.name}`} className="text-slate-500 hover:text-rose-400 transition px-1" onClick={() => remove(line.id)}>✕</button>
+                          <button type="button" aria-label={t.oneMore} className={`${ui.ghost} !px-3`} onClick={() => setQuantity(line.id, line.quantity + 1)}>+</button>
+                          <button type="button" aria-label={t.removeLine} className="text-slate-500 hover:text-rose-400 transition px-1" onClick={() => remove(line.id)}>✕</button>
                         </span>
                       ) : (
                         <span className="text-sm text-slate-400">× {line.quantity}</span>
@@ -342,7 +344,7 @@ export function PosTerminal({
               <div className="space-y-4">
                 {canDiscount && (
                   <div>
-                    <label htmlFor="till-discount" className={ui.label}>Discount (optional)</label>
+                    <label htmlFor="till-discount" className={ui.label}>{t.discountOptional}</label>
                     <input
                       id="till-discount"
                       value={discount}
@@ -359,11 +361,11 @@ export function PosTerminal({
                 )}
 
                 <div>
-                  <label htmlFor="till-customer" className={ui.label}>Customer (optional)</label>
+                  <label htmlFor="till-customer" className={ui.label}>{t.customerOptional}</label>
                   {customer ? (
                     <div className="flex items-center justify-between gap-3 py-3 border-b border-white/10">
                       <span className="text-white truncate">{customer.name}</span>
-                      <button type="button" className="text-xs uppercase tracking-wider text-slate-400 hover:text-rose-400 transition" onClick={() => { touch(); setCustomer(null); }}>Remove</button>
+                      <button type="button" className="text-xs uppercase tracking-wider text-slate-400 hover:text-rose-400 transition" onClick={() => { touch(); setCustomer(null); }}>{t.cancel}</button>
                     </div>
                   ) : (
                     <>
@@ -372,7 +374,7 @@ export function PosTerminal({
                         value={customerQuery}
                         onChange={(e) => setCustomerQuery(e.target.value)}
                         autoComplete="off"
-                        placeholder="Search by name or email"
+                        placeholder={t.searchCustomerPlaceholder}
                         className={ui.input}
                       />
                       {customerQuery.trim().length >= 2 && customerResults.length > 0 && (
@@ -405,12 +407,12 @@ export function PosTerminal({
               <div className="space-y-2 pt-2">
                 {totals.discountCents > 0 && (
                   <>
-                    <div className="flex justify-between text-sm text-slate-400"><span>Subtotal</span><span>{money(totals.subtotalCents)}</span></div>
-                    <div className="flex justify-between text-sm text-slate-400"><span>Discount</span><span>− {money(totals.discountCents)}</span></div>
+                    <div className="flex justify-between text-sm text-slate-400"><span>{t.subtotal}</span><span>{money(totals.subtotalCents)}</span></div>
+                    <div className="flex justify-between text-sm text-slate-400"><span>{t.discount}</span><span>− {money(totals.discountCents)}</span></div>
                   </>
                 )}
                 <div className="flex items-baseline justify-between">
-                  <span className={ui.label}>Total</span>
+                  <span className={ui.label}>{t.total}</span>
                   <span className="text-4xl font-black text-white">{money(totals.totalCents)}</span>
                 </div>
               </div>
@@ -423,7 +425,7 @@ export function PosTerminal({
                 onClick={startPayment}
                 className={`${ui.button} w-full`}
               >
-                Charge
+                {t.charge}
               </button>
             )}
 
@@ -433,7 +435,7 @@ export function PosTerminal({
                   {rows.map((row) => (
                     <li key={row.id} className="flex items-end gap-3">
                       <div className="w-32">
-                        <label className={ui.label} htmlFor={`method-${row.id}`}>Method</label>
+                        <label className={ui.label} htmlFor={`method-${row.id}`}>{t.method}</label>
                         <select
                           id={`method-${row.id}`}
                           value={row.method}
@@ -442,13 +444,13 @@ export function PosTerminal({
                           }
                           className={`${ui.input} !text-base`}
                         >
-                          {METHODS.map((m) => (
+                          {methods.map((m) => (
                             <option key={m.value} value={m.value}>{m.label}</option>
                           ))}
                         </select>
                       </div>
                       <div className="flex-1">
-                        <label className={ui.label} htmlFor={`amount-${row.id}`}>Amount</label>
+                        <label className={ui.label} htmlFor={`amount-${row.id}`}>{t.amount}</label>
                         <input
                           id={`amount-${row.id}`}
                           value={row.amount}
@@ -461,36 +463,36 @@ export function PosTerminal({
                         />
                       </div>
                       {rows.length > 1 && (
-                        <button type="button" aria-label="Remove payment" className="pb-3 text-slate-500 hover:text-rose-400 transition" onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}>✕</button>
+                        <button type="button" aria-label={t.cancel} className="pb-3 text-slate-500 hover:text-rose-400 transition" onClick={() => setRows((prev) => prev.filter((r) => r.id !== row.id))}>✕</button>
                       )}
                     </li>
                   ))}
                 </ul>
 
                 {rows.length < 6 && (
-                  <button type="button" className={ui.ghost} onClick={() => addRow("CARD")}>Split payment</button>
+                  <button type="button" className={ui.ghost} onClick={() => addRow("CARD")}>{t.splitPayment}</button>
                 )}
 
                 <div className="min-h-12">
                   {unreadable ? (
-                    <p className={ui.error}>One of the amounts isn&apos;t valid.</p>
+                    <p className={ui.error}>Invalid amount.</p>
                   ) : allocation?.ok ? (
                     allocation.changeCents > 0 ? (
-                      <p className="text-slate-300">Change to give back: <span className="text-rose-400 font-semibold">{money(allocation.changeCents)}</span></p>
+                      <p className="text-slate-300">{t.changeToReturn}: <span className="text-rose-400 font-semibold">{money(allocation.changeCents)}</span></p>
                     ) : (
-                      <p className="text-slate-300">Exact amount.</p>
+                      <p className="text-slate-300">{t.exactAmount}</p>
                     )
                   ) : (
                     <p className={ui.error}>
-                      {allocation?.shortCents ? `${money(allocation.shortCents)} still missing.` : allocation?.error}
+                      {allocation?.shortCents ? `${money(allocation.shortCents)} (${t.remainingDue})` : allocation?.error}
                     </p>
                   )}
                 </div>
 
                 <div className="flex gap-3">
-                  <button type="button" className={ui.ghost} disabled={busy} onClick={() => setStage("cart")}>Back</button>
+                  <button type="button" className={ui.ghost} disabled={busy} onClick={() => setStage("cart")}>{t.back}</button>
                   <button type="button" className={`${ui.button} flex-1`} disabled={!allocation?.ok || busy} onClick={charge}>
-                    {busy ? "Saving..." : "Confirm sale"}
+                    {busy ? t.saving : t.confirmSale}
                   </button>
                 </div>
               </div>

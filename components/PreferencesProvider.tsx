@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { Locale } from "@/lib/i18n";
+import { useRouter } from "next/navigation";
+import type { Locale, TranslationDict } from "@/lib/i18n";
 import { translations } from "@/lib/i18n";
 
 export type Theme = "rose" | "emerald" | "amber" | "indigo" | "cyan";
@@ -15,7 +16,6 @@ export const THEMES: { id: Theme; name: string; colorClass: string; hex: string 
 ];
 
 export type TranslationKeys = keyof (typeof translations)["es"];
-export type TranslationDict = Record<TranslationKeys, string>;
 
 type PreferencesContextType = {
   theme: Theme;
@@ -28,6 +28,8 @@ type PreferencesContextType = {
 const PreferencesContext = createContext<PreferencesContextType | null>(null);
 
 export function PreferencesProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("erp-theme") as Theme | null;
@@ -40,6 +42,11 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("erp-locale") as Locale | null;
       if (saved && (["es", "en", "pt", "zh"] as const).includes(saved)) return saved;
+      // Also check cookie
+      const match = document.cookie.match(/erp-locale=([^;]+)/);
+      if (match && (["es", "en", "pt", "zh"] as const).includes(match[1] as Locale)) {
+        return match[1] as Locale;
+      }
     }
     return "es";
   });
@@ -47,6 +54,10 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    document.cookie = `erp-locale=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+  }, [locale]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -57,6 +68,8 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
     localStorage.setItem("erp-locale", newLocale);
+    document.cookie = `erp-locale=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    router.refresh();
   };
 
   const t = translations[locale] || translations.es;

@@ -5,14 +5,23 @@ import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Receipt" };
 
-const METHOD_LABEL = { CASH: "Cash", CARD: "Card", TRANSFER: "Transfer", OTHER: "Other" } as const;
-
 export default async function ReceiptPage({ params }: { params: Promise<{ id: string }> }) {
-  const { organization } = await requireSession();
+  const [{ organization }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const { id } = await params;
+
+  const methodLabel: Record<string, string> = {
+    CASH: t.methodCash,
+    CARD: t.methodCard,
+    TRANSFER: t.methodTransfer,
+    OTHER: t.methodOther,
+  };
 
   const [sale, org] = await Promise.all([
     db.sale.findFirst({
@@ -63,9 +72,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
       <article className="thermal-ticket w-full max-w-[340px] bg-white text-black p-6 font-mono text-xs sm:text-sm space-y-4 rounded-lg shadow-2xl">
         <header className="text-center space-y-1">
           <p className="text-base font-bold tracking-tight">{org.name}</p>
-          <p className="font-semibold">Sale #{sale.number}</p>
+          <p className="font-semibold">{t.saleNumber}{sale.number}</p>
           <p className="text-xs text-black/70">{formatDate(sale.createdAt)}</p>
-          {sale.status === "VOIDED" && <p className="font-bold text-base text-black border border-black py-0.5 my-1">— VOIDED —</p>}
+          {sale.status === "VOIDED" && <p className="font-bold text-base text-black border border-black py-0.5 my-1">— {t.voidedBadge.toUpperCase()} —</p>}
         </header>
 
         <ul className="border-y border-dashed border-black/40 py-3 space-y-2">
@@ -83,30 +92,29 @@ export default async function ReceiptPage({ params }: { params: Promise<{ id: st
         <div className="space-y-1">
           {Number(sale.discountCents) > 0 && (
             <>
-              <div className="flex justify-between"><span>Subtotal</span><span>{money(sale.subtotalCents)}</span></div>
-              <div className="flex justify-between"><span>Discount</span><span>− {money(sale.discountCents)}</span></div>
+              <div className="flex justify-between"><span>{t.subtotal}</span><span>{money(sale.subtotalCents)}</span></div>
+              <div className="flex justify-between"><span>{t.discount}</span><span>− {money(sale.discountCents)}</span></div>
             </>
           )}
-          <div className="flex justify-between text-base font-bold"><span>Total</span><span>{money(sale.totalCents)}</span></div>
-          <div className="flex justify-between text-black/60"><span>Tax included</span><span>{money(sale.taxCents)}</span></div>
+          <div className="flex justify-between text-base font-bold"><span>{t.total}</span><span>{money(sale.totalCents)}</span></div>
         </div>
 
         <div className="border-t border-dashed border-black/40 pt-3 space-y-1">
           {sale.payments.map((payment) => (
             <div key={payment.id} className="flex justify-between">
-              <span>{METHOD_LABEL[payment.method]}</span>
+              <span>{methodLabel[payment.method] || payment.method}</span>
               <span>{money(payment.amountCents)}</span>
             </div>
           ))}
           {Number(sale.changeCents) > 0 && (
-            <div className="flex justify-between"><span>Change</span><span>{money(sale.changeCents)}</span></div>
+            <div className="flex justify-between"><span>{t.changeToReturn}</span><span>{money(sale.changeCents)}</span></div>
           )}
         </div>
 
         <footer className="border-t border-dashed border-black/40 pt-3 text-center text-black/60 space-y-1">
-          <p>Served by {sale.cashier.name}</p>
-          {sale.contact && <p>Customer: {sale.contact.name}</p>}
-          <p>This is not a tax invoice.</p>
+          <p>{t.receiptCashier} {sale.cashier.name}</p>
+          {sale.contact && <p>{t.receiptCustomer} {sale.contact.name}</p>}
+          <p>{t.receiptThanks}</p>
         </footer>
       </article>
     </div>

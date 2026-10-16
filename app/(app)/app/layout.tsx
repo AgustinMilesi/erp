@@ -6,9 +6,13 @@ import { ui } from "@/components/ui";
 import { logoutAction } from "@/app/actions/auth";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const session = await requireSession();
+  const [session, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const unread = await db.message.count({
     where: { organizationId: session.organization.id, status: "NEW" },
   });
@@ -17,7 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen md:grid md:grid-cols-[260px_1fr]">
       <aside className="border-b md:border-b-0 md:border-r border-white/10 p-6 md:p-8 flex flex-col gap-6 md:gap-10">
         <div>
-          <p className={ui.label}>Workspace</p>
+          <p className={ui.label}>{t.workspace}</p>
           <p className="text-white text-xl font-black leading-tight">{session.organization.name}</p>
         </div>
 
@@ -42,16 +46,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
           <div className="flex items-center gap-2">
             <form action={logoutAction} className="flex-1">
-              <SubmitButton variant="ghost" pendingText="Signing out..." className="w-full text-center">
-                Sign out
+              <SubmitButton variant="ghost" pendingText={t.signingOut} className="w-full text-center">
+                {t.signOut}
               </SubmitButton>
             </form>
 
             <Link
               href="/app/settings"
               className="p-2 border border-white/15 hover:border-rose-400 hover:text-rose-400 text-slate-300 rounded-full transition-colors flex items-center justify-center shrink-0"
-              title="Settings"
-              aria-label="Settings"
+              title={t.settings}
+              aria-label={t.settings}
             >
               <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

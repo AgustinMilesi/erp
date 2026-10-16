@@ -6,11 +6,15 @@ import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Overview" };
 
 export default async function OverviewPage() {
-  const { organization, user } = await requireSession();
+  const [{ organization, user }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
   const orgId = organization.id;
   const money = (cents: number | bigint) => formatMoney(cents, organization.currency);
 
@@ -76,8 +80,8 @@ export default async function OverviewPage() {
   return (
     <div className="space-y-12">
       <div className="space-y-2">
-        <PageTitle light="Hi," bold={`${user.name.split(" ")[0]}.`} />
-        <p className={ui.muted}>Today in {organization.name}.</p>
+        <PageTitle light={t.hi} bold={`${user.name.split(" ")[0]}.`} />
+        <p className={ui.muted}>{t.todayIn} {organization.name}.</p>
       </div>
 
       {/* POS & Cash Quick Banner */}
@@ -86,18 +90,18 @@ export default async function OverviewPage() {
           <span className={`size-3 rounded-full ${openSession ? "bg-emerald-400 animate-pulse" : "bg-rose-400"}`} />
           <div>
             <p className="text-white font-medium text-sm">
-              {openSession ? "Cash register is OPEN" : "Cash register is CLOSED"}
+              {openSession ? t.registerOpen : t.registerClosed}
             </p>
             <p className="text-xs text-slate-400">
               {openSession
-                ? `Opened ${formatDate(openSession.openedAt)} by ${openSession.openedBy.name}`
-                : "Open the till to accept payments and start selling"}
+                ? `${t.openedByLabel} ${formatDate(openSession.openedAt)} ${t.by} ${openSession.openedBy.name}`
+                : t.openTill}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Link href={openSession ? "/pos" : "/app/cash"} className={ui.button}>
-            {openSession ? "Open POS Till" : "Open Register"}
+            {openSession ? t.openPosTill : t.openRegisterBtn}
           </Link>
         </div>
       </div>
@@ -105,27 +109,27 @@ export default async function OverviewPage() {
       {/* Core KPI metrics */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link href="/app/sales" className={`${ui.card} p-6 hover:border-rose-400/60 transition`}>
-          <p className={ui.label}>Today&apos;s revenue</p>
+          <p className={ui.label}>{t.todayRevenue}</p>
           <p className="text-3xl font-light text-white tracking-tight">{money(todayRevenue)}</p>
-          <p className="text-xs text-slate-500 mt-2">{todaySales._count} completed sales</p>
+          <p className="text-xs text-slate-500 mt-2">{todaySales._count} {t.completedSales}</p>
         </Link>
 
         <Link href="/app/sales" className={`${ui.card} p-6 hover:border-rose-400/60 transition`}>
-          <p className={ui.label}>Today&apos;s sales</p>
+          <p className={ui.label}>{t.todaySales}</p>
           <p className="text-3xl font-light text-white">{todaySales._count}</p>
-          <p className="text-xs text-slate-500 mt-2">View sales history</p>
+          <p className="text-xs text-slate-500 mt-2">{t.viewSalesHistory}</p>
         </Link>
 
         <Link href="/app/inbox?status=NEW" className={`${ui.card} p-6 hover:border-rose-400/60 transition`}>
-          <p className={ui.label}>New messages</p>
+          <p className={ui.label}>{t.newMessages}</p>
           <p className="text-3xl font-light text-white">{unread}</p>
-          <p className="text-xs text-slate-500 mt-2">Customer inbox</p>
+          <p className="text-xs text-slate-500 mt-2">{t.customerInbox}</p>
         </Link>
 
         <Link href="/app/contacts" className={`${ui.card} p-6 hover:border-rose-400/60 transition`}>
-          <p className={ui.label}>Total contacts</p>
+          <p className={ui.label}>{t.totalContacts}</p>
           <p className="text-3xl font-light text-white">{contacts}</p>
-          <p className="text-xs text-slate-500 mt-2">Customers & leads</p>
+          <p className="text-xs text-slate-500 mt-2">{t.customersAndLeads}</p>
         </Link>
       </div>
 
@@ -133,14 +137,14 @@ export default async function OverviewPage() {
         {/* Latest Sales Activity */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className={ui.label}>Latest sales</p>
+            <p className={ui.label}>{t.latestSales}</p>
             <Link href="/app/sales" className="text-xs uppercase tracking-wider text-slate-400 hover:text-rose-400 transition">
-              View all
+              {t.viewAll}
             </Link>
           </div>
 
           {recentSales.length === 0 ? (
-            <p className={ui.muted}>No sales recorded yet.</p>
+            <p className={ui.muted}>{t.noSalesYet}</p>
           ) : (
             <ul className="divide-y divide-white/10 border-y border-white/10">
               {recentSales.map((s) => (
@@ -148,8 +152,8 @@ export default async function OverviewPage() {
                   <Link href={`/app/sales/${s.id}`} className="flex items-center justify-between gap-4 py-3.5 hover:text-rose-400 transition">
                     <span className="min-w-0">
                       <span className={`block truncate text-sm ${s.status === "VOIDED" ? "text-slate-500 line-through" : "text-white"}`}>
-                        Sale #{s.number}
-                        {s.status === "VOIDED" && <span className="ml-2 text-xs uppercase tracking-wider text-rose-400 no-underline font-mono">Voided</span>}
+                        {t.saleNumber}{s.number}
+                        {s.status === "VOIDED" && <span className="ml-2 text-xs uppercase tracking-wider text-rose-400 no-underline font-mono">{t.voidedBadge}</span>}
                       </span>
                       <span className="block text-xs text-slate-500 truncate">
                         {formatDate(s.createdAt)} · {s.cashier.name}
@@ -168,14 +172,14 @@ export default async function OverviewPage() {
         {/* Low Stock Alerts */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className={ui.label}>Low stock alerts</p>
+            <p className={ui.label}>{t.lowStockAlerts}</p>
             <Link href="/app/products" className="text-xs uppercase tracking-wider text-slate-400 hover:text-rose-400 transition">
-              All products
+              {t.allProducts}
             </Link>
           </div>
 
           {lowStockProducts.length === 0 ? (
-            <p className={ui.muted}>All inventory levels are healthy.</p>
+            <p className={ui.muted}>{t.allInventoryHealthy}</p>
           ) : (
             <ul className="divide-y divide-white/10 border-y border-white/10">
               {lowStockProducts.map((p) => (
@@ -187,9 +191,9 @@ export default async function OverviewPage() {
                     </div>
                     <div className="text-right">
                       <span className={`text-sm font-semibold ${p.stock <= 0 ? "text-rose-400" : "text-amber-400"}`}>
-                        {p.stock} left
+                        {p.stock} {t.left}
                       </span>
-                      <span className="block text-xs text-slate-500">Min: {p.minStock}</span>
+                      <span className="block text-xs text-slate-500">{t.min} {p.minStock}</span>
                     </div>
                   </Link>
                 </li>

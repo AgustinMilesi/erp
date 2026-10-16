@@ -19,17 +19,25 @@ import { canManage, requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { CURRENCIES } from "@/lib/validation";
+import { getServerTranslations } from "@/lib/i18n-server";
 
 export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
-  const { organization, role, user } = await requireSession();
+  const [{ organization, role, user }, { t }] = await Promise.all([
+    requireSession(),
+    getServerTranslations(),
+  ]);
+
+  const titleWords = t.yourSettings.split(" ");
+  const titleLight = titleWords[0];
+  const titleBold = titleWords.slice(1).join(" ") ? `${titleWords.slice(1).join(" ")}.` : ".";
 
   if (!canManage(role)) {
     return (
       <div className="space-y-6">
-        <PageTitle light="Your" bold="settings." />
-        <p className={ui.muted}>Only owners and admins can change the workspace settings.</p>
+        <PageTitle light={titleLight} bold={titleBold} />
+        <p className={ui.muted}>{t.adminOnly}</p>
       </div>
     );
   }
@@ -63,21 +71,24 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-16">
-      <PageTitle light="Your" bold="settings." />
+      <div>
+        <PageTitle light={titleLight} bold={titleBold} />
+        <p className={`${ui.muted} mt-2`}>{t.settingsSubtitle}</p>
+      </div>
 
       <section className="space-y-4">
-        <p className={ui.label}>Workspace</p>
+        <p className={ui.label}>{t.workspaceSection}</p>
         <ActionForm action={saveSettings} keepValues className="space-y-2">
           <div>
-            <label className={ui.label} htmlFor="name">Name</label>
+            <label className={ui.label} htmlFor="name">{t.orgName}</label>
             <input id="name" name="name" required minLength={2} maxLength={80} defaultValue={org.name} className={ui.input} />
           </div>
           <div>
-            <label className={ui.label} htmlFor="notifyEmail">Send new messages to</label>
+            <label className={ui.label} htmlFor="notifyEmail">{t.notifyEmail}</label>
             <input id="notifyEmail" name="notifyEmail" type="email" defaultValue={org.notifyEmail ?? ""} placeholder="you@company.com" className={ui.input} />
           </div>
           <div>
-            <label className={ui.label} htmlFor="timezone">Timezone</label>
+            <label className={ui.label} htmlFor="timezone">{t.timezone}</label>
             <select id="timezone" name="timezone" defaultValue={org.timezone} className={ui.input}>
               <option value="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires (GMT-3)</option>
               <option value="America/Sao_Paulo">America/Sao_Paulo (GMT-3)</option>
@@ -93,21 +104,21 @@ export default async function SettingsPage() {
             </select>
           </div>
           <div>
-            <label className={ui.label} htmlFor="webhookUrl">Webhook address (optional)</label>
+            <label className={ui.label} htmlFor="webhookUrl">{t.webhookUrl}</label>
             <input id="webhookUrl" name="webhookUrl" type="url" defaultValue={org.webhookUrl ?? ""} placeholder="https://erp.company.com/hooks/contact" className={ui.input} />
-            <p className="text-xs text-slate-500 mt-1">We call it with each new message, signed so you can check it came from us.</p>
+            <p className="text-xs text-slate-500 mt-1">{t.webhookDesc}</p>
           </div>
-          <div className="pt-6"><SubmitButton>Save settings</SubmitButton></div>
+          <div className="pt-6"><SubmitButton>{t.saveSettingsBtn}</SubmitButton></div>
         </ActionForm>
 
         {org.webhookUrl && org.webhookSecret && (
           <div className={`${ui.card} p-4 space-y-3`}>
-            <p className={ui.label}>Webhook signing secret</p>
+            <p className={ui.label}>Webhook Secret</p>
             <code className="block break-all text-sm text-slate-300">{org.webhookSecret}</code>
             <div className="flex gap-3">
               <CopyButton text={org.webhookSecret} />
-              <ActionForm action={rotateWebhookSecret} keepValues confirm="Generate a new secret? The old one stops working.">
-                <SubmitButton variant="ghost" pendingText="...">Generate a new one</SubmitButton>
+              <ActionForm action={rotateWebhookSecret} keepValues confirm="Generate a new secret?">
+                <SubmitButton variant="ghost" pendingText="...">Generate</SubmitButton>
               </ActionForm>
             </div>
           </div>
@@ -115,7 +126,7 @@ export default async function SettingsPage() {
       </section>
 
       <section className="space-y-4">
-        <p className={ui.label}>Point of sale</p>
+        <p className={ui.label}>{t.posSection}</p>
         <ActionForm action={savePosSettings} keepValues className="space-y-2">
           <div>
             <label className={ui.label} htmlFor="currency">Currency</label>
@@ -127,19 +138,16 @@ export default async function SettingsPage() {
           </div>
           <label className="flex items-center gap-3 pt-4 text-slate-300 text-sm">
             <input type="checkbox" name="allowNegativeStock" defaultChecked={org.allowNegativeStock} className="accent-rose-400 size-4" />
-            Let the till sell products that show no stock
+            {t.allowNegativeStock}
           </label>
-          <p className="text-xs text-slate-500">Useful while the stock counts aren&apos;t up to date. Stock can then go below zero.</p>
-          <div className="pt-6"><SubmitButton>Save</SubmitButton></div>
+          <p className="text-xs text-slate-500">{t.allowNegativeStockHelp}</p>
+          <div className="pt-6"><SubmitButton>{t.savePosBtn}</SubmitButton></div>
         </ActionForm>
       </section>
 
       <section className="space-y-6">
         <div className="space-y-2">
-          <p className={ui.label}>API keys</p>
-          <p className={ui.muted}>
-            Keys let your ERP or any other system read and create contacts, and read messages, products and sales. See the README for the endpoints.
-          </p>
+          <p className={ui.label}>{t.apiKeysSection}</p>
         </div>
 
         <ApiKeyCreator />
@@ -152,13 +160,12 @@ export default async function SettingsPage() {
                   <p className="text-white">{key.name}</p>
                   <p className="text-sm text-slate-500">
                     <span className="font-mono">{key.prefix}…</span>
-                    {" · created "}{formatDate(key.createdAt)}
-                    {" · "}{key.lastUsedAt ? `last used ${formatDate(key.lastUsedAt)}` : "never used"}
+                    {" · "}{formatDate(key.createdAt)}
                   </p>
                 </div>
-                <ActionForm action={revokeApiKey} confirm="Revoke this key? Anything using it will stop working.">
+                <ActionForm action={revokeApiKey} confirm={t.revokeKeyConfirm}>
                   <input type="hidden" name="id" value={key.id} />
-                  <SubmitButton variant="danger" pendingText="...">Revoke</SubmitButton>
+                  <SubmitButton variant="danger" pendingText="...">{t.revokeKey}</SubmitButton>
                 </ActionForm>
               </li>
             ))}
@@ -168,16 +175,13 @@ export default async function SettingsPage() {
 
       <section className="space-y-6">
         <div className="space-y-2">
-          <p className={ui.label}>Team & Cashiers</p>
-          <p className={ui.muted}>
-            Invite cashiers and administrators to this workspace. Members can operate the POS and record sales. Owners and admins can manage stock, prices, voids and settings.
-          </p>
+          <p className={ui.label}>{t.teamSection}</p>
         </div>
 
         <ActionForm action={inviteMember} className="space-y-4">
           <div className="grid sm:grid-cols-[1fr_160px_auto] gap-3 items-end">
             <div>
-              <label className={ui.label} htmlFor="inviteEmail">Email address</label>
+              <label className={ui.label} htmlFor="inviteEmail">{t.inviteEmail}</label>
               <input
                 id="inviteEmail"
                 name="email"
@@ -188,30 +192,30 @@ export default async function SettingsPage() {
               />
             </div>
             <div>
-              <label className={ui.label} htmlFor="inviteRole">Role</label>
+              <label className={ui.label} htmlFor="inviteRole">{t.inviteRole}</label>
               <select id="inviteRole" name="role" defaultValue="MEMBER" className={ui.input}>
-                <option value="MEMBER">Member (Cashier)</option>
-                <option value="ADMIN">Admin</option>
+                <option value="MEMBER">{t.roleCashier}</option>
+                <option value="ADMIN">{t.roleAdmin}</option>
               </select>
             </div>
-            <SubmitButton pendingText="Inviting...">Invite</SubmitButton>
+            <SubmitButton pendingText="...">{t.sendInviteBtn}</SubmitButton>
           </div>
         </ActionForm>
 
         {pendingInvites.length > 0 && (
           <div className="space-y-3 pt-4">
-            <p className={ui.label}>Pending invitations</p>
+            <p className={ui.label}>{t.pendingInvites}</p>
             <ul className="divide-y divide-white/10 border-y border-white/10">
               {pendingInvites.map((inv) => (
                 <li key={inv.id} className="flex flex-wrap items-center justify-between gap-4 py-3">
                   <div>
                     <span className="text-white text-sm">{inv.email}</span>
                     <span className="ml-2 text-xs uppercase tracking-wider text-slate-400">({inv.role.toLowerCase()})</span>
-                    <span className="block text-xs text-slate-500">Expires {formatDate(inv.expiresAt)}</span>
+                    <span className="block text-xs text-slate-500">{t.expires} {formatDate(inv.expiresAt)}</span>
                   </div>
-                  <ActionForm action={cancelInvitation} confirm="Cancel this invitation?">
+                  <ActionForm action={cancelInvitation} confirm={t.cancelInvite + "?"}>
                     <input type="hidden" name="invitationId" value={inv.id} />
-                    <SubmitButton variant="ghost" pendingText="...">Cancel</SubmitButton>
+                    <SubmitButton variant="ghost" pendingText="...">{t.cancelInvite}</SubmitButton>
                   </ActionForm>
                 </li>
               ))}
@@ -220,7 +224,7 @@ export default async function SettingsPage() {
         )}
 
         <div className="space-y-3 pt-4">
-          <p className={ui.label}>Active members ({members.length})</p>
+          <p className={ui.label}>{t.teamSection} ({members.length})</p>
           <ul className="divide-y divide-white/10 border-y border-white/10">
             {members.map((m) => {
               const isMe = m.user.id === user.id;
@@ -229,10 +233,10 @@ export default async function SettingsPage() {
                 <li key={m.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
                   <div className="min-w-0">
                     <p className="text-white">
-                      {m.user.name} {isMe && <span className="text-xs text-rose-400 font-semibold">(You)</span>}
+                      {m.user.name} {isMe && <span className="text-xs text-rose-400 font-semibold">(Tú)</span>}
                     </p>
                     <p className="text-sm text-slate-500">
-                      {m.user.email} · joined {formatDate(m.createdAt)}
+                      {m.user.email} · {formatDate(m.createdAt)}
                     </p>
                   </div>
 
@@ -257,9 +261,9 @@ export default async function SettingsPage() {
                     )}
 
                     {!isOwner && !isMe && (
-                      <ActionForm action={removeMember} confirm={`Remove ${m.user.name} from this workspace?`}>
+                      <ActionForm action={removeMember} confirm={t.removeMemberConfirm}>
                         <input type="hidden" name="membershipId" value={m.id} />
-                        <SubmitButton variant="danger" pendingText="...">Remove</SubmitButton>
+                        <SubmitButton variant="danger" pendingText="...">{t.removeMember}</SubmitButton>
                       </ActionForm>
                     )}
                   </div>
