@@ -37,7 +37,7 @@ export default async function SettingsPage() {
   const [org, keys, members, pendingInvites] = await Promise.all([
     db.organization.findUniqueOrThrow({
       where: { id: organization.id },
-      select: { name: true, notifyEmail: true, webhookUrl: true, webhookSecret: true, currency: true, allowNegativeStock: true },
+      select: { name: true, notifyEmail: true, webhookUrl: true, webhookSecret: true, currency: true, allowNegativeStock: true, timezone: true },
     }),
     db.apiKey.findMany({
       where: { organizationId: organization.id, revokedAt: null },
@@ -75,6 +75,22 @@ export default async function SettingsPage() {
           <div>
             <label className={ui.label} htmlFor="notifyEmail">Send new messages to</label>
             <input id="notifyEmail" name="notifyEmail" type="email" defaultValue={org.notifyEmail ?? ""} placeholder="you@company.com" className={ui.input} />
+          </div>
+          <div>
+            <label className={ui.label} htmlFor="timezone">Timezone</label>
+            <select id="timezone" name="timezone" defaultValue={org.timezone} className={ui.input}>
+              <option value="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires (GMT-3)</option>
+              <option value="America/Sao_Paulo">America/Sao_Paulo (GMT-3)</option>
+              <option value="America/Santiago">America/Santiago (GMT-4/GMT-3)</option>
+              <option value="America/Montevideo">America/Montevideo (GMT-3)</option>
+              <option value="America/Bogota">America/Bogota (GMT-5)</option>
+              <option value="America/Mexico_City">America/Mexico_City (GMT-6)</option>
+              <option value="America/New_York">America/New_York (US Eastern)</option>
+              <option value="Europe/Madrid">Europe/Madrid (GMT+1/GMT+2)</option>
+              <option value="Europe/London">Europe/London (GMT/BST)</option>
+              <option value="Asia/Shanghai">Asia/Shanghai (GMT+8 - China)</option>
+              <option value="UTC">UTC (Coordinated Universal Time)</option>
+            </select>
           </div>
           <div>
             <label className={ui.label} htmlFor="webhookUrl">Webhook address (optional)</label>

@@ -156,7 +156,7 @@ export async function saveSettings(formData: FormData): Promise<ActionResult> {
   if (!canManage(role)) return fail(ONLY_ADMINS);
   const parsed = settingsSchema.safeParse(toObject(formData));
   if (!parsed.success) return fail(firstIssue(parsed.error));
-  const { name, notifyEmail, webhookUrl } = parsed.data;
+  const { name, notifyEmail, webhookUrl, timezone } = parsed.data;
 
   const url = blankToNull(webhookUrl);
   if (url && !isSafeWebhookUrl(url)) {
@@ -175,6 +175,7 @@ export async function saveSettings(formData: FormData): Promise<ActionResult> {
       notifyEmail: blankToNull(notifyEmail),
       webhookUrl: url,
       webhookSecret: url ? (current?.webhookSecret ?? newWebhookSecret()) : null,
+      ...(timezone ? { timezone } : {}),
     },
   });
   refresh();

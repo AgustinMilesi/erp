@@ -69,6 +69,7 @@ export const settingsSchema = z.object({
   name: z.string().trim().min(2, "Please enter a name").max(80, "That's too long"),
   notifyEmail: z.union([email, z.literal("")]).optional(),
   webhookUrl: z.string().trim().max(500, "That's too long").optional(),
+  timezone: z.string().trim().min(2).max(100).optional(),
 });
 
 export const inviteMemberSchema = z.object({

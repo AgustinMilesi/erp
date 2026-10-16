@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { NavLinks } from "@/components/NavLinks";
+import { PreferencesControls } from "@/components/PreferencesControls";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ui } from "@/components/ui";
 import { logoutAction } from "@/app/actions/auth";
@@ -21,25 +23,47 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
         <NavLinks
           items={[
-            { href: "/app", label: "Overview" },
-            { href: "/pos", label: "Point of sale" },
-            { href: "/app/sales", label: "Sales" },
-            { href: "/app/products", label: "Products" },
-            { href: "/app/cash", label: "Cash" },
-            { href: "/app/inbox", label: "Inbox", badge: unread },
-            { href: "/app/contacts", label: "Contacts" },
-            { href: "/app/forms", label: "Forms" },
-            { href: "/app/settings", label: "Settings" },
+            { href: "/app", key: "overview", label: "Overview" },
+            { href: "/pos", key: "pos", label: "Point of sale" },
+            { href: "/app/sales", key: "sales", label: "Sales" },
+            { href: "/app/products", key: "products", label: "Products" },
+            { href: "/app/cash", key: "cash", label: "Cash" },
+            { href: "/app/inbox", key: "inbox", label: "Inbox", badge: unread },
+            { href: "/app/contacts", key: "contacts", label: "Contacts" },
+            { href: "/app/forms", key: "forms", label: "Forms" },
           ]}
         />
 
-        <div className="md:mt-auto space-y-3">
-          <p className="text-slate-400 text-sm break-all">{session.user.email}</p>
-          <form action={logoutAction}>
-            <SubmitButton variant="ghost" pendingText="Signing out...">
-              Sign out
-            </SubmitButton>
-          </form>
+        <div className="md:mt-auto space-y-4 pt-4 border-t border-white/10">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-slate-400 text-xs truncate max-w-[150px]">{session.user.email}</p>
+            <PreferencesControls />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <form action={logoutAction} className="flex-1">
+              <SubmitButton variant="ghost" pendingText="Signing out..." className="w-full text-center">
+                Sign out
+              </SubmitButton>
+            </form>
+
+            <Link
+              href="/app/settings"
+              className="p-2 border border-white/15 hover:border-rose-400 hover:text-rose-400 text-slate-300 rounded-full transition-colors flex items-center justify-center shrink-0"
+              title="Settings"
+              aria-label="Settings"
+            >
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.75"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </aside>
 

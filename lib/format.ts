@@ -1,10 +1,23 @@
 import "server-only";
 import { env } from "@/lib/env";
 
-const formatter = new Intl.DateTimeFormat("en-GB", {
-  dateStyle: "medium",
-  timeStyle: "short",
-  timeZone: env.APP_TIMEZONE,
-});
+export function formatDate(
+  date: Date,
+  timeZone?: string,
+  locale = "es-AR"
+) {
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: timeZone || env.APP_TIMEZONE,
+    }).format(date);
+  } catch {
+    return new Intl.DateTimeFormat("en-US", {
+      dateStyle: "medium",
+      timeStyle: "short",
+      timeZone: "UTC",
+    }).format(date);
+  }
+}
 
-export const formatDate = (date: Date) => formatter.format(date);

@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: "Point of sale, inventory control, cash shifts and customer management.",
 };
 
+import { PreferencesProvider } from "@/components/PreferencesProvider";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -18,8 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#0a0f1f] text-slate-50">
-        {children}
-        <Toaster position="top-right" theme="dark" richColors />
+        <PreferencesProvider>
+          {children}
+          <Toaster position="top-right" theme="dark" richColors />
+        </PreferencesProvider>
       </body>
     </html>
   );

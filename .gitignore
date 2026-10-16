@@ -49,3 +49,5 @@ prisma/*.db-journal
 
 # === Neon CLI ===
 .neon
+.vercel
+.env*

@@ -42,7 +42,7 @@ export async function destroySession() {
 
 export type AppSession = {
   user: { id: string; name: string; email: string };
-  organization: { id: string; name: string; slug: string; currency: string };
+  organization: { id: string; name: string; slug: string; currency: string; timezone: string };
   role: Role;
 };
 
@@ -64,7 +64,7 @@ export const getSession = cache(async (): Promise<AppSession | null> => {
             take: 1,
             select: {
               role: true,
-              organization: { select: { id: true, name: true, slug: true, currency: true } },
+              organization: { select: { id: true, name: true, slug: true, currency: true, timezone: true } },
             },
           },
         },
