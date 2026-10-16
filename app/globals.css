@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+html, body {
+  background-color: #0a0f1f;
+  color: #f8fafc;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+input, textarea, select {
+  background-color: transparent;
+}
+
+select option {
+  background-color: #0a0f1f;
+  color: #f8fafc;
+}

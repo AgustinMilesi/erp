@@ -1,0 +1,399 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MessageStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+  OTHER
+}
+
+enum SaleStatus {
+  COMPLETED
+  VOIDED
+}
+
+enum CashSessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum CashMovementType {
+  IN
+  OUT
+}
+
+enum StockMovementType {
+  INITIAL
+  RESTOCK
+  SALE
+  VOID
+  ADJUSTMENT
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  sessions       Session[]
+  passwordResets PasswordReset[]
+  memberships    Membership[]
+
+  sessionsOpened CashSession[]   @relation("SessionOpenedBy")
+  sessionsClosed CashSession[]   @relation("SessionClosedBy")
+  cashMovements  CashMovement[]
+  sales          Sale[]          @relation("SaleCashier")
+  salesVoided    Sale[]          @relation("SaleVoidedBy")
+  stockMovements StockMovement[]
+}
+
+// The primary key is the SHA-256 of the cookie token, never the token itself.
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// Same idea as Session: only the hash of the emailed token is stored.
+model PasswordReset {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// A workspace. Every piece of business data hangs from one of these,
+// which is what lets the ERP reuse the same tenants later on.
+model Organization {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  notifyEmail   String?
+  webhookUrl    String?
+  webhookSecret String?
+  createdAt     DateTime @default(now())
+
+  // Point of sale settings. Sale numbers come from saleCounter, which is
+  // incremented inside the sale transaction, so they never repeat or skip.
+  currency           String  @default("ARS")
+  allowNegativeStock Boolean @default(false)
+  saleCounter        Int     @default(0)
+
+  memberships    Membership[]
+  forms          Form[]
+  messages       Message[]
+  contacts       Contact[]
+  apiKeys        ApiKey[]
+  categories     Category[]
+  products       Product[]
+  stockMovements StockMovement[]
+  cashSessions   CashSession[]
+  cashMovements  CashMovement[]
+  sales          Sale[]
+}
+
+model Membership {
+  id             String   @id @default(cuid())
+  userId         String
+  organizationId String
+  role           Role     @default(MEMBER)
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+}
+
+model Form {
+  id             String   @id @default(cuid())
+  organizationId String
+  publicId       String   @unique
+  name           String
+  active         Boolean  @default(true)
+  allowedOrigins String[]
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@index([organizationId])
+}
+
+model Contact {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  email          String
+  phone          String?
+  company        String?
+  notes          String?
+  // The id this person has in another system (the ERP, for example)
+  externalId     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  messages     Message[]
+  sales        Sale[]
+
+  @@unique([organizationId, email])
+  @@unique([organizationId, externalId])
+  @@index([organizationId, createdAt])
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  organizationId String
+  formId         String?
+  contactId      String?
+  name           String
+  email          String
+  subject        String
+  body           String
+  status         MessageStatus @default(NEW)
+  createdAt      DateTime      @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  form         Form?        @relation(fields: [formId], references: [id], onDelete: SetNull)
+  contact      Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status, createdAt])
+  @@index([contactId])
+}
+
+// Keys for the ERP and other integrations. Only the hash is stored.
+model ApiKey {
+  id             String    @id @default(cuid())
+  organizationId String
+  name           String
+  prefix         String
+  keyHash        String    @unique
+  lastUsedAt     DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+// Fixed-window counters kept in Postgres, so rate limits also work on serverless.
+model RateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+}
+
+// ---------------------------------------------------------------------------
+// Point of sale
+// Money is stored in cents as BigInt, so large amounts never overflow.
+// ---------------------------------------------------------------------------
+
+model Category {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  products     Product[]
+
+  @@unique([organizationId, name])
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  organizationId String
+  categoryId     String?
+  sku            String
+  barcode        String?
+  name           String
+  // Prices already include tax, like in a shop. taxRateBp is in basis points (2100 = 21%).
+  priceCents     BigInt
+  costCents      BigInt   @default(0)
+  taxRateBp      Int      @default(2100)
+  stock          Int      @default(0)
+  minStock       Int      @default(0)
+  trackStock     Boolean  @default(true)
+  active         Boolean  @default(true)
+  // The id this product has in another system
+  externalId     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category     Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  saleItems    SaleItem[]
+  movements    StockMovement[]
+
+  @@unique([organizationId, sku])
+  @@unique([organizationId, barcode])
+  @@unique([organizationId, externalId])
+  @@index([organizationId, name])
+  @@index([organizationId, categoryId])
+}
+
+model StockMovement {
+  id             String            @id @default(cuid())
+  organizationId String
+  productId      String
+  userId         String?
+  type           StockMovementType
+  // Signed: positive adds to the shelf, negative takes away
+  quantity       Int
+  reason         String?
+  saleId         String?
+  createdAt      DateTime          @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  product      Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([productId, createdAt])
+  @@index([organizationId, createdAt])
+}
+
+// One cash register shift. A workspace has at most one open at a time.
+model CashSession {
+  id             String            @id @default(cuid())
+  organizationId String
+  openedById     String
+  closedById     String?
+  status         CashSessionStatus @default(OPEN)
+  openingCents   BigInt
+  // What the cashier counted at closing and what the system expected
+  countedCents   BigInt?
+  expectedCents  BigInt?
+  note           String?
+  openedAt       DateTime          @default(now())
+  closedAt       DateTime?
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  openedBy     User           @relation("SessionOpenedBy", fields: [openedById], references: [id])
+  closedBy     User?          @relation("SessionClosedBy", fields: [closedById], references: [id])
+  sales        Sale[]
+  movements    CashMovement[]
+
+  @@index([organizationId, status])
+  @@index([organizationId, openedAt])
+}
+
+// Money put in or taken out of the drawer outside of sales
+model CashMovement {
+  id             String           @id @default(cuid())
+  organizationId String
+  sessionId      String
+  userId         String
+  type           CashMovementType
+  amountCents    BigInt
+  reason         String
+  createdAt      DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  session      CashSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@index([sessionId])
+}
+
+model Sale {
+  id             String     @id @default(cuid())
+  organizationId String
+  sessionId      String
+  cashierId      String
+  contactId      String?
+  number         Int
+  status         SaleStatus @default(COMPLETED)
+  subtotalCents  BigInt
+  discountCents  BigInt     @default(0)
+  totalCents     BigInt
+  // Tax already included in the total, kept for reports
+  taxCents       BigInt
+  changeCents    BigInt     @default(0)
+  note           String?
+  // Sent by the till for every attempt, so a retry can't record the same sale twice
+  idempotencyKey String
+  createdAt      DateTime   @default(now())
+  voidedAt       DateTime?
+  voidedById     String?
+  voidReason     String?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  session      CashSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  cashier      User         @relation("SaleCashier", fields: [cashierId], references: [id])
+  voidedBy     User?        @relation("SaleVoidedBy", fields: [voidedById], references: [id])
+  contact      Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  items        SaleItem[]
+  payments     Payment[]
+
+  @@unique([organizationId, number])
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, createdAt])
+  @@index([sessionId])
+  @@index([contactId])
+}
+
+// Name, sku and price are copied from the product at the moment of the sale,
+// so old receipts never change when the catalog does.
+model SaleItem {
+  id             String  @id @default(cuid())
+  saleId         String
+  productId      String?
+  sku            String
+  name           String
+  quantity       Int
+  unitPriceCents BigInt
+  taxRateBp      Int
+  totalCents     BigInt
+
+  sale    Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([saleId])
+  @@index([productId])
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  saleId      String
+  method      PaymentMethod
+  // What counts toward the total. For cash this is the amount handed over minus the change.
+  amountCents BigInt
+
+  sale Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+
+  @@index([saleId])
+}
