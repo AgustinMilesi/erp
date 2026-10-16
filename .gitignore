@@ -46,3 +46,6 @@ ehthumbs.db
 # === Prisma local ===
 prisma/*.db
 prisma/*.db-journal
+
+# === Neon CLI ===
+.neon
