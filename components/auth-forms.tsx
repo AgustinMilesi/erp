@@ -50,20 +50,46 @@ export function LoginForm() {
   } = useForm<z.infer<typeof loginSchema>>({ resolver: zodResolver(loginSchema) });
 
   return (
-    <form onSubmit={handleSubmit(async (data) => handle(await loginAction(data)))} className="space-y-2">
+    <form onSubmit={handleSubmit(async (data) => handle(await loginAction(data)))} className="space-y-4">
       <Field error={errors.email?.message}>
-        <input {...register("email")} type="email" placeholder="Email" aria-label="Email" autoComplete="email" className={ui.input} />
+        <label className={ui.label} htmlFor="login-email">Email</label>
+        <div className="relative">
+          <input
+            id="login-email"
+            {...register("email")}
+            type="email"
+            placeholder="usuario@comercio.com"
+            aria-label="Email"
+            autoComplete="email"
+            className={`${ui.input} !pt-1 !pb-2.5`}
+          />
+        </div>
       </Field>
+
       <Field error={errors.password?.message}>
-        <input {...register("password")} type="password" placeholder="Password" aria-label="Password" autoComplete="current-password" className={ui.input} />
+        <div className="flex items-center justify-between">
+          <label className={ui.label} htmlFor="login-password">Contraseña</label>
+          <Link href="/forgot-password" className="text-xs text-slate-400 hover:text-rose-400 transition mb-2">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+        <div className="relative">
+          <input
+            id="login-password"
+            {...register("password")}
+            type="password"
+            placeholder="••••••••••••"
+            aria-label="Contraseña"
+            autoComplete="current-password"
+            className={`${ui.input} !pt-1 !pb-2.5`}
+          />
+        </div>
       </Field>
-      <div className="pt-6 flex flex-wrap items-center gap-6">
-        <button type="submit" disabled={isSubmitting} className={ui.button}>
-          {isSubmitting ? "Signing in..." : "Sign in"}
+
+      <div className="pt-4">
+        <button type="submit" disabled={isSubmitting} className={`${ui.button} w-full text-center py-3.5`}>
+          {isSubmitting ? "Iniciando sesión..." : "Iniciar Sesión"}
         </button>
-        <Link href="/forgot-password" className={`${ui.muted} text-sm hover:text-rose-400 transition`}>
-          Forgot your password?
-        </Link>
       </div>
     </form>
   );
