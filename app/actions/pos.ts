@@ -232,7 +232,7 @@ export async function openRegister(formData: FormData): Promise<ActionResult> {
   return run(async () => {
     await openSession({ organizationId: organization.id, userId: user.id, role }, parsed.data.opening, parsed.data.note);
     refresh();
-    return ok("Cash register open.");
+    return ok("Cash register open.", { redirectTo: "/app/cash" });
   });
 }
 
