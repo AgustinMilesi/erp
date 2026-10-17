@@ -346,7 +346,7 @@ function DebtorCard({
                     <div className="min-w-0">
                       <span className="text-slate-200 block truncate">{it.productName}</span>
                       <span className="text-slate-500 text-[10px]">
-                        {it.quantity} × {money(it.unitPriceCents)} · {formatDate(it.addedAt)}
+                        {it.quantity >= 50 ? `${it.quantity}gr` : `${it.quantity}u.`} × {money(it.unitPriceCents)}{it.quantity >= 50 ? " /kg" : ""} · {formatDate(it.addedAt)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">

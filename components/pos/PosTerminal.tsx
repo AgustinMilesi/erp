@@ -203,46 +203,58 @@ export function PosTerminal({
 
   const discountCents = canDiscount && activeTab.discount.trim() ? parseMoney(activeTab.discount) : 0;
   const totals = computeTotals(
-    activeTab.lines.map((l) => ({ unitPriceCents: l.priceCents, quantity: l.quantity, taxRateBp: 0 })),
+    activeTab.lines.map((l) => ({
+      unitPriceCents: l.priceCents,
+      quantity: l.quantity,
+      taxRateBp: 0,
+      saleType: l.saleType,
+    })),
     discountCents ?? 0,
   );
 
   function parseQuantity(raw: string, isWeight = false): number {
     const cleaned = raw.replace(",", ".").trim();
     const val = parseFloat(cleaned);
-    if (isNaN(val) || val <= 0) return 1;
-    if (isWeight && val >= 20) {
-      // Entered in grams (e.g. 250, 500, 1000) -> convert to kg
-      return Math.round((val / 1000) * 10000) / 10000;
+    if (isNaN(val) || val <= 0) return isWeight ? 100 : 1;
+    if (isWeight) {
+      // 100 son 100 gramos, 1000 es 1 kilo (1000 gramos).
+      // Si el usuario ingresa valores como 1, 2, o 1.5 kilos: convertir a gramos
+      if (val < 10) {
+        return Math.round(val * 1000);
+      }
+      return Math.round(val);
     }
     return Math.round(val * 1000) / 1000;
   }
 
-  function addProductToCart(product: TillProduct, qty = 1) {
-    if (qty <= 0) return;
+  function addProductToCart(product: TillProduct, qty?: number) {
     const isWeight = product.saleType === "WEIGHT";
+    const finalQty = qty !== undefined ? qty : isWeight ? 100 : 1;
+    if (finalQty <= 0) return;
+
     const current = activeTab.lines.find((l) => l.id === product.id)?.quantity ?? 0;
-    if (product.trackStock && !allowNegativeStock && current + qty > product.stock) {
-      toast.error(`Solo quedan ${product.stock} de "${product.name}" en stock.`);
-      return;
+    if (product.trackStock && !allowNegativeStock) {
+      const stockGrams = isWeight ? product.stock * 1000 : product.stock;
+      if (current + finalQty > stockGrams) {
+        toast.error(`Solo quedan ${product.stock} de "${product.name}" en stock.`);
+        return;
+      }
     }
 
     const updatedLines = [...activeTab.lines];
     const existingIndex = updatedLines.findIndex((l) => l.id === product.id);
     if (existingIndex >= 0) {
-      const newTotalQty = Math.round((updatedLines[existingIndex].quantity + qty) * 1000) / 1000;
+      const newTotalQty = Math.round(updatedLines[existingIndex].quantity + finalQty);
       updatedLines[existingIndex] = {
         ...updatedLines[existingIndex],
         quantity: newTotalQty,
       };
     } else {
-      updatedLines.push({ ...product, quantity: qty });
+      updatedLines.push({ ...product, quantity: finalQty });
     }
 
     updateActiveTab({ lines: updatedLines, saleKey: newKey() });
-    const formattedQty = isWeight
-      ? (qty < 1 ? `${Math.round(qty * 1000)}g` : `${qty}kg`)
-      : `${qty}u.`;
+    const formattedQty = isWeight ? `${finalQty}gr` : `${finalQty}u.`;
     toast.success(`+${formattedQty} ${product.name}`);
   }
 
@@ -250,15 +262,19 @@ export function PosTerminal({
     const line = activeTab.lines.find((l) => l.id === lineId);
     if (!line) return;
     const isWeight = line.saleType === "WEIGHT";
-    const step = isWeight ? (line.quantity > 1 ? 0.5 : 0.1) : 1;
-    const newQty = Math.round((line.quantity + direction * step) * 1000) / 1000;
+    // For weight products: step is 100gr (or 50gr if current is <= 100gr)
+    const step = isWeight ? (line.quantity <= 100 ? 50 : 100) : 1;
+    const newQty = Math.round(line.quantity + direction * step);
     if (newQty <= 0) {
       removeLine(lineId);
       return;
     }
-    if (line.trackStock && !allowNegativeStock && newQty > line.stock) {
-      toast.error(`Stock máximo alcanzado (${line.stock}).`);
-      return;
+    if (line.trackStock && !allowNegativeStock) {
+      const stockGrams = isWeight ? line.stock * 1000 : line.stock;
+      if (newQty > stockGrams) {
+        toast.error(`Stock máximo alcanzado (${line.stock}).`);
+        return;
+      }
     }
     const updatedLines = activeTab.lines.map((l) =>
       l.id === lineId ? { ...l, quantity: newQty } : l,
@@ -271,9 +287,12 @@ export function PosTerminal({
     if (!line) return;
     const isWeight = line.saleType === "WEIGHT";
     const val = parseQuantity(rawVal, isWeight);
-    if (line.trackStock && !allowNegativeStock && val > line.stock) {
-      toast.error(`Stock máximo alcanzado (${line.stock}).`);
-      return;
+    if (line.trackStock && !allowNegativeStock) {
+      const stockGrams = isWeight ? line.stock * 1000 : line.stock;
+      if (val > stockGrams) {
+        toast.error(`Stock máximo alcanzado (${line.stock}).`);
+        return;
+      }
     }
     const updatedLines = activeTab.lines.map((l) =>
       l.id === lineId ? { ...l, quantity: val } : l,
@@ -311,7 +330,7 @@ export function PosTerminal({
     }
 
     const isWeight = targetProd.saleType === "WEIGHT";
-    const qty = parseQuantity(quantityInput, isWeight);
+    const qty = isWeight && quantityInput === "1" ? 100 : parseQuantity(quantityInput, isWeight);
     addProductToCart(targetProd, qty);
     setQuery("");
     setQuantityInput("1");
@@ -528,13 +547,7 @@ export function PosTerminal({
         <div className="flex items-center gap-2">
           {tabs.slice(0, 3).map((tab) => {
             const isActive = tab.id === activeTabId;
-            const rawCount = tab.lines.reduce((acc, l) => acc + l.quantity, 0);
-            const countDisplay =
-              rawCount > 0
-                ? Number.isInteger(rawCount)
-                  ? rawCount
-                  : rawCount.toFixed(2).replace(/\.?0+$/, "")
-                : null;
+            const countDisplay = tab.lines.length;
 
             return (
               <button
@@ -548,7 +561,7 @@ export function PosTerminal({
                 }`}
               >
                 <span>{tab.label}</span>
-                {countDisplay !== null && (
+                {countDisplay > 0 && (
                   <span className="bg-rose-500/40 text-rose-200 text-xs px-2 py-0.5 rounded-full font-mono font-bold">
                     {countDisplay}
                   </span>
@@ -592,7 +605,7 @@ export function PosTerminal({
                 <div className="w-1/3">
                   <input
                     type="text"
-                    inputMode="decimal"
+                    inputMode="numeric"
                     value={quantityInput}
                     onChange={(e) => setQuantityInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -602,8 +615,8 @@ export function PosTerminal({
                       }
                     }}
                     className={`${ui.input} text-center font-bold font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
-                    placeholder="Cant/g"
-                    title="Cantidad o peso a agregar con teclado (ej: 0.5, 250, 1)"
+                    placeholder="Cant/gr"
+                    title="Cantidad o gramos (ej: 100, 250, 500, 1000)"
                   />
                 </div>
                 <button
@@ -633,7 +646,7 @@ export function PosTerminal({
                       key={p.id}
                       onClick={() => {
                         setSelectedProductId(p.id);
-                        const qty = parseQuantity(quantityInput, isWeight);
+                        const qty = isWeight && quantityInput === "1" ? 100 : parseQuantity(quantityInput, isWeight);
                         addProductToCart(p, qty);
                       }}
                       className={`flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer transition select-none ${
@@ -711,7 +724,11 @@ export function PosTerminal({
               <ul className="divide-y divide-white/5 max-h-[500px] overflow-y-auto pr-1 space-y-1">
                 {activeTab.lines.map((item, idx) => {
                   const isWeight = item.saleType === "WEIGHT";
-                  const lineTotal = Math.round(item.priceCents * item.quantity);
+                  const lineTotal = Math.round(
+                    isWeight
+                      ? (item.priceCents * item.quantity) / 1000
+                      : item.priceCents * item.quantity,
+                  );
 
                   return (
                     <li key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
@@ -722,7 +739,7 @@ export function PosTerminal({
                             {item.name}
                           </p>
                           {isWeight && (
-                            <span className="text-[9px] px-1 bg-amber-500/20 text-amber-300 rounded font-semibold border border-amber-500/30">
+                            <span className="text-[9px] px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded font-semibold border border-amber-500/30">
                               ⚖️ x Kilo
                             </span>
                           )}
@@ -743,14 +760,14 @@ export function PosTerminal({
                             type="button"
                             onClick={() => adjustLineQty(item.id, -1)}
                             className="size-6 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-white/10 font-bold transition"
-                            title={isWeight ? "Restar peso" : "Restar 1"}
+                            title={isWeight ? "Restar 100gr" : "Restar 1"}
                           >
                             −
                           </button>
                           <div className="flex items-center px-1">
                             <input
                               type="text"
-                              inputMode="decimal"
+                              inputMode="numeric"
                               defaultValue={item.quantity}
                               key={`${item.id}-${item.quantity}`}
                               onBlur={(e) => setLineExactQty(item.id, e.target.value)}
@@ -759,18 +776,18 @@ export function PosTerminal({
                                   e.currentTarget.blur();
                                 }
                               }}
-                              className="w-12 text-center font-bold text-white font-mono bg-transparent border-0 focus:bg-white/15 focus:ring-1 focus:ring-rose-400 rounded py-0.5 text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              title="Modificá peso o cantidad con teclado y presioná Enter"
+                              className="w-14 text-center font-bold text-white font-mono bg-transparent border-0 focus:bg-white/15 focus:ring-1 focus:ring-rose-400 rounded py-0.5 text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              title="Escribí los gramos con el teclado (ej: 100, 250, 500, 1000) y pulsá Enter"
                             />
                             <span className="text-[10px] text-slate-400 font-mono ml-0.5">
-                              {isWeight ? "kg" : "u"}
+                              {isWeight ? "gr" : "u"}
                             </span>
                           </div>
                           <button
                             type="button"
                             onClick={() => adjustLineQty(item.id, 1)}
                             className="size-6 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-white/10 font-bold transition"
-                            title={isWeight ? "Sumar peso" : "Sumar 1"}
+                            title={isWeight ? "Sumar 100gr" : "Sumar 1"}
                           >
                             +
                           </button>

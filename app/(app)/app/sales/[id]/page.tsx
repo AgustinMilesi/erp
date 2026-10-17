@@ -72,7 +72,9 @@ export default async function SalePage({ params }: { params: Promise<{ id: strin
             <li key={item.id} className="flex items-start justify-between gap-4 py-3">
               <span className="min-w-0">
                 <span className="block text-white break-words">{item.name}</span>
-                <span className="block text-sm text-slate-500">{item.quantity} × {money(item.unitPriceCents)} · {item.sku}</span>
+                <span className="block text-sm text-slate-500">
+                  {item.quantity >= 50 ? `${item.quantity}gr` : `${item.quantity}u.`} × {money(item.unitPriceCents)}{item.quantity >= 50 ? " /kg" : ""} · {item.sku}
+                </span>
               </span>
               <span className="text-white whitespace-nowrap">{money(item.totalCents)}</span>
             </li>

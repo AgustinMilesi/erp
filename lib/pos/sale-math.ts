@@ -7,6 +7,7 @@ export type PricedLine = {
   unitPriceCents: number;
   quantity: number;
   taxRateBp: number;
+  saleType?: string;
 };
 
 export type Totals = {
@@ -42,7 +43,13 @@ export function spreadDiscount(lineTotals: number[], discountCents: number) {
 }
 
 export function computeTotals(lines: PricedLine[], discountCents = 0): Totals {
-  const lineTotals = lines.map((line) => Math.round(line.unitPriceCents * line.quantity));
+  const lineTotals = lines.map((line) => {
+    if (line.saleType === "WEIGHT") {
+      // unitPriceCents is price per kilo (1000g). quantity is in grams.
+      return Math.round((line.unitPriceCents * line.quantity) / 1000);
+    }
+    return Math.round(line.unitPriceCents * line.quantity);
+  });
   const subtotalCents = lineTotals.reduce((sum, value) => sum + value, 0);
   const discount = Math.min(Math.max(discountCents, 0), subtotalCents);
   const shares = spreadDiscount(lineTotals, discount);

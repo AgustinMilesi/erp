@@ -89,6 +89,7 @@ async function runSale(tx: Tx, actor: Actor, input: SaleInput) {
     unitPriceCents: Number(product.priceCents),
     quantity,
     taxRateBp: product.taxRateBp,
+    saleType: product.saleType,
   }));
   const totals = computeTotals(priced, input.discountCents);
 
@@ -106,7 +107,7 @@ async function runSale(tx: Tx, actor: Actor, input: SaleInput) {
 
   for (const { product, quantity } of lines) {
     if (!product.trackStock) continue;
-    const intQty = Math.ceil(quantity);
+    const intQty = product.saleType === "WEIGHT" ? Math.ceil(quantity / 1000) : Math.ceil(quantity);
     const taken = await tx.product.updateMany({
       where: {
         id: product.id,
