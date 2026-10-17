@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ActionForm } from "@/components/ActionForm";
 import { PageTitle } from "@/components/Headline";
 import { SubmitButton } from "@/components/SubmitButton";
@@ -21,15 +22,22 @@ const EXPENSE_CATEGORIES = [
   "Otros",
 ];
 
+const ALLOWED_LIMITS = [5, 10, 20, 100] as const;
+type Limit = (typeof ALLOWED_LIMITS)[number];
+
 export default async function ExpensesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; page?: string; limit?: string }>;
 }) {
   const [{ organization, role }] = await Promise.all([requireSession()]);
   const query = await searchParams;
   const q = query.q?.trim().slice(0, 100);
   const categoryFilter = query.category?.trim();
+
+  const rawLimit = Number(query.limit);
+  const limit: Limit = ALLOWED_LIMITS.includes(rawLimit as Limit) ? (rawLimit as Limit) : 10;
+  const rawPage = Math.max(1, Number(query.page) || 1);
 
   const where = {
     organizationId: organization.id,
@@ -44,13 +52,18 @@ export default async function ExpensesPage({
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
 
-  const [expenses, totalCount, monthAgg, todayAgg] = await Promise.all([
+  const totalCount = await db.expense.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+  const page = Math.min(rawPage, totalPages);
+  const skip = (page - 1) * limit;
+
+  const [expenses, monthAgg, todayAgg] = await Promise.all([
     db.expense.findMany({
       where,
       orderBy: { date: "desc" },
-      take: 100,
+      skip,
+      take: limit,
     }),
-    db.expense.count({ where }),
     db.expense.aggregate({
       where: { organizationId: organization.id, date: { gte: startOfMonth } },
       _sum: { amountCents: true },
@@ -67,6 +80,16 @@ export default async function ExpensesPage({
 
   const monthTotal = monthAgg._sum.amountCents ?? BigInt(0);
   const todayTotal = todayAgg._sum.amountCents ?? BigInt(0);
+
+  const href = (targetPage: number, targetLimit = limit) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (categoryFilter) params.set("category", categoryFilter);
+    if (targetLimit !== 10) params.set("limit", String(targetLimit));
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const qs = params.toString();
+    return `/app/expenses${qs ? `?${qs}` : ""}`;
+  };
 
   return (
     <div className="space-y-10">
@@ -96,7 +119,7 @@ export default async function ExpensesPage({
         </div>
       </div>
 
-      {/* Filter / Search */}
+      {/* Filter / Search + Selector de Cantidad */}
       <form action="/app/expenses" className="flex flex-wrap items-end gap-4">
         <div className="flex-1 min-w-48">
           <label htmlFor="q" className={ui.label}>Buscar concepto o proveedor</label>
@@ -117,8 +140,41 @@ export default async function ExpensesPage({
             ))}
           </select>
         </div>
+        <div className="w-40">
+          <label htmlFor="limit" className={ui.label}>Mostrar por página</label>
+          <select id="limit" name="limit" defaultValue={String(limit)} className={ui.input}>
+            <option value="5">5 facturas</option>
+            <option value="10">10 facturas</option>
+            <option value="20">20 facturas</option>
+            <option value="100">100 facturas</option>
+          </select>
+        </div>
         <button type="submit" className={ui.ghost}>Filtrar</button>
       </form>
+
+      {/* Quick Limit Pills Selector */}
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-white/10 pb-3">
+        <div className="flex items-center gap-2">
+          <span className="uppercase tracking-[0.15em] text-slate-400 font-medium">Ver por página:</span>
+          {ALLOWED_LIMITS.map((opt) => (
+            <Link
+              key={opt}
+              href={href(1, opt)}
+              className={`px-3 py-1 rounded-full font-mono text-xs font-bold transition select-none ${
+                limit === opt
+                  ? "bg-rose-400 text-slate-950 shadow-md shadow-rose-400/20"
+                  : "bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/10"
+              }`}
+            >
+              {opt}
+            </Link>
+          ))}
+        </div>
+
+        <div className="text-slate-400 font-mono text-xs">
+          Página <span className="text-white font-bold">{page}</span> de <span className="text-white font-bold">{totalPages}</span>
+        </div>
+      </div>
 
       {/* Expenses Table */}
       {expenses.length === 0 ? (
@@ -131,46 +187,113 @@ export default async function ExpensesPage({
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/10 text-slate-400 text-xs uppercase tracking-wider">
-              <tr>
-                <th className="py-3 px-4">Fecha</th>
-                <th className="py-3 px-4">Descripción / Proveedor</th>
-                <th className="py-3 px-4">Categoría</th>
-                <th className="py-3 px-4 text-right">Monto</th>
-                {manage && <th className="py-3 px-4 text-right">Acción</th>}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {expenses.map((e) => (
-                <tr key={e.id} className="hover:bg-white/[0.02] transition">
-                  <td className="py-3.5 px-4 text-slate-400 text-xs whitespace-nowrap">
-                    {formatDate(e.date)}
-                  </td>
-                  <td className="py-3.5 px-4 text-white font-medium">
-                    {e.description}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300">
-                      {e.category}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right font-semibold text-rose-400 whitespace-nowrap">
-                    {money(e.amountCents)}
-                  </td>
-                  {manage && (
-                    <td className="py-3.5 px-4 text-right">
-                      <ActionForm action={deleteExpense} confirm="¿Eliminar este registro de gasto?">
-                        <input type="hidden" name="id" value={e.id} />
-                        <SubmitButton variant="danger" pendingText="...">Eliminar</SubmitButton>
-                      </ActionForm>
-                    </td>
-                  )}
+        <div className="space-y-4">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-white/10 text-slate-400 text-xs uppercase tracking-wider">
+                <tr>
+                  <th className="py-3 px-4">Fecha</th>
+                  <th className="py-3 px-4">Descripción / Proveedor</th>
+                  <th className="py-3 px-4">Categoría</th>
+                  <th className="py-3 px-4 text-right">Monto</th>
+                  {manage && <th className="py-3 px-4 text-right">Acción</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {expenses.map((e) => (
+                  <tr key={e.id} className="hover:bg-white/[0.02] transition">
+                    <td className="py-3.5 px-4 text-slate-400 text-xs whitespace-nowrap">
+                      {formatDate(e.date)}
+                    </td>
+                    <td className="py-3.5 px-4 text-white font-medium">
+                      {e.description}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300">
+                        {e.category}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-right font-semibold text-rose-400 whitespace-nowrap font-mono">
+                      {money(e.amountCents)}
+                    </td>
+                    {manage && (
+                      <td className="py-3.5 px-4 text-right">
+                        <ActionForm action={deleteExpense} confirm="¿Eliminar este registro de gasto?">
+                          <input type="hidden" name="id" value={e.id} />
+                          <SubmitButton variant="danger" pendingText="...">Eliminar</SubmitButton>
+                        </ActionForm>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          {totalCount > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10 text-xs">
+              <div className="text-slate-400">
+                Mostrando <span className="text-white font-mono font-bold">{skip + 1}</span> a{" "}
+                <span className="text-white font-mono font-bold">{Math.min(skip + limit, totalCount)}</span> de{" "}
+                <span className="text-white font-mono font-bold">{totalCount}</span> facturas
+              </div>
+
+              <div className="flex items-center gap-2">
+                {page > 1 ? (
+                  <Link href={href(page - 1)} className={ui.ghost}>
+                    ← Anterior
+                  </Link>
+                ) : (
+                  <span className={`${ui.ghost} opacity-30 cursor-not-allowed select-none`}>
+                    ← Anterior
+                  </span>
+                )}
+
+                {/* Direct Page Numbers */}
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                    .reduce<(number | string)[]>((acc, p, idx, arr) => {
+                      if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) {
+                        acc.push("...");
+                      }
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((item, idx) =>
+                      typeof item === "string" ? (
+                        <span key={`dots-${idx}`} className="px-1 text-slate-500 font-mono">
+                          ...
+                        </span>
+                      ) : (
+                        <Link
+                          key={item}
+                          href={href(item)}
+                          className={`size-8 rounded-full flex items-center justify-center font-mono text-xs font-bold transition select-none ${
+                            item === page
+                              ? "bg-rose-400 text-slate-950 shadow-md shadow-rose-400/20"
+                              : "bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white border border-white/10"
+                          }`}
+                        >
+                          {item}
+                        </Link>
+                      ),
+                    )}
+                </div>
+
+                {page < totalPages ? (
+                  <Link href={href(page + 1)} className={ui.ghost}>
+                    Siguiente →
+                  </Link>
+                ) : (
+                  <span className={`${ui.ghost} opacity-30 cursor-not-allowed select-none`}>
+                    Siguiente →
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
