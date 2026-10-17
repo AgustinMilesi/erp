@@ -18,7 +18,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       where: { organizationId: session.organization.id, status: "NEW" },
     }),
     db.debtor.count({
-      where: { organizationId: session.organization.id },
+      where: { organizationId: session.organization.id, items: { some: {} } },
     }),
   ]);
 
