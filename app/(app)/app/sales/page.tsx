@@ -102,8 +102,10 @@ export default async function SalesPage({
 
       {sales.length === 0 ? (
         <div className="clay-card p-12 text-center space-y-3 rounded-3xl">
-          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-2xl">
-            🧾
+          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-xl">
+            <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M9 12h6m-6 4h4m-8 4h16a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v14a1 1 0 001 1z" />
+            </svg>
           </div>
           <p className="text-[#18182E] font-bold text-base">{t.noSalesEmpty}</p>
           <p className="text-xs text-[#72729A]">
@@ -123,7 +125,9 @@ export default async function SalesPage({
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div className="size-10 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] group-hover:bg-[#5E48E8] group-hover:text-white flex items-center justify-center text-sm font-bold transition shadow-xs">
-                      🧾
+                      <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M9 12h6m-6 4h4m-8 4h16a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                      </svg>
                     </div>
                     <span className="min-w-0">
                       <span

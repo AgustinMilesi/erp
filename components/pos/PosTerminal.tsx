@@ -691,7 +691,7 @@ export function PosTerminal({
                           </p>
                           {isWeight && (
                             <span className="text-[10px] px-2 py-0.5 bg-[#5E48E8]/10 text-[#5E48E8] rounded-full font-bold border border-[#5E48E8]/20">
-                              ⚖️ x Kilo
+                              x Kilo
                             </span>
                           )}
                           {p.size && (
@@ -745,8 +745,10 @@ export function PosTerminal({
 
             {activeTab.lines.length === 0 ? (
               <div className="text-center py-20 space-y-3">
-                <div className="size-14 rounded-3xl bg-[#EEF0FA] flex items-center justify-center mx-auto text-2xl text-[#72729A] shadow-inner-xs">
-                  🛒
+                <div className="size-14 rounded-3xl bg-[#EEF0FA] flex items-center justify-center mx-auto text-[#72729A] shadow-inner-xs">
+                  <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
                 </div>
                 <p className="text-[#18182E] text-xs uppercase tracking-wider font-bold">Pedido vacío</p>
                 <p className="text-xs text-[#72729A]">
@@ -773,7 +775,7 @@ export function PosTerminal({
                           </p>
                           {isWeight && (
                             <span className="text-[9px] px-1.5 py-0.5 bg-[#5E48E8]/10 text-[#5E48E8] rounded-full font-bold border border-[#5E48E8]/20">
-                              ⚖️ x Kilo
+                              x Kilo
                             </span>
                           )}
                           {item.size && (
@@ -833,10 +835,13 @@ export function PosTerminal({
                         <button
                           type="button"
                           onClick={() => removeLine(item.id)}
-                          className="size-6 flex items-center justify-center text-[#72729A] hover:text-rose-500 hover:bg-rose-50 rounded-full transition text-xs cursor-pointer"
+                          className="size-6 flex items-center justify-center text-[#72729A] hover:text-rose-500 hover:bg-rose-50 rounded-full transition cursor-pointer"
                           title="Eliminar del pedido"
                         >
-                          ✕
+                          <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
                         </button>
                       </div>
                     </li>
@@ -878,9 +883,33 @@ export function PosTerminal({
 
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: "CASH" as const, label: "Efectivo", icon: "💵" },
-                  { id: "TRANSFER" as const, label: "Transf.", icon: "📲" },
-                  { id: "CARD" as const, label: "Posnet", icon: "💳" },
+                  {
+                    id: "CASH" as const,
+                    label: "Efectivo",
+                    icon: (
+                      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    id: "TRANSFER" as const,
+                    label: "Transf.",
+                    icon: (
+                      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    id: "CARD" as const,
+                    label: "Posnet",
+                    icon: (
+                      <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-6 3.75h16.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5H4.5A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 21z" />
+                      </svg>
+                    ),
+                  },
                 ].map((m) => {
                   const isSelected = activeTab.paymentMethod === m.id;
                   return (
@@ -894,7 +923,7 @@ export function PosTerminal({
                           : "bg-white text-[#72729A] border-[#EAE9F6] hover:text-[#18182E] hover:bg-[#F8F9FE] shadow-xs"
                       }`}
                     >
-                      <span className="text-lg">{m.icon}</span>
+                      {m.icon}
                       <span>{m.label}</span>
                     </button>
                   );
@@ -977,7 +1006,7 @@ export function PosTerminal({
                 onClick={handleSendToDebtor}
                 className="w-full py-2.5 px-3 rounded-full text-xs uppercase tracking-wider font-bold bg-white text-[#72729A] border border-[#EAE9F6] hover:border-amber-400 hover:bg-amber-50 hover:text-amber-800 shadow-xs transition cursor-pointer disabled:opacity-40"
               >
-                📒 Enviar al Fiado
+                Enviar al Fiado
               </button>
             </div>
           </div>
@@ -986,8 +1015,9 @@ export function PosTerminal({
           {pendingSales.length > 0 && (
             <div className="clay-card p-5 space-y-3 border-amber-200 bg-amber-50/50">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>⏸️ Pendientes de Pago ({pendingSales.length})</span>
+                <p className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span>Pendientes de Pago ({pendingSales.length})</span>
                 </p>
               </div>
 
@@ -1016,7 +1046,10 @@ export function PosTerminal({
                         className="text-[#72729A] hover:text-rose-500 p-1 cursor-pointer"
                         title="Descartar"
                       >
-                        ✕
+                        <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
                       </button>
                     </div>
                   </li>
@@ -1046,14 +1079,21 @@ export function PosTerminal({
             <div className="clay-card max-w-lg w-full p-6 sm:p-7 space-y-5 rounded-3xl border border-[#EAE9F6] shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between border-b border-[#EAE9F6] pb-3">
                 <p className="text-base font-extrabold text-[#18182E] uppercase tracking-wider flex items-center gap-2">
-                  <span>⚡</span> Dividir Pago de la Venta
+                  <svg className="size-4 text-[#5E48E8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                  Dividir Pago de la Venta
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowSplitModal(false)}
-                  className="text-[#72729A] hover:text-[#18182E] text-lg font-bold cursor-pointer"
+                  className="text-[#72729A] hover:text-[#18182E] p-1 cursor-pointer"
                 >
-                  ✕
+                  <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
                 </button>
               </div>
 
@@ -1063,9 +1103,9 @@ export function PosTerminal({
               </div>
 
               <div className="space-y-4">
-                {/* 💵 Efectivo */}
+                {/* Efectivo */}
                 <div>
-                  <label className={ui.label}>💵 Efectivo ($)</label>
+                  <label className={ui.label}>Efectivo ($)</label>
                   <input
                     type="number"
                     step="any"
@@ -1076,9 +1116,9 @@ export function PosTerminal({
                   />
                 </div>
 
-                {/* 📲 Transferencia */}
+                {/* Transferencia */}
                 <div>
-                  <label className={ui.label}>📲 Transferencia / MP ($)</label>
+                  <label className={ui.label}>Transferencia / MP ($)</label>
                   <input
                     type="number"
                     step="any"
@@ -1089,9 +1129,9 @@ export function PosTerminal({
                   />
                 </div>
 
-                {/* 💳 Posnet */}
+                {/* Posnet */}
                 <div>
-                  <label className={ui.label}>💳 Posnet / Tarjeta ($)</label>
+                  <label className={ui.label}>Posnet / Tarjeta ($)</label>
                   <input
                     type="number"
                     step="any"
@@ -1102,11 +1142,11 @@ export function PosTerminal({
                   />
                 </div>
 
-                {/* 📒 Enviar a Fiado / Deudor */}
+                {/* Enviar a Fiado / Deudor */}
                 <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
-                      <span>📒</span> Enviar al Fiado / Deudor
+                      <span>Cuenta Corriente (Fiado)</span>
                     </label>
                     {remainderForDebtor > 0 && (
                       <button
@@ -1153,11 +1193,11 @@ export function PosTerminal({
               {/* Status Box */}
               {debtorMissing ? (
                 <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">
-                  ⚠️ Ingresaste un monto de fiado pero no seleccionaste ningún cliente deudor.
+                  Ingresaste un monto de fiado pero no seleccionaste ningún cliente deudor.
                 </div>
               ) : remainingCents > 0 ? (
                 <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center justify-between">
-                  <span>⚠️ Faltan <strong className="font-mono">{money(remainingCents)}</strong> para cubrir el total.</span>
+                  <span>Faltan <strong className="font-mono">{money(remainingCents)}</strong> para cubrir el total.</span>
                   {splitDebtorId && (
                     <button
                       type="button"
@@ -1174,7 +1214,7 @@ export function PosTerminal({
                 </div>
               ) : remainingCents === 0 ? (
                 <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium flex items-center justify-between">
-                  <span>✅ Total cubierto exactamente.</span>
+                  <span>Total cubierto exactamente.</span>
                   {splitDebtorCents > 0 && (
                     <span className="font-mono font-bold text-amber-800">
                       (Fiado: {money(splitDebtorCents)})
@@ -1183,7 +1223,7 @@ export function PosTerminal({
                 </div>
               ) : (
                 <div className="p-3 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-800">
-                  💵 Vuelto en efectivo a entregar: <strong className="font-mono">{money(-remainingCents)}</strong>
+                  Vuelto en efectivo a entregar: <strong className="font-mono">{money(-remainingCents)}</strong>
                 </div>
               )}
 
@@ -1213,8 +1253,10 @@ export function PosTerminal({
       {doneSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18182E]/40 backdrop-blur-md animate-in fade-in duration-200">
           <div className="clay-card max-w-sm w-full p-8 text-center space-y-6 rounded-3xl border border-[#EAE9F6] shadow-2xl">
-            <div className="size-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto text-3xl font-black shadow-xs">
-              ✓
+            <div className="size-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-xs">
+              <svg className="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </div>
 
             <div className="space-y-1">

@@ -277,7 +277,7 @@ export default async function SettingsPage() {
             <div>
               <label className={ui.label} htmlFor="scope">¿Qué datos querés eliminar?</label>
               <select id="scope" name="scope" defaultValue="all" className={ui.input}>
-                <option value="all">⚠️ Todo el sistema (Ventas, Caja, Fiados, Gastos, Catálogo y Contactos)</option>
+                <option value="all">Todo el sistema (Ventas, Caja, Fiados, Gastos, Catálogo y Contactos)</option>
                 <option value="sales">Solo Historial de Ventas y Turnos de Caja</option>
                 <option value="debtors">Solo Deudores y Cuentas Corrientes (Fiados)</option>
                 <option value="expenses">Solo Gastos y Facturas</option>

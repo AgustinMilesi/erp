@@ -89,7 +89,7 @@ export default async function CashPage() {
               href="/app/pos"
               className="px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] hover:-translate-y-0.5 active:scale-95 transition shadow-[0_8px_20px_rgba(85,56,234,0.32)] flex items-center gap-2 select-none"
             >
-              <span>⚡</span> Ir al Punto de Venta (POS) →
+              Ir al Punto de Venta (POS) →
             </Link>
           </div>
 
@@ -100,7 +100,7 @@ export default async function CashPage() {
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
-                    💵 Efectivo en el Cajón
+                    Efectivo en el Cajón
                   </p>
                   <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Plata en mano
@@ -117,22 +117,22 @@ export default async function CashPage() {
               {/* Visual Formula: Exactly explains why! */}
               <div className="mt-5 pt-3 border-t border-[#EAE9F6] space-y-1 text-xs">
                 <div className="flex justify-between text-[#72729A]">
-                  <span>🏁 Fondo de inicio:</span>
+                  <span>Fondo de inicio:</span>
                   <span className="font-mono text-[#18182E] font-medium">{money(summary.openingCents)}</span>
                 </div>
                 <div className="flex justify-between text-emerald-700">
-                  <span>➕ Cobros en efectivo:</span>
+                  <span>Cobros en efectivo:</span>
                   <span className="font-mono font-bold">+{money(summary.byMethod.CASH)}</span>
                 </div>
                 {summary.cashInCents > 0 && (
                   <div className="flex justify-between text-sky-700">
-                    <span>➕ Entradas extras:</span>
+                    <span>Entradas extras:</span>
                     <span className="font-mono font-bold">+{money(summary.cashInCents)}</span>
                   </div>
                 )}
                 {summary.cashOutCents > 0 && (
                   <div className="flex justify-between text-rose-600">
-                    <span>➖ Retiros / Gastos:</span>
+                    <span>Retiros / Gastos:</span>
                     <span className="font-mono font-bold">−{money(summary.cashOutCents)}</span>
                   </div>
                 )}
@@ -146,7 +146,7 @@ export default async function CashPage() {
             {/* Card 2: Total Sales */}
             <div className="clay-card p-6 flex flex-col justify-between">
               <div className="space-y-1">
-                <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">🛍️ Total Ventas del Turno</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">Total Ventas del Turno</p>
                 <p className="text-3xl sm:text-4xl font-extrabold font-mono text-[#18182E] tracking-tight mt-1">
                   {money(summary.totalSalesCents)}
                 </p>
@@ -164,14 +164,13 @@ export default async function CashPage() {
             {/* Card 3: Payment Breakdown */}
             <div className="clay-card p-6 flex flex-col justify-between space-y-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">💳 ¿Cómo te pagaron?</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">¿Cómo te pagaron?</p>
                 <p className="text-xs text-[#72729A] mt-1">Desglose según el medio de pago:</p>
               </div>
 
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                   <div className="flex items-center gap-2">
-                    <span>💵</span>
                     <span className="text-[#18182E] font-bold">Efectivo</span>
                     <span className="text-[10px] text-emerald-600 font-mono font-bold">(al cajón)</span>
                   </div>
@@ -180,7 +179,6 @@ export default async function CashPage() {
 
                 <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                   <div className="flex items-center gap-2">
-                    <span>📱</span>
                     <span className="text-[#18182E] font-bold">Transferencia / MP</span>
                     <span className="text-[10px] text-sky-600 font-mono font-bold">(en banco)</span>
                   </div>
@@ -189,7 +187,6 @@ export default async function CashPage() {
 
                 <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                   <div className="flex items-center gap-2">
-                    <span>💳</span>
                     <span className="text-[#18182E] font-bold">Tarjetas Débito / Crédito</span>
                     <span className="text-[10px] text-[#5E48E8] font-mono font-bold">(en posnet)</span>
                   </div>
@@ -199,7 +196,6 @@ export default async function CashPage() {
                 {summary.byMethod.OTHER > 0 && (
                   <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                     <div className="flex items-center gap-2">
-                      <span>🏷️</span>
                       <span className="text-[#18182E] font-bold">Otro</span>
                     </div>
                     <span className="font-mono font-black text-[#18182E]">{money(summary.byMethod.OTHER)}</span>
@@ -278,7 +274,7 @@ export default async function CashPage() {
       <section className="space-y-4 pt-6 border-t border-white/10">
         <div className="space-y-1">
           <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <span>📚</span> Historial de Turnos Anteriores ({history.length})
+            Historial de Turnos Anteriores ({history.length})
           </h3>
           <p className="text-xs text-slate-400">
             Registro histórico de cierres de caja y resultados de arqueo.

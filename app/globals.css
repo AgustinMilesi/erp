@@ -1,92 +1,154 @@
 @import "tailwindcss";
 
 :root {
-  --primary-accent: #5e48e8;
-  --primary-accent-hover: #4f38d8;
-  --primary-accent-rgb: 94, 72, 232;
+  /* Default Theme: Clay Violet */
+  --primary-accent: #6852f6;
+  --primary-accent-hover: #5538ea;
+  --primary-accent-gradient: linear-gradient(135deg, #6852f6 0%, #5538ea 100%);
+  --primary-accent-shadow: rgba(85, 56, 234, 0.35);
+  --primary-accent-rgb: 104, 82, 246;
+
+  /* Light Canvas Defaults */
   --bg-page: #eef0fa;
   --bg-card: #ffffff;
+  --bg-card-subtle: #f8f9fe;
+  --bg-hover: #f3f2fd;
   --text-main: #18182e;
   --text-muted: #72729a;
   --border-card: #eae9f6;
+  --border-subtle: #f1f0fa;
 }
 
+/* ==============================================================================
+   Dark Mode Canvas
+   ============================================================================== */
+[data-mode="dark"],
+.dark {
+  color-scheme: dark;
+  --bg-page: #0d0f17;
+  --bg-card: #151824;
+  --bg-card-subtle: #1c2030;
+  --bg-hover: #22273b;
+  --text-main: #f1f3f9;
+  --text-muted: #8b92a5;
+  --border-card: #262b3d;
+  --border-subtle: #1e2232;
+}
+
+/* ==============================================================================
+   Color Themes (Palettes)
+   ============================================================================== */
 [data-theme="violet"] {
-  --primary-accent: #5e48e8;
-  --primary-accent-hover: #4f38d8;
-  --primary-accent-rgb: 94, 72, 232;
+  --primary-accent: #6852f6;
+  --primary-accent-hover: #5538ea;
+  --primary-accent-gradient: linear-gradient(135deg, #6852f6 0%, #5538ea 100%);
+  --primary-accent-shadow: rgba(85, 56, 234, 0.35);
+  --primary-accent-rgb: 104, 82, 246;
+}
+
+[data-theme="indigo"] {
+  --primary-accent: #4f46e5;
+  --primary-accent-hover: #4338ca;
+  --primary-accent-gradient: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+  --primary-accent-shadow: rgba(79, 70, 229, 0.35);
+  --primary-accent-rgb: 79, 70, 229;
 }
 
 [data-theme="rose"] {
-  --primary-accent: #fb7185;
-  --primary-accent-hover: #f43f5e;
-  --primary-accent-rgb: 251, 113, 133;
+  --primary-accent: #f43f5e;
+  --primary-accent-hover: #e11d48;
+  --primary-accent-gradient: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
+  --primary-accent-shadow: rgba(244, 63, 94, 0.35);
+  --primary-accent-rgb: 244, 63, 94;
 }
 
 [data-theme="emerald"] {
   --primary-accent: #10b981;
   --primary-accent-hover: #059669;
+  --primary-accent-gradient: linear-gradient(135deg, #34d399 0%, #059669 100%);
+  --primary-accent-shadow: rgba(16, 185, 129, 0.35);
   --primary-accent-rgb: 16, 185, 129;
 }
 
 [data-theme="amber"] {
   --primary-accent: #f59e0b;
   --primary-accent-hover: #d97706;
+  --primary-accent-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  --primary-accent-shadow: rgba(245, 158, 11, 0.35);
   --primary-accent-rgb: 245, 158, 11;
-}
-
-[data-theme="indigo"] {
-  --primary-accent: #6366f1;
-  --primary-accent-hover: #4f46e5;
-  --primary-accent-rgb: 99, 102, 241;
 }
 
 [data-theme="cyan"] {
   --primary-accent: #06b6d4;
   --primary-accent-hover: #0891b2;
+  --primary-accent-gradient: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
+  --primary-accent-shadow: rgba(6, 182, 212, 0.35);
   --primary-accent-rgb: 6, 182, 212;
 }
 
-/* Base Body Styling */
+/* ==============================================================================
+   Base Body Styling
+   ============================================================================== */
 html, body {
-  background-color: #eef0fa;
-  color: #18182e;
+  background-color: var(--bg-page);
+  color: var(--text-main);
   font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
   letter-spacing: -0.01em;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Claymorphism Custom Classes */
+/* ==============================================================================
+   Claymorphism Surface Styles
+   ============================================================================== */
 .clay-card {
-  background-color: #ffffff;
+  background-color: var(--bg-card);
   border-radius: 1.5rem;
-  border: 1px solid #eae9f6;
-  box-shadow: 0 16px 36px -8px rgba(94, 72, 232, 0.08), 0 4px 14px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--border-card);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(0, 0, 0, 0.02);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-mode="dark"] .clay-card,
+.dark .clay-card {
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.45), 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
 .clay-card:hover {
-  box-shadow: 0 20px 42px -8px rgba(94, 72, 232, 0.14), 0 6px 18px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 20px 42px -8px rgba(0, 0, 0, 0.09), 0 6px 18px rgba(0, 0, 0, 0.03);
   transform: translateY(-2px);
 }
 
-.clay-card-purple {
-  background: linear-gradient(135deg, #6852f6 0%, #5538ea 100%);
-  color: #ffffff;
+[data-mode="dark"] .clay-card:hover,
+.dark .clay-card:hover {
+  box-shadow: 0 20px 42px -8px rgba(0, 0, 0, 0.6), 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* Accent Card (Reacts to the chosen color theme) */
+.clay-card-purple,
+.clay-card-accent {
+  background: var(--primary-accent-gradient) !important;
+  color: #ffffff !important;
   border-radius: 1.5rem;
-  box-shadow: 0 20px 40px -10px rgba(85, 56, 234, 0.42), 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 40px -10px var(--primary-accent-shadow), 0 4px 12px rgba(0, 0, 0, 0.04);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.clay-card-purple *,
+.clay-card-accent * {
+  color: #ffffff !important;
+}
+
+/* Clay Action Buttons */
 .clay-btn {
-  background: linear-gradient(135deg, #6852f6 0%, #5538ea 100%);
-  color: #ffffff;
-  box-shadow: 0 10px 24px -4px rgba(85, 56, 234, 0.35);
+  background: var(--primary-accent-gradient) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 24px -4px var(--primary-accent-shadow);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .clay-btn:hover {
-  box-shadow: 0 14px 30px -4px rgba(85, 56, 234, 0.45);
+  box-shadow: 0 14px 30px -4px var(--primary-accent-shadow);
   transform: translateY(-2px);
 }
 
@@ -94,36 +156,25 @@ html, body {
   transform: scale(0.98);
 }
 
+/* Clay Pills (Active and Inactive) */
 .clay-pill-active {
-  background: linear-gradient(135deg, #6852f6 0%, #5538ea 100%);
+  background: var(--primary-accent-gradient) !important;
   color: #ffffff !important;
-  box-shadow: 0 8px 20px rgba(85, 56, 234, 0.32);
-}
-
-.clay-card-purple,
-.clay-card-purple *,
-.clay-btn,
-.clay-btn *,
-.clay-pill-active,
-.clay-pill-active *,
-[class*="from-[#6852F6]"],
-[class*="from-[#6852F6]"] * {
-  color: #ffffff !important;
+  box-shadow: 0 8px 20px var(--primary-accent-shadow);
 }
 
 .clay-pill-inactive {
-  background: rgba(255, 255, 255, 0.9);
-  color: #64748b;
-  border: 1px solid #eae9f6;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border-card);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .clay-pill-inactive:hover {
-  background: #ffffff;
-  color: #5e48e8;
-  border-color: rgba(94, 72, 232, 0.3);
-  box-shadow: 0 4px 12px rgba(94, 72, 232, 0.08);
+  background: var(--bg-hover);
+  color: var(--primary-accent);
+  border-color: rgba(var(--primary-accent-rgb), 0.3);
   transform: translateY(-1px);
 }
 
@@ -143,61 +194,161 @@ html, body {
   animation: smooth-lift 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Dynamic theme overrides */
-.text-rose-400 { color: var(--primary-accent) !important; }
-.bg-rose-400 { background-color: var(--primary-accent) !important; }
-.hover\:bg-rose-500:hover { background-color: var(--primary-accent-hover) !important; }
-.border-rose-400 { border-color: var(--primary-accent) !important; }
-.hover\:border-rose-400:hover { border-color: var(--primary-accent) !important; }
-.hover\:border-rose-400\/60:hover { border-color: rgba(var(--primary-accent-rgb), 0.6) !important; }
-.border-rose-400\/30 { border-color: rgba(var(--primary-accent-rgb), 0.3) !important; }
-.bg-rose-400\/\[0\.03\] { background-color: rgba(var(--primary-accent-rgb), 0.04) !important; }
-.hover\:text-rose-400:hover { color: var(--primary-accent) !important; }
-.focus\:border-rose-400:focus { border-color: var(--primary-accent) !important; }
-.accent-rose-400 { accent-color: var(--primary-accent) !important; }
-
-/* Global theme adapters for soft clay light styling */
-.bg-slate-950 { background-color: #eef0fa !important; }
-.bg-slate-950\/90 { background-color: rgba(255, 255, 255, 0.9) !important; }
-.bg-slate-950\/40 { background-color: rgba(255, 255, 255, 0.7) !important; }
-.text-slate-100 { color: #18182e !important; }
-.text-white { color: #18182e !important; }
-.text-slate-200 { color: #334155 !important; }
-.text-slate-300 { color: #475569 !important; }
-.text-slate-400 { color: #72729a !important; }
-.text-slate-500 { color: #94a3b8 !important; }
-.border-white\/10 { border-color: #eae9f6 !important; }
-.border-white\/5 { border-color: #f1f0fa !important; }
-.border-white\/15 { border-color: #e2e1f4 !important; }
-.border-white\/20 { border-color: #d8d6f0 !important; }
-
-.bg-white\/\[0\.02\],
-.bg-white\/\[0\.03\],
-.bg-white\/\[0\.04\],
-.bg-white\/\[0\.01\] {
-  background-color: #ffffff !important;
-  box-shadow: 0 16px 36px -8px rgba(94, 72, 232, 0.08), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
-  border-radius: 1.5rem !important;
-  border-color: #eae9f6 !important;
+/* ==============================================================================
+   Dynamic Color Theme Utility Mappings (Fixes theme options across the entire app)
+   ============================================================================== */
+.bg-\[\#5E48E8\],
+.bg-\[\#5e48e8\],
+.bg-\[\#6852F6\],
+.bg-\[\#6852f6\],
+.bg-\[\#5538EA\],
+.bg-\[\#5538ea\] {
+  background-color: var(--primary-accent) !important;
 }
 
-.bg-white\/5, .bg-white\/10 {
-  background-color: #f4f3fb !important;
+.hover\:bg-\[\#5E48E8\]:hover,
+.hover\:bg-\[\#4F38D8\]:hover,
+.hover\:bg-\[\#4a2fe0\]:hover {
+  background-color: var(--primary-accent-hover) !important;
 }
 
-.hover\:bg-white\/\[0\.02\]:hover,
-.hover\:bg-white\/\[0\.08\]:hover,
-.hover\:bg-white\/5:hover,
-.hover\:bg-white\/10:hover {
-  background-color: #f8f8fd !important;
+.text-\[\#5E48E8\],
+.text-\[\#5e48e8\],
+.text-\[\#6852F6\],
+.text-\[\#6852f6\],
+.text-\[\#5538EA\],
+.text-\[\#5538ea\] {
+  color: var(--primary-accent) !important;
 }
 
-.divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
-  border-color: #f1f0fa !important;
+.hover\:text-\[\#5E48E8\]:hover,
+.hover\:text-\[\#4F38D8\]:hover,
+.hover\:text-\[\#4a2fe0\]:hover {
+  color: var(--primary-accent-hover) !important;
 }
 
-.divide-white\/10 > :not([hidden]) ~ :not([hidden]) {
-  border-color: #eae9f6 !important;
+.border-\[\#5E48E8\],
+.border-\[\#5e48e8\],
+.focus\:border-\[\#5E48E8\]:focus {
+  border-color: var(--primary-accent) !important;
+}
+
+.ring-\[\#5E48E8\],
+.focus\:ring-\[\#5E48E8\]\/15:focus,
+.focus\:ring-\[\#5E48E8\]\/20:focus {
+  --tw-ring-color: rgba(var(--primary-accent-rgb), 0.2) !important;
+}
+
+/* Gradient overrides so any gradient button or pill updates dynamically with the theme */
+[class*="from-[#6852F6]"],
+[class*="from-[#6852f6]"] {
+  background: var(--primary-accent-gradient) !important;
+  color: #ffffff !important;
+}
+
+[class*="from-[#6852F6]"] *,
+[class*="from-[#6852f6]"] * {
+  color: #ffffff !important;
+}
+
+[class*="shadow-[0_8px_20px_rgba(85,56,234"],
+[class*="shadow-[0_10px_24px_rgba(85,56,234"],
+[class*="shadow-[0_4px_12px_rgba(85,56,234"],
+[class*="shadow-[0_14px_28px_rgba(85,56,234"] {
+  box-shadow: 0 10px 24px -4px var(--primary-accent-shadow) !important;
+}
+
+/* ==============================================================================
+   Dark Mode Canvas Adaptations
+   ============================================================================== */
+[data-mode="dark"] .bg-\[\#EEF0FA\],
+[data-mode="dark"] .bg-\[\#eef0fa\],
+.dark .bg-\[\#EEF0FA\],
+.dark .bg-\[\#eef0fa\] {
+  background-color: var(--bg-page) !important;
+}
+
+[data-mode="dark"] .bg-white,
+[data-mode="dark"] .bg-white\/80,
+[data-mode="dark"] .bg-white\/85,
+[data-mode="dark"] .bg-white\/90,
+[data-mode="dark"] .bg-white\/95,
+.dark .bg-white,
+.dark .bg-white\/80,
+.dark .bg-white\/85,
+.dark .bg-white\/90,
+.dark .bg-white\/95 {
+  background-color: var(--bg-card) !important;
+}
+
+[data-mode="dark"] .bg-\[\#F8F9FE\],
+[data-mode="dark"] .bg-\[\#f8f9fe\],
+[data-mode="dark"] .bg-\[\#F3F2FD\],
+[data-mode="dark"] .bg-\[\#f3f2fd\],
+[data-mode="dark"] .bg-\[\#f4f3fb\],
+.dark .bg-\[\#F8F9FE\],
+.dark .bg-\[\#f8f9fe\],
+.dark .bg-\[\#F3F2FD\],
+.dark .bg-\[\#f3f2fd\],
+.dark .bg-\[\#f4f3fb\] {
+  background-color: var(--bg-card-subtle) !important;
+}
+
+[data-mode="dark"] .hover\:bg-\[\#F3F2FD\]:hover,
+[data-mode="dark"] .hover\:bg-\[\#F8F9FE\]:hover,
+.dark .hover\:bg-\[\#F3F2FD\]:hover,
+.dark .hover\:bg-\[\#F8F9FE\]:hover {
+  background-color: var(--bg-hover) !important;
+}
+
+[data-mode="dark"] .text-\[\#18182E\],
+[data-mode="dark"] .text-\[\#18182e\],
+.dark .text-\[\#18182E\],
+.dark .text-\[\#18182e\] {
+  color: var(--text-main) !important;
+}
+
+[data-mode="dark"] .text-\[\#72729A\],
+[data-mode="dark"] .text-\[\#72729a\],
+.dark .text-\[\#72729A\],
+.dark .text-\[\#72729a\] {
+  color: var(--text-muted) !important;
+}
+
+[data-mode="dark"] .border-\[\#EAE9F6\],
+[data-mode="dark"] .border-\[\#eae9f6\],
+[data-mode="dark"] .border-\[\#E2E1F4\],
+[data-mode="dark"] .border-\[\#e2e1f4\],
+.dark .border-\[\#EAE9F6\],
+.dark .border-\[\#eae9f6\],
+.dark .border-\[\#E2E1F4\],
+.dark .border-\[\#e2e1f4\] {
+  border-color: var(--border-card) !important;
+}
+
+/* Inputs, Textareas and Dropdowns */
+[data-mode="dark"] input,
+[data-mode="dark"] textarea,
+[data-mode="dark"] select,
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--bg-card-subtle) !important;
+  border-color: var(--border-card) !important;
+  color: var(--text-main) !important;
+}
+
+[data-mode="dark"] input::placeholder,
+[data-mode="dark"] textarea::placeholder,
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+[data-mode="dark"] select option,
+.dark select option {
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
 }
 
 /* Custom soft scrollbars */
@@ -209,21 +360,15 @@ html, body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4d7eb;
+  background: #c8cbdc;
   border-radius: 9999px;
 }
+[data-mode="dark"] ::-webkit-scrollbar-thumb,
+.dark ::-webkit-scrollbar-thumb {
+  background: #2c3248;
+}
 ::-webkit-scrollbar-thumb:hover {
-  background: #b8bcdb;
-}
-
-/* Clean input defaults */
-input, textarea, select {
-  color: #18182e;
-}
-
-select option {
-  background-color: #ffffff;
-  color: #18182e;
+  background: #a9aebd;
 }
 
 /* Remove spinner arrows from number inputs */

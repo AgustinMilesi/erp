@@ -54,8 +54,8 @@ export function ProductForm({
         <div>
           <label className={ui.label} htmlFor="p-sale-type">Tipo de Venta (Unidad o Peso)</label>
           <select id="p-sale-type" name="saleType" defaultValue={product?.saleType ?? "UNIT"} className={ui.input}>
-            <option value="UNIT">📦 Por Unidad (u.)</option>
-            <option value="WEIGHT">⚖️ Por Kilo / Peso (Gramaje)</option>
+            <option value="UNIT">Por Unidad (u.)</option>
+            <option value="WEIGHT">Por Peso / Gramaje (kg / g)</option>
           </select>
         </div>
 

@@ -89,8 +89,10 @@ export default async function ProductsPage({
 
       {products.length === 0 ? (
         <div className="clay-card p-12 text-center space-y-3 rounded-3xl">
-          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-2xl">
-            📦
+          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-xl">
+            <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
           </div>
           <p className="text-[#18182E] font-bold text-base">
             {q || low ? t.noProductsMatchFilter : t.noProductsYetCatalog}
@@ -112,7 +114,7 @@ export default async function ProductsPage({
                         <span>{p.name}</span>
                         {p.saleType === "WEIGHT" && (
                           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            ⚖️ x Kilo
+                            x Kilo
                           </span>
                         )}
                         {p.size && (

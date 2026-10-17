@@ -260,10 +260,10 @@ export function DataImporter() {
     <form onSubmit={handleUpload} className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-rose-400/10 text-rose-400 border border-rose-400/20">
-          📄 Backup Completo JSON
+          Backup Completo JSON
         </span>
         <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
-          📊 Catálogo Excel (.xlsx, .xls)
+          Catálogo Excel (.xlsx, .xls)
         </span>
       </div>
 
@@ -303,12 +303,12 @@ export function DataImporter() {
 
       {detected && (
         <div className="p-3.5 rounded-xl border border-rose-400/30 bg-rose-400/[0.04] text-xs text-slate-300 space-y-1">
-          <p className="font-semibold text-rose-300">✅ Archivo de backup reconocido:</p>
+          <p className="font-semibold text-rose-300">Archivo de backup reconocido:</p>
           <div className="flex flex-wrap gap-4 text-slate-400 pt-0.5">
-            <span>📦 <strong>{detected.productsCount}</strong> productos / comida</span>
-            {detected.debtorsCount > 0 && <span>👥 <strong>{detected.debtorsCount}</strong> deudores (cuentas corrientes)</span>}
-            {detected.expensesCount > 0 && <span>🧾 <strong>{detected.expensesCount}</strong> gastos y facturas</span>}
-            {detected.salesCount > 0 && <span>💳 <strong>{detected.salesCount}</strong> ventas históricas</span>}
+            <span><strong>{detected.productsCount}</strong> productos / comida</span>
+            {detected.debtorsCount > 0 && <span><strong>{detected.debtorsCount}</strong> deudores (cuentas corrientes)</span>}
+            {detected.expensesCount > 0 && <span><strong>{detected.expensesCount}</strong> gastos y facturas</span>}
+            {detected.salesCount > 0 && <span><strong>{detected.salesCount}</strong> ventas históricas</span>}
           </div>
         </div>
       )}

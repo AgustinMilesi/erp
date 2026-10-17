@@ -92,7 +92,10 @@ export function AppShell({
           className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
           aria-label="Cerrar menú"
         >
-          ✕
+          <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
         </button>
       </div>
 
@@ -165,8 +168,10 @@ export function AppShell({
           </button>
 
           <div className="flex items-center gap-2.5">
-            <span className="size-9 rounded-2xl bg-gradient-to-br from-[#6852F6] to-[#5538EA] text-white flex items-center justify-center shadow-[0_4px_12px_rgba(85,56,234,0.35)] text-base font-bold shrink-0">
-              ⚡
+            <span className="size-9 rounded-2xl bg-gradient-to-br from-[#6852F6] to-[#5538EA] text-white flex items-center justify-center shadow-[0_4px_12px_rgba(85,56,234,0.35)] shrink-0">
+              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </span>
             <span className="text-[#18182E] font-black text-base sm:text-lg tracking-tight truncate max-w-[200px] sm:max-w-xs">
               {organizationName}

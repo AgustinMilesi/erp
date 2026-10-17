@@ -101,7 +101,7 @@ export default async function OverviewPage() {
             href={openSession ? "/app/pos" : "/app/cash"}
             className="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] shadow-[0_8px_20px_rgba(85,56,234,0.32)] hover:-translate-y-0.5 active:scale-95 transition-all flex items-center gap-1.5"
           >
-            <span>⚡</span> {openSession ? t.openPosTill : t.openRegisterBtn}
+            {openSession ? t.openPosTill : t.openRegisterBtn}
           </Link>
         </div>
       </div>
@@ -159,8 +159,10 @@ export default async function OverviewPage() {
               <p className="text-3xl font-extrabold text-[#18182E] tracking-tight">{todaySales._count}</p>
               <p className="text-xs text-[#72729A]">{t.completedSales}</p>
             </div>
-            <div className="size-12 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] flex items-center justify-center text-xl font-bold group-hover:scale-110 group-hover:bg-[#5E48E8] group-hover:text-white transition-all shadow-xs">
-              🛍️
+            <div className="size-12 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] flex items-center justify-center font-bold group-hover:scale-110 group-hover:bg-[#5E48E8] group-hover:text-white transition-all shadow-xs">
+              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
             </div>
           </Link>
 
@@ -173,8 +175,10 @@ export default async function OverviewPage() {
               <p className="text-3xl font-extrabold text-[#18182E] tracking-tight">{unread}</p>
               <p className="text-xs text-[#72729A]">{t.customerInbox}</p>
             </div>
-            <div className="size-12 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] flex items-center justify-center text-xl font-bold group-hover:scale-110 group-hover:bg-[#5E48E8] group-hover:text-white transition-all shadow-xs">
-              💬
+            <div className="size-12 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] flex items-center justify-center font-bold group-hover:scale-110 group-hover:bg-[#5E48E8] group-hover:text-white transition-all shadow-xs">
+              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75A2.25 2.25 0 014.5 4.5h15a2.25 2.25 0 012.25 2.25z" />
+              </svg>
             </div>
           </Link>
 
@@ -187,8 +191,10 @@ export default async function OverviewPage() {
               <p className="text-3xl font-extrabold text-[#18182E] tracking-tight">{contacts}</p>
               <p className="text-xs text-[#72729A]">{t.customersAndLeads}</p>
             </div>
-            <div className="size-12 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] flex items-center justify-center text-xl font-bold group-hover:scale-110 group-hover:bg-[#5E48E8] group-hover:text-white transition-all shadow-xs">
-              👥
+            <div className="size-12 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] flex items-center justify-center font-bold group-hover:scale-110 group-hover:bg-[#5E48E8] group-hover:text-white transition-all shadow-xs">
+              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
             </div>
           </Link>
         </div>
@@ -223,7 +229,9 @@ export default async function OverviewPage() {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="size-10 rounded-2xl bg-[#EEF0FA] group-hover:bg-[#5E48E8]/10 text-[#5E48E8] flex items-center justify-center text-sm font-bold transition">
-                        🧾
+                        <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M9 12h6m-6 4h4m-8 4h16a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                        </svg>
                       </div>
                       <div className="min-w-0">
                         <span className={`block truncate text-sm font-bold ${s.status === "VOIDED" ? "text-[#72729A] line-through" : "text-[#18182E]"}`}>
@@ -266,7 +274,11 @@ export default async function OverviewPage() {
 
           {lowStockProducts.length === 0 ? (
             <div className="text-center py-10 space-y-2">
-              <span className="text-2xl">✨</span>
+              <div className="size-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
+                <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
               <p className="text-xs font-bold text-emerald-600">{t.allInventoryHealthy}</p>
             </div>
           ) : (
@@ -279,7 +291,11 @@ export default async function OverviewPage() {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="size-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold">
-                        ⚠️
+                        <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                          <line x1="12" y1="9" x2="12" y2="13" />
+                          <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
                       </div>
                       <div className="min-w-0">
                         <span className="block text-[#18182E] text-sm font-bold truncate group-hover:text-[#5E48E8] transition">

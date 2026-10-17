@@ -95,7 +95,7 @@ export function CashOpenCard({
 
         <div className="pt-2">
           <SubmitButton pendingText="Abriendo caja..." className="w-full sm:w-auto">
-            🟢 Abrir Caja y Comenzar Turno
+            Abrir Caja y Comenzar Turno
           </SubmitButton>
         </div>
       </ActionForm>
@@ -129,7 +129,7 @@ export function CashMovementCard() {
     <div className="clay-card p-6 sm:p-7 space-y-5 rounded-3xl">
       <div className="space-y-1">
         <h3 className="text-base font-extrabold text-[#18182E] flex items-center gap-2">
-          <span>💸</span> Registrar Entrada o Salida de Dinero
+          Registrar Entrada o Salida de Dinero
         </h3>
         <p className="text-xs text-[#72729A]">
           Anotá cualquier plata física que entre o salga del cajón durante el turno para que el arqueo final sea exacto.
@@ -157,7 +157,6 @@ export function CashMovementCard() {
                   : "bg-white text-[#72729A] border-[#EAE9F6] hover:bg-[#F8F9FE] hover:text-[#18182E]"
               }`}
             >
-              <span className="text-base">🔴</span>
               <span>Sacar plata (Salida / Gasto)</span>
             </button>
 
@@ -173,7 +172,6 @@ export function CashMovementCard() {
                   : "bg-white text-[#72729A] border-[#EAE9F6] hover:bg-[#F8F9FE] hover:text-[#18182E]"
               }`}
             >
-              <span className="text-base">🟢</span>
               <span>Meter plata (Entrada / Ingreso)</span>
             </button>
           </div>
@@ -185,11 +183,11 @@ export function CashMovementCard() {
         <div className="p-3.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6] text-xs text-[#18182E]">
           {type === "OUT" ? (
             <p>
-              💡 <span className="font-bold text-rose-600">Salida de dinero:</span> Usalo cuando saques billetes del cajón para pagar a proveedores, gastos diarios, fletes o retiros personales.
+              <span className="font-bold text-rose-600">Salida de dinero:</span> Usalo cuando saques billetes del cajón para pagar a proveedores, gastos diarios, fletes o retiros personales.
             </p>
           ) : (
             <p>
-              💡 <span className="font-bold text-emerald-700">Entrada de dinero:</span> Usalo si trajiste billetes de cambio para tener en la caja o agregaste dinero de tu bolsillo.
+              <span className="font-bold text-emerald-700">Entrada de dinero:</span> Usalo si trajiste billetes de cambio para tener en la caja o agregaste dinero de tu bolsillo.
             </p>
           )}
         </div>
@@ -290,7 +288,7 @@ export function CashCloseCard({
     <div className="clay-card p-6 sm:p-7 space-y-6 rounded-3xl">
       <div className="space-y-1">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#EEF0FA] text-[#5E48E8] border border-[#EAE9F6]">
-          <span>🏁</span> Fin de turno / Arqueo final
+          Fin de turno / Arqueo final
         </div>
         <h3 className="text-xl font-extrabold text-[#18182E]">
           Cerrar Caja y Control de Efectivo
@@ -353,12 +351,12 @@ export function CashCloseCard({
             }`}
           >
             <div className="flex items-start gap-3">
-              <span className="text-xl">
-                {differenceCents === 0 ? "✅" : differenceCents > 0 ? "✨" : "⚠️"}
-              </span>
+              <span className={`size-3 rounded-full mt-1.5 shrink-0 ${
+                differenceCents === 0 ? "bg-emerald-500" : differenceCents > 0 ? "bg-sky-500" : "bg-rose-500"
+              }`} />
               <div className="space-y-1">
                 <p className="font-bold text-sm">
-                  {differenceCents === 0 && "¡Caja clavada! El dinero coincide perfectamente ($0 diferencia)."}
+                  {differenceCents === 0 && "Caja exacta: El dinero coincide perfectamente ($0 diferencia)."}
                   {differenceCents > 0 && `Sobrante de efectivo: +${money(differenceCents)}`}
                   {differenceCents < 0 && `Faltante de efectivo: −${money(Math.abs(differenceCents))}`}
                 </p>
@@ -394,7 +392,7 @@ export function CashCloseCard({
             pendingText="Cerrando caja..."
             className="w-full sm:w-auto"
           >
-            🔒 Confirmar Cierre de Caja y Finalizar Turno
+            Confirmar Cierre de Caja y Finalizar Turno
           </SubmitButton>
         </div>
       </ActionForm>

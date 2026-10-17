@@ -116,8 +116,10 @@ export default async function DebtorsPage({
       {/* Debtors List */}
       {debtorCards.length === 0 ? (
         <div className="clay-card p-12 text-center space-y-3 rounded-3xl">
-          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-2xl">
-            📒
+          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-xl">
+            <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
           </div>
           <p className="text-[#18182E] font-bold text-base">
             {q ? "No hay deudores que coincidan con la búsqueda." : "Aún no tenés cuentas corrientes registradas."}
@@ -147,7 +149,7 @@ export default async function DebtorsPage({
             {activeDebtors.length === 0 ? (
               <div className="clay-card p-8 text-center space-y-2 rounded-3xl bg-emerald-50/40 border-emerald-200">
                 <p className="text-emerald-800 font-bold text-sm">
-                  🎉 ¡Al día! No hay clientes con deuda pendiente.
+                  ¡Al día! No hay clientes con deuda pendiente.
                 </p>
                 <p className="text-xs text-[#72729A]">
                   Todas las cuentas están saldadas en $0. Cuando fíes una compra o agregues un ítem, el cliente pasará automáticamente a esta lista activa.
@@ -170,8 +172,10 @@ export default async function DebtorsPage({
             >
               <summary className="cursor-pointer list-none flex flex-wrap items-center justify-between gap-4 select-none">
                 <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="size-12 rounded-2xl bg-[#EEF0FA] flex items-center justify-center text-2xl shadow-xs">
-                    📁
+                  <div className="size-12 rounded-2xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center shadow-xs">
+                    <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -330,7 +334,7 @@ function DebtorCard({
       <div className="pt-6 mt-4 border-t border-[#EAE9F6] space-y-6">
         {d.notes && (
           <p className="text-xs text-slate-400 bg-white/[0.02] p-3 rounded-lg border border-white/5">
-            📝 {d.notes}
+            {d.notes}
           </p>
         )}
 
@@ -363,10 +367,13 @@ function DebtorCard({
                           <input type="hidden" name="itemId" value={it.id} />
                           <button
                             type="submit"
-                            className="text-slate-500 hover:text-rose-400 p-0.5 text-xs transition leading-none"
+                            className="text-slate-500 hover:text-rose-400 p-0.5 transition leading-none"
                             title="Eliminar ítem"
                           >
-                            ✕
+                            <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18" />
+                              <line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
                           </button>
                         </ActionForm>
                       )}
