@@ -106,13 +106,14 @@ async function runSale(tx: Tx, actor: Actor, input: SaleInput) {
 
   for (const { product, quantity } of lines) {
     if (!product.trackStock) continue;
+    const intQty = Math.ceil(quantity);
     const taken = await tx.product.updateMany({
       where: {
         id: product.id,
         organizationId,
-        ...(org.allowNegativeStock ? {} : { stock: { gte: quantity } }),
+        ...(org.allowNegativeStock ? {} : { stock: { gte: intQty } }),
       },
-      data: { stock: { decrement: quantity } },
+      data: { stock: { decrement: intQty } },
     });
     if (taken.count === 0) throw new PosError(`Not enough stock of "${product.name}".`);
   }

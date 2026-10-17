@@ -207,8 +207,20 @@ export function PosTerminal({
     discountCents ?? 0,
   );
 
+  function parseQuantity(raw: string, isWeight = false): number {
+    const cleaned = raw.replace(",", ".").trim();
+    const val = parseFloat(cleaned);
+    if (isNaN(val) || val <= 0) return 1;
+    if (isWeight && val >= 20) {
+      // Entered in grams (e.g. 250, 500, 1000) -> convert to kg
+      return Math.round((val / 1000) * 10000) / 10000;
+    }
+    return Math.round(val * 1000) / 1000;
+  }
+
   function addProductToCart(product: TillProduct, qty = 1) {
     if (qty <= 0) return;
+    const isWeight = product.saleType === "WEIGHT";
     const current = activeTab.lines.find((l) => l.id === product.id)?.quantity ?? 0;
     if (product.trackStock && !allowNegativeStock && current + qty > product.stock) {
       toast.error(`Solo quedan ${product.stock} de "${product.name}" en stock.`);
@@ -218,22 +230,28 @@ export function PosTerminal({
     const updatedLines = [...activeTab.lines];
     const existingIndex = updatedLines.findIndex((l) => l.id === product.id);
     if (existingIndex >= 0) {
+      const newTotalQty = Math.round((updatedLines[existingIndex].quantity + qty) * 1000) / 1000;
       updatedLines[existingIndex] = {
         ...updatedLines[existingIndex],
-        quantity: updatedLines[existingIndex].quantity + qty,
+        quantity: newTotalQty,
       };
     } else {
       updatedLines.push({ ...product, quantity: qty });
     }
 
     updateActiveTab({ lines: updatedLines, saleKey: newKey() });
-    toast.success(`+${qty} ${product.name}`);
+    const formattedQty = isWeight
+      ? (qty < 1 ? `${Math.round(qty * 1000)}g` : `${qty}kg`)
+      : `${qty}u.`;
+    toast.success(`+${formattedQty} ${product.name}`);
   }
 
-  function adjustLineQty(lineId: string, amount: number) {
+  function adjustLineQty(lineId: string, direction: number) {
     const line = activeTab.lines.find((l) => l.id === lineId);
     if (!line) return;
-    const newQty = line.quantity + amount;
+    const isWeight = line.saleType === "WEIGHT";
+    const step = isWeight ? (line.quantity > 1 ? 0.5 : 0.1) : 1;
+    const newQty = Math.round((line.quantity + direction * step) * 1000) / 1000;
     if (newQty <= 0) {
       removeLine(lineId);
       return;
@@ -244,6 +262,21 @@ export function PosTerminal({
     }
     const updatedLines = activeTab.lines.map((l) =>
       l.id === lineId ? { ...l, quantity: newQty } : l,
+    );
+    updateActiveTab({ lines: updatedLines, saleKey: newKey() });
+  }
+
+  function setLineExactQty(lineId: string, rawVal: string) {
+    const line = activeTab.lines.find((l) => l.id === lineId);
+    if (!line) return;
+    const isWeight = line.saleType === "WEIGHT";
+    const val = parseQuantity(rawVal, isWeight);
+    if (line.trackStock && !allowNegativeStock && val > line.stock) {
+      toast.error(`Stock máximo alcanzado (${line.stock}).`);
+      return;
+    }
+    const updatedLines = activeTab.lines.map((l) =>
+      l.id === lineId ? { ...l, quantity: val } : l,
     );
     updateActiveTab({ lines: updatedLines, saleKey: newKey() });
   }
@@ -264,27 +297,25 @@ export function PosTerminal({
 
   // Quick product submission from search box or button
   async function handleAddClick() {
-    const qty = Math.max(1, parseInt(quantityInput, 10) || 1);
-    if (selectedProductId) {
-      const prod = results.find((r) => r.id === selectedProductId);
-      if (prod) {
-        addProductToCart(prod, qty);
-        setQuantityInput("1");
-        return;
-      }
+    let targetProd = selectedProductId ? results.find((r) => r.id === selectedProductId) : null;
+    const term = query.trim();
+
+    if (!targetProd && term) {
+      const exact = await findProductByCode(term).catch(() => null);
+      targetProd = exact ?? (results.length > 0 ? results[0] : null);
     }
 
-    const term = query.trim();
-    if (!term) return;
-    const exact = await findProductByCode(term).catch(() => null);
-    const pick = exact ?? (results.length > 0 ? results[0] : null);
-    if (pick) {
-      addProductToCart(pick, qty);
-      setQuery("");
-      setQuantityInput("1");
-    } else {
+    if (!targetProd) {
       toast.error("Producto no encontrado.");
+      return;
     }
+
+    const isWeight = targetProd.saleType === "WEIGHT";
+    const qty = parseQuantity(quantityInput, isWeight);
+    addProductToCart(targetProd, qty);
+    setQuery("");
+    setQuantityInput("1");
+    if (searchBox.current) searchBox.current.focus();
   }
 
   // Direct 1-click checkout with active payment method
@@ -497,7 +528,13 @@ export function PosTerminal({
         <div className="flex items-center gap-2">
           {tabs.slice(0, 3).map((tab) => {
             const isActive = tab.id === activeTabId;
-            const count = tab.lines.reduce((acc, l) => acc + l.quantity, 0);
+            const rawCount = tab.lines.reduce((acc, l) => acc + l.quantity, 0);
+            const countDisplay =
+              rawCount > 0
+                ? Number.isInteger(rawCount)
+                  ? rawCount
+                  : rawCount.toFixed(2).replace(/\.?0+$/, "")
+                : null;
 
             return (
               <button
@@ -511,9 +548,9 @@ export function PosTerminal({
                 }`}
               >
                 <span>{tab.label}</span>
-                {count > 0 && (
+                {countDisplay !== null && (
                   <span className="bg-rose-500/40 text-rose-200 text-xs px-2 py-0.5 rounded-full font-mono font-bold">
-                    {count}
+                    {countDisplay}
                   </span>
                 )}
               </button>
@@ -554,13 +591,19 @@ export function PosTerminal({
               <div className="flex gap-2">
                 <div className="w-1/3">
                   <input
-                    type="number"
-                    min="1"
+                    type="text"
+                    inputMode="decimal"
                     value={quantityInput}
                     onChange={(e) => setQuantityInput(e.target.value)}
-                    className={`${ui.input} text-center font-bold`}
-                    placeholder="Cant."
-                    title="Cantidad a agregar"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleAddClick();
+                      }
+                    }}
+                    className={`${ui.input} text-center font-bold font-mono [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
+                    placeholder="Cant/g"
+                    title="Cantidad o peso a agregar con teclado (ej: 0.5, 250, 1)"
                   />
                 </div>
                 <button
@@ -583,13 +626,15 @@ export function PosTerminal({
                 results.map((p) => {
                   const isOut = p.trackStock && p.stock <= 0 && !allowNegativeStock;
                   const isSelected = selectedProductId === p.id;
+                  const isWeight = p.saleType === "WEIGHT";
 
                   return (
                     <div
                       key={p.id}
                       onClick={() => {
                         setSelectedProductId(p.id);
-                        addProductToCart(p, Math.max(1, parseInt(quantityInput, 10) || 1));
+                        const qty = parseQuantity(quantityInput, isWeight);
+                        addProductToCart(p, qty);
                       }}
                       className={`flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer transition select-none ${
                         isSelected
@@ -598,11 +643,25 @@ export function PosTerminal({
                       } ${isOut ? "opacity-40 cursor-not-allowed" : ""}`}
                     >
                       <div className="min-w-0 pr-2">
-                        <p className="text-white font-medium truncate">{p.name}</p>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="text-white font-medium truncate">{p.name}</p>
+                          {isWeight && (
+                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded font-semibold border border-amber-500/30">
+                              ⚖️ x Kilo
+                            </span>
+                          )}
+                          {p.size && (
+                            <span className="text-[10px] px-1 bg-white/10 text-slate-300 rounded">
+                              {p.size}
+                            </span>
+                          )}
+                        </div>
                         <p className="text-slate-500 font-mono text-[10px] truncate">{p.sku}</p>
                       </div>
                       <div className="text-right whitespace-nowrap">
-                        <span className="text-rose-300 font-bold block">{money(p.priceCents)}</span>
+                        <span className="text-rose-300 font-bold block">
+                          {money(p.priceCents)}{isWeight ? " /kg" : ""}
+                        </span>
                         {p.trackStock && (
                           <span className={`text-[10px] ${isOut ? "text-rose-500 font-bold" : "text-slate-500"}`}>
                             {isOut ? "Sin stock" : `${p.stock} disp.`}
@@ -650,56 +709,89 @@ export function PosTerminal({
               </div>
             ) : (
               <ul className="divide-y divide-white/5 max-h-[500px] overflow-y-auto pr-1 space-y-1">
-                {activeTab.lines.map((item, idx) => (
-                  <li key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-white font-medium truncate">
-                        <span className="text-slate-500 font-mono mr-1">{idx + 1}.</span>
-                        {item.name}
-                      </p>
-                      <p className="text-slate-400 text-[11px] mt-0.5">
-                        {money(item.priceCents)} c/u
-                      </p>
-                    </div>
+                {activeTab.lines.map((item, idx) => {
+                  const isWeight = item.saleType === "WEIGHT";
+                  const lineTotal = Math.round(item.priceCents * item.quantity);
 
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center bg-white/5 border border-white/10 rounded-lg p-0.5">
-                        <button
-                          type="button"
-                          onClick={() => adjustLineQty(item.id, -1)}
-                          className="size-6 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-white/10 font-bold transition"
-                          title="Restar 1"
-                        >
-                          −
-                        </button>
-                        <span className="w-8 text-center font-bold text-white font-mono">
-                          {item.quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => adjustLineQty(item.id, 1)}
-                          className="size-6 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-white/10 font-bold transition"
-                          title="Sumar 1"
-                        >
-                          +
-                        </button>
+                  return (
+                    <li key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="text-white font-medium truncate">
+                            <span className="text-slate-500 font-mono mr-1">{idx + 1}.</span>
+                            {item.name}
+                          </p>
+                          {isWeight && (
+                            <span className="text-[9px] px-1 bg-amber-500/20 text-amber-300 rounded font-semibold border border-amber-500/30">
+                              ⚖️ x Kilo
+                            </span>
+                          )}
+                          {item.size && (
+                            <span className="text-[9px] px-1 bg-white/10 text-slate-300 rounded">
+                              {item.size}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-slate-400 text-[11px] mt-0.5">
+                          {money(item.priceCents)} {isWeight ? "/kg" : "c/u"}
+                        </p>
                       </div>
 
-                      <span className="text-white font-bold w-16 text-right">
-                        {money(item.priceCents * item.quantity)}
-                      </span>
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex items-center bg-white/5 border border-white/10 rounded-lg p-0.5">
+                          <button
+                            type="button"
+                            onClick={() => adjustLineQty(item.id, -1)}
+                            className="size-6 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-white/10 font-bold transition"
+                            title={isWeight ? "Restar peso" : "Restar 1"}
+                          >
+                            −
+                          </button>
+                          <div className="flex items-center px-1">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              defaultValue={item.quantity}
+                              key={`${item.id}-${item.quantity}`}
+                              onBlur={(e) => setLineExactQty(item.id, e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.currentTarget.blur();
+                                }
+                              }}
+                              className="w-12 text-center font-bold text-white font-mono bg-transparent border-0 focus:bg-white/15 focus:ring-1 focus:ring-rose-400 rounded py-0.5 text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              title="Modificá peso o cantidad con teclado y presioná Enter"
+                            />
+                            <span className="text-[10px] text-slate-400 font-mono ml-0.5">
+                              {isWeight ? "kg" : "u"}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => adjustLineQty(item.id, 1)}
+                            className="size-6 flex items-center justify-center text-slate-400 hover:text-white rounded hover:bg-white/10 font-bold transition"
+                            title={isWeight ? "Sumar peso" : "Sumar 1"}
+                          >
+                            +
+                          </button>
+                        </div>
 
-                      <button
-                        type="button"
-                        onClick={() => removeLine(item.id)}
-                        className="text-slate-600 hover:text-rose-400 p-1 transition leading-none text-sm"
-                        title="Eliminar del pedido"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                        <span className="text-white font-bold w-16 text-right font-mono">
+                          {money(lineTotal)}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={() => removeLine(item.id)}
+                          className="text-slate-600 hover:text-rose-400 p-1 transition leading-none text-sm"
+                          title="Eliminar del pedido"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

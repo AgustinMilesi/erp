@@ -42,7 +42,7 @@ export function spreadDiscount(lineTotals: number[], discountCents: number) {
 }
 
 export function computeTotals(lines: PricedLine[], discountCents = 0): Totals {
-  const lineTotals = lines.map((line) => line.unitPriceCents * line.quantity);
+  const lineTotals = lines.map((line) => Math.round(line.unitPriceCents * line.quantity));
   const subtotalCents = lineTotals.reduce((sum, value) => sum + value, 0);
   const discount = Math.min(Math.max(discountCents, 0), subtotalCents);
   const shares = spreadDiscount(lineTotals, discount);

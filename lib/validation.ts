@@ -180,6 +180,9 @@ export const productSchema = z.object({
   sku: optionalText(40),
   barcode: optionalText(60),
   categoryId: z.string().max(40).optional(),
+  saleType: z.enum(["UNIT", "WEIGHT"]).default("UNIT"),
+  size: optionalText(40),
+  brand: optionalText(60),
   price: money("The price"),
   cost: money("The cost", { allowBlank: true }),
   taxRateBp: wholeNumber("The tax rate", 0, 10_000).refine(
@@ -257,7 +260,7 @@ export const saleInputSchema = z.object({
     .array(
       z.object({
         productId: z.string().min(1).max(40),
-        quantity: z.number().int().min(1).max(100_000),
+        quantity: z.number().positive("Quantity has to be greater than zero").max(100_000),
       }),
     )
     .min(1, "The cart is empty")

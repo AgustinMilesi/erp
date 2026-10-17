@@ -122,6 +122,11 @@ async function importJsonData(orgId: string, buffer: Buffer): Promise<ActionResu
         select: { id: true },
       });
 
+      const isWeight = item.type === "Kilo" || item.saleType === "WEIGHT" || String(item.type).toLowerCase() === "kilo";
+      const saleType = isWeight ? "WEIGHT" : "UNIT";
+      const brand = item.brand ? String(item.brand).trim() : null;
+      const size = item.size ? String(item.size).trim() : null;
+
       if (existing) {
         await db.product.update({
           where: { id: existing.id },
@@ -129,6 +134,9 @@ async function importJsonData(orgId: string, buffer: Buffer): Promise<ActionResu
             name: fullName,
             priceCents,
             categoryId,
+            saleType,
+            brand,
+            size,
             ...(barcode ? { barcode } : {}),
             active: true,
           },
@@ -140,6 +148,9 @@ async function importJsonData(orgId: string, buffer: Buffer): Promise<ActionResu
             name: fullName,
             sku,
             barcode,
+            saleType,
+            brand,
+            size,
             priceCents,
             costCents: BigInt(0),
             taxRateBp: 2100,

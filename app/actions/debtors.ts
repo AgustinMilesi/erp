@@ -32,10 +32,11 @@ export async function addDebtorItem(formData: FormData): Promise<ActionResult> {
   const { organization } = await requireSession();
   const debtorId = String(formData.get("debtorId") || "");
   const productName = String(formData.get("productName") || "").trim();
-  const quantity = Math.max(1, parseInt(String(formData.get("quantity") || "1"), 10));
+  const rawQty = parseFloat(String(formData.get("quantity") || "1").replace(",", "."));
+  const quantity = isNaN(rawQty) || rawQty <= 0 ? 1 : rawQty;
   const priceRaw = parseFloat(String(formData.get("price") || "0").replace(/[^0-9.]/g, ""));
   const unitPriceCents = BigInt(Math.max(0, Math.round(priceRaw * 100)));
-  const totalCents = unitPriceCents * BigInt(quantity);
+  const totalCents = BigInt(Math.round(Number(unitPriceCents) * quantity));
 
   if (!debtorId || !productName) return fail("Datos incompletos.");
 

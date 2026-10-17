@@ -49,7 +49,7 @@ export default async function ProductsPage({
       orderBy: { name: "asc" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      select: { id: true, name: true, sku: true, priceCents: true, stock: true, minStock: true, trackStock: true, active: true },
+      select: { id: true, name: true, sku: true, priceCents: true, stock: true, minStock: true, trackStock: true, active: true, saleType: true, size: true, brand: true },
     }),
     db.product.count({ where }),
     db.category.findMany({
@@ -104,14 +104,27 @@ export default async function ProductsPage({
               <li key={p.id}>
                 <Link href={`/app/products/${p.id}`} className="flex items-center justify-between gap-4 py-4 hover:text-rose-400 transition">
                   <span className="min-w-0">
-                    <span className={`block truncate ${p.active ? "text-white" : "text-slate-500"}`}>
-                      {p.name}
-                      {!p.active && <span className="ml-2 text-xs uppercase tracking-wider text-slate-500 font-mono">{t.hidden}</span>}
+                    <span className={`flex items-center flex-wrap gap-1.5 truncate ${p.active ? "text-white font-medium" : "text-slate-500"}`}>
+                      <span>{p.name}</span>
+                      {p.saleType === "WEIGHT" && (
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          ⚖️ x Kilo
+                        </span>
+                      )}
+                      {p.size && (
+                        <span className="text-xs text-slate-400 font-normal">
+                          ({p.size})
+                        </span>
+                      )}
+                      {!p.active && <span className="ml-1 text-xs uppercase tracking-wider text-slate-500 font-mono">{t.hidden}</span>}
                     </span>
-                    <span className="block text-sm text-slate-500 truncate">{p.sku}</span>
+                    <span className="block text-sm text-slate-500 truncate">{p.sku}{p.brand ? ` · ${p.brand}` : ""}</span>
                   </span>
                   <span className="text-right whitespace-nowrap">
-                    <span className="block text-white">{formatMoney(p.priceCents, organization.currency, organization.showDecimals)}</span>
+                    <span className="block text-white font-semibold">
+                      {formatMoney(p.priceCents, organization.currency, organization.showDecimals)}
+                      {p.saleType === "WEIGHT" ? <span className="text-xs text-slate-400 font-normal"> /kg</span> : ""}
+                    </span>
                     <span className={`block text-sm ${isLow ? "text-rose-400" : "text-slate-500"}`}>
                       {p.trackStock ? `${p.stock} ${t.inStock}` : t.noStockTracking}
                     </span>

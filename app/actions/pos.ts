@@ -116,6 +116,9 @@ export async function saveProduct(formData: FormData): Promise<ActionResult> {
       name: input.name,
       barcode: blankToNull(input.barcode),
       categoryId,
+      saleType: input.saleType ?? "UNIT",
+      size: blankToNull(input.size),
+      brand: blankToNull(input.brand),
       priceCents: BigInt(input.price),
       costCents: BigInt(input.cost),
       taxRateBp: input.taxRateBp,
@@ -334,9 +337,22 @@ export type TillProduct = {
   priceCents: number;
   stock: number;
   trackStock: boolean;
+  saleType: string;
+  size: string | null;
+  brand: string | null;
 };
 
-const tillSelect = { id: true, name: true, sku: true, priceCents: true, stock: true, trackStock: true } as const;
+const tillSelect = {
+  id: true,
+  name: true,
+  sku: true,
+  priceCents: true,
+  stock: true,
+  trackStock: true,
+  saleType: true,
+  size: true,
+  brand: true,
+} as const;
 
 const toTillProduct = (p: {
   id: string;
@@ -345,6 +361,9 @@ const toTillProduct = (p: {
   priceCents: bigint;
   stock: number;
   trackStock: boolean;
+  saleType: string;
+  size: string | null;
+  brand: string | null;
 }): TillProduct => ({ ...p, priceCents: Number(p.priceCents) });
 
 async function lookupAllowed(userId: string) {

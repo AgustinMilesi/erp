@@ -11,6 +11,9 @@ type ProductValues = {
   sku: string;
   barcode: string | null;
   categoryId: string | null;
+  saleType?: string;
+  size?: string | null;
+  brand?: string | null;
   priceCents: bigint;
   costCents: bigint;
   taxRateBp: number;
@@ -39,15 +42,45 @@ export function ProductForm({
   const editing = Boolean(product);
 
   return (
-    <ActionForm action={saveProduct} keepValues={editing} className="space-y-2">
+    <ActionForm action={saveProduct} keepValues={editing} className="space-y-4">
       {product && <input type="hidden" name="id" value={product.id} />}
 
-      <div>
-        <label className={ui.label} htmlFor="p-name">{t.productNameLabel}</label>
-        <input id="p-name" name="name" required minLength={2} maxLength={120} defaultValue={product?.name} className={ui.input} />
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="sm:col-span-2">
+          <label className={ui.label} htmlFor="p-name">{t.productNameLabel} *</label>
+          <input id="p-name" name="name" required minLength={2} maxLength={120} defaultValue={product?.name} className={ui.input} placeholder="Ej: Manzana Roja, Coca Cola, Queso Cremoso..." />
+        </div>
+
+        <div>
+          <label className={ui.label} htmlFor="p-sale-type">Tipo de Venta (Unidad o Peso)</label>
+          <select id="p-sale-type" name="saleType" defaultValue={product?.saleType ?? "UNIT"} className={ui.input}>
+            <option value="UNIT">📦 Por Unidad (u.)</option>
+            <option value="WEIGHT">⚖️ Por Kilo / Peso (Gramaje)</option>
+          </select>
+        </div>
+
+        <div>
+          <label className={ui.label} htmlFor="p-size">Gramaje / Tamaño</label>
+          <input id="p-size" name="size" maxLength={40} placeholder="Ej: 1000g, 1kg, 250g, 1.5L" defaultValue={product?.size ?? ""} className={ui.input} />
+        </div>
+
+        <div>
+          <label className={ui.label} htmlFor="p-brand">Marca</label>
+          <input id="p-brand" name="brand" maxLength={60} placeholder="Ej: La Serenísima, Coca-Cola..." defaultValue={product?.brand ?? ""} className={ui.input} />
+        </div>
+
+        <div>
+          <label className={ui.label} htmlFor="p-category">{t.categoryLabel}</label>
+          <select id="p-category" name="categoryId" defaultValue={product?.categoryId ?? ""} className={ui.input}>
+            <option value="">{t.noCategoryOption}</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>{category.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-x-6">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className={ui.label} htmlFor="p-sku">{t.skuLabel} {editing ? "" : t.skuOptional}</label>
           <input id="p-sku" name="sku" maxLength={40} defaultValue={product?.sku} className={ui.input} />
@@ -60,8 +93,9 @@ export function ProductForm({
 
       <div className="grid sm:grid-cols-2 gap-x-6">
         <div>
-          <label className={ui.label} htmlFor="p-price">{t.priceLabel}</label>
+          <label className={ui.label} htmlFor="p-price">{t.priceLabel} *</label>
           <input id="p-price" name="price" required inputMode="decimal" placeholder="0,00" defaultValue={product ? centsToInput(product.priceCents) : ""} className={ui.input} />
+          <p className="text-[11px] text-slate-400 mt-1">Si vendés por Kilo, ingresá el precio por 1 Kilo (1.000 gr).</p>
         </div>
         <div>
           <label className={ui.label} htmlFor="p-cost">{t.costLabel}</label>
@@ -75,15 +109,6 @@ export function ProductForm({
           <select id="p-tax" name="taxRateBp" defaultValue={String(product?.taxRateBp ?? 2100)} className={ui.input}>
             {TAX_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className={ui.label} htmlFor="p-category">{t.categoryLabel}</label>
-          <select id="p-category" name="categoryId" defaultValue={product?.categoryId ?? ""} className={ui.input}>
-            <option value="">{t.noCategoryOption}</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>{category.name}</option>
             ))}
           </select>
         </div>

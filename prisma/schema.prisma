@@ -271,6 +271,9 @@ model Product {
   minStock       Int      @default(0)
   trackStock     Boolean  @default(true)
   active         Boolean  @default(true)
+  saleType       String   @default("UNIT")
+  size           String?
+  brand          String?
   // The id this product has in another system
   externalId     String?
   createdAt      DateTime @default(now())
@@ -397,7 +400,7 @@ model SaleItem {
   productId      String?
   sku            String
   name           String
-  quantity       Int
+  quantity       Float
   unitPriceCents BigInt
   taxRateBp      Int
   totalCents     BigInt
@@ -467,7 +470,7 @@ model DebtorItem {
   debtorId       String
   productId      String?
   productName    String
-  quantity       Int      @default(1)
+  quantity       Float    @default(1)
   unitPriceCents BigInt
   totalCents     BigInt
   addedAt        DateTime @default(now())
