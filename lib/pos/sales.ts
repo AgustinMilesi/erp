@@ -156,6 +156,24 @@ async function runSale(tx: Tx, actor: Actor, input: SaleInput) {
     select: { id: true, number: true },
   });
 
+  if (input.debtorId) {
+    const debtor = await tx.debtor.findFirst({
+      where: { id: input.debtorId, organizationId },
+    });
+    if (debtor) {
+      await tx.debtorItem.createMany({
+        data: lines.map(({ product, quantity }, i) => ({
+          debtorId: debtor.id,
+          productId: product.id,
+          productName: product.name,
+          quantity,
+          unitPriceCents: product.priceCents,
+          totalCents: BigInt(totals.lineTotals[i]),
+        })),
+      });
+    }
+  }
+
   const tracked = lines.filter(({ product }) => product.trackStock);
   if (tracked.length > 0) {
     await tx.stockMovement.createMany({
