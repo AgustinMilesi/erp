@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePreferences, THEMES } from "@/components/PreferencesProvider";
 import { LOCALES } from "@/lib/i18n";
 
@@ -8,14 +8,25 @@ export function PreferencesControls() {
   const { theme, setTheme, mode, setMode, locale, setLocale, t } = usePreferences();
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [open]);
+
   return (
     <div className="relative">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#72729A] hover:text-[#5E48E8] transition-all py-1.5 px-3 rounded-xl bg-white border border-[#EAE9F6] shadow-xs hover:shadow-sm select-none cursor-pointer"
+        className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#72729A] hover:text-[#5E48E8] transition-all py-1.5 px-3 rounded-xl bg-white border border-[#EAE9F6] shadow-xs hover:shadow-sm select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E48E8]"
         title="Personalización y preferencias"
         aria-label="Abrir panel de preferencias"
+        aria-expanded={open}
+        aria-haspopup="true"
       >
         {/* Minimalist mode icon: Sun / Moon */}
         {mode === "dark" ? (
@@ -62,7 +73,7 @@ export function PreferencesControls() {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           {/* Opens DOWNWARDS below the header button */}
-          <div className="absolute right-0 top-full mt-2 w-64 p-4 rounded-3xl bg-white/95 border border-[#EAE9F6] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.18)] z-50 space-y-4 animate-smooth-in">
+          <div role="dialog" aria-label="Panel de preferencias" className="absolute right-0 top-full mt-2 w-64 p-4 rounded-3xl bg-white/95 border border-[#EAE9F6] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.18)] z-50 space-y-4 animate-smooth-in">
             {/* Mode selection: Claro / Oscuro */}
             <div>
               <p className="text-[10px] uppercase tracking-wider text-[#72729A] font-bold mb-2">

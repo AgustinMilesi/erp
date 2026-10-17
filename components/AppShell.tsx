@@ -66,6 +66,16 @@ export function AppShell({
     return () => cancelAnimationFrame(handle);
   }, []);
 
+  // Close mobile drawer on Escape key
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [mobileOpen]);
+
   function toggleDesktopSidebar() {
     setDesktopOpen((prev) => {
       const next = !prev;
@@ -156,9 +166,10 @@ export function AppShell({
                 toggleDesktopSidebar();
               }
             }}
-            className="p-2.5 rounded-2xl text-[#5E48E8] hover:bg-[#F3F2FD] transition-all duration-200 border border-[#EAE9F6] shadow-xs flex items-center justify-center active:scale-95"
+            className="p-2.5 rounded-2xl text-[#5E48E8] hover:bg-[#F3F2FD] transition-all duration-200 border border-[#EAE9F6] shadow-xs flex items-center justify-center active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E48E8]"
             title="Alternar menú / Más espacio"
             aria-label="Abrir o cerrar menú"
+            aria-expanded={mobileOpen}
           >
             <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -221,7 +232,7 @@ export function AppShell({
               onClick={() => setMobileOpen(false)}
             />
             {/* Panel lateral deslizante */}
-            <div className="relative w-72 max-w-[85vw] bg-white border-r border-[#EAE9F6] p-5 flex flex-col z-10 shadow-2xl h-[100dvh]">
+            <div role="dialog" aria-modal="true" aria-label="Menú de navegación" className="relative w-72 max-w-[85vw] bg-white border-r border-[#EAE9F6] p-5 flex flex-col z-10 shadow-2xl h-[100dvh]">
               {sidebarContent}
             </div>
           </div>

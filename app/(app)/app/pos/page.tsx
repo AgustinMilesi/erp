@@ -24,9 +24,8 @@ export default async function IntegratedPosPage() {
     }),
   ]);
 
-  const open =
-    existingOpen ??
-    (await db.cashSession.create({
+  if (!existingOpen) {
+    await db.cashSession.create({
       data: {
         organizationId: organization.id,
         openedById: user.id,
@@ -34,8 +33,8 @@ export default async function IntegratedPosPage() {
         openingCents: BigInt(0),
         note: "Turno iniciado automáticamente desde el Punto de Venta",
       },
-      select: { id: true },
-    }));
+    });
+  }
 
   return (
     <PosTerminal
