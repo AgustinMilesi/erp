@@ -101,21 +101,21 @@ export default async function ExpensesPage({
       </div>
 
       {/* KPI Stats */}
-      <div className="grid sm:grid-cols-3 gap-4">
-        <div className={`${ui.card} p-5`}>
-          <p className={ui.label}>Gastos de este mes</p>
-          <p className="text-3xl font-light text-rose-400 tracking-tight">{money(monthTotal)}</p>
-          <p className="text-xs text-slate-500 mt-1">Egresos acumulados del mes en curso</p>
+      <div className="grid sm:grid-cols-3 gap-5">
+        <div className="clay-card p-6 rounded-3xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">Gastos de este mes</p>
+          <p className="text-3xl font-extrabold text-rose-600 tracking-tight mt-1">{money(monthTotal)}</p>
+          <p className="text-xs text-[#72729A] mt-1">Egresos acumulados del mes en curso</p>
         </div>
-        <div className={`${ui.card} p-5`}>
-          <p className={ui.label}>Gastos de hoy</p>
-          <p className="text-3xl font-light text-white tracking-tight">{money(todayTotal)}</p>
-          <p className="text-xs text-slate-500 mt-1">Registrados durante el día</p>
+        <div className="clay-card p-6 rounded-3xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">Gastos de hoy</p>
+          <p className="text-3xl font-extrabold text-[#18182E] tracking-tight mt-1">{money(todayTotal)}</p>
+          <p className="text-xs text-[#72729A] mt-1">Registrados durante el día</p>
         </div>
-        <div className={`${ui.card} p-5`}>
-          <p className={ui.label}>Total comprobantes</p>
-          <p className="text-3xl font-light text-white tracking-tight">{totalCount}</p>
-          <p className="text-xs text-slate-500 mt-1">Gastos y facturas archivadas</p>
+        <div className="clay-card p-6 rounded-3xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">Total comprobantes</p>
+          <p className="text-3xl font-extrabold text-[#18182E] tracking-tight mt-1">{totalCount}</p>
+          <p className="text-xs text-[#72729A] mt-1">Gastos y facturas archivadas</p>
         </div>
       </div>
 
@@ -153,17 +153,17 @@ export default async function ExpensesPage({
       </form>
 
       {/* Quick Limit Pills Selector */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-white/10 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-[#EAE9F6] pb-3">
         <div className="flex items-center gap-2">
-          <span className="uppercase tracking-[0.15em] text-slate-400 font-medium">Ver por página:</span>
+          <span className="uppercase tracking-[0.15em] text-[#72729A] font-bold">Ver por página:</span>
           {ALLOWED_LIMITS.map((opt) => (
             <Link
               key={opt}
               href={href(1, opt)}
-              className={`px-3 py-1 rounded-full font-mono text-xs font-bold transition select-none ${
+              className={`px-3.5 py-1.5 rounded-full font-mono text-xs font-bold transition select-none cursor-pointer ${
                 limit === opt
-                  ? "bg-rose-400 text-slate-950 shadow-md shadow-rose-400/20"
-                  : "bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/10"
+                  ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white shadow-xs"
+                  : "bg-white text-[#72729A] hover:text-[#18182E] hover:bg-[#F8F9FE] border border-[#EAE9F6] shadow-xs"
               }`}
             >
               {opt}
@@ -171,26 +171,29 @@ export default async function ExpensesPage({
           ))}
         </div>
 
-        <div className="text-slate-400 font-mono text-xs">
-          Página <span className="text-white font-bold">{page}</span> de <span className="text-white font-bold">{totalPages}</span>
+        <div className="text-[#72729A] font-mono text-xs">
+          Página <span className="text-[#18182E] font-bold">{page}</span> de <span className="text-[#18182E] font-bold">{totalPages}</span>
         </div>
       </div>
 
       {/* Expenses Table */}
       {expenses.length === 0 ? (
-        <div className={`${ui.card} p-8 text-center space-y-2 border-white/10`}>
-          <p className="text-white font-medium">
+        <div className="clay-card p-12 text-center space-y-3 rounded-3xl">
+          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-2xl">
+            🧾
+          </div>
+          <p className="text-[#18182E] font-bold text-base">
             {q || categoryFilter ? "No hay gastos que coincidan con el filtro." : "Aún no tenés gastos o facturas registradas."}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#72729A]">
             Podés registrar un comprobante con el formulario inferior o importar tus gastos desde Configuración.
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="clay-card p-6 sm:p-7 rounded-3xl space-y-4">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-white/10 text-slate-400 text-xs uppercase tracking-wider">
+              <thead className="border-b border-[#EAE9F6] text-[#72729A] text-xs uppercase tracking-wider font-bold">
                 <tr>
                   <th className="py-3 px-4">Fecha</th>
                   <th className="py-3 px-4">Descripción / Proveedor</th>
@@ -199,21 +202,21 @@ export default async function ExpensesPage({
                   {manage && <th className="py-3 px-4 text-right">Acción</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-[#EAE9F6]">
                 {expenses.map((e) => (
-                  <tr key={e.id} className="hover:bg-white/[0.02] transition">
-                    <td className="py-3.5 px-4 text-slate-400 text-xs whitespace-nowrap">
+                  <tr key={e.id} className="hover:bg-[#F8F9FE] transition">
+                    <td className="py-3.5 px-4 text-[#72729A] text-xs whitespace-nowrap">
                       {formatDate(e.date)}
                     </td>
-                    <td className="py-3.5 px-4 text-white font-medium">
+                    <td className="py-3.5 px-4 text-[#18182E] font-bold">
                       {e.description}
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300">
+                      <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#EEF0FA] text-[#5E48E8] border border-[#EAE9F6]">
                         {e.category}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-right font-semibold text-rose-400 whitespace-nowrap font-mono">
+                    <td className="py-3.5 px-4 text-right font-black text-rose-600 whitespace-nowrap font-mono text-base">
                       {money(e.amountCents)}
                     </td>
                     {manage && (
@@ -232,20 +235,20 @@ export default async function ExpensesPage({
 
           {/* Pagination Controls */}
           {totalCount > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10 text-xs">
-              <div className="text-slate-400">
-                Mostrando <span className="text-white font-mono font-bold">{skip + 1}</span> a{" "}
-                <span className="text-white font-mono font-bold">{Math.min(skip + limit, totalCount)}</span> de{" "}
-                <span className="text-white font-mono font-bold">{totalCount}</span> facturas
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#EAE9F6] text-xs">
+              <div className="text-[#72729A]">
+                Mostrando <span className="text-[#18182E] font-mono font-bold">{skip + 1}</span> a{" "}
+                <span className="text-[#18182E] font-mono font-bold">{Math.min(skip + limit, totalCount)}</span> de{" "}
+                <span className="text-[#18182E] font-mono font-bold">{totalCount}</span> facturas
               </div>
 
               <div className="flex items-center gap-2">
                 {page > 1 ? (
-                  <Link href={href(page - 1)} className={ui.ghost}>
+                  <Link href={href(page - 1)} className="px-4 py-2 rounded-full text-xs font-bold text-[#18182E] bg-white border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs transition">
                     ← Anterior
                   </Link>
                 ) : (
-                  <span className={`${ui.ghost} opacity-30 cursor-not-allowed select-none`}>
+                  <span className="px-4 py-2 rounded-full text-xs font-bold text-[#72729A] bg-white/50 border border-[#EAE9F6] opacity-40 cursor-not-allowed select-none">
                     ← Anterior
                   </span>
                 )}
@@ -263,17 +266,17 @@ export default async function ExpensesPage({
                     }, [])
                     .map((item, idx) =>
                       typeof item === "string" ? (
-                        <span key={`dots-${idx}`} className="px-1 text-slate-500 font-mono">
+                        <span key={`dots-${idx}`} className="px-1 text-[#72729A] font-mono font-bold">
                           ...
                         </span>
                       ) : (
                         <Link
                           key={item}
                           href={href(item)}
-                          className={`size-8 rounded-full flex items-center justify-center font-mono text-xs font-bold transition select-none ${
+                          className={`size-8 rounded-full flex items-center justify-center font-mono text-xs font-bold transition select-none cursor-pointer ${
                             item === page
-                              ? "bg-rose-400 text-slate-950 shadow-md shadow-rose-400/20"
-                              : "bg-white/[0.04] text-slate-300 hover:bg-white/10 hover:text-white border border-white/10"
+                              ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white shadow-xs"
+                              : "bg-white text-[#72729A] hover:bg-[#F8F9FE] hover:text-[#18182E] border border-[#EAE9F6]"
                           }`}
                         >
                           {item}
@@ -283,11 +286,11 @@ export default async function ExpensesPage({
                 </div>
 
                 {page < totalPages ? (
-                  <Link href={href(page + 1)} className={ui.ghost}>
+                  <Link href={href(page + 1)} className="px-4 py-2 rounded-full text-xs font-bold text-[#18182E] bg-white border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs transition">
                     Siguiente →
                   </Link>
                 ) : (
-                  <span className={`${ui.ghost} opacity-30 cursor-not-allowed select-none`}>
+                  <span className="px-4 py-2 rounded-full text-xs font-bold text-[#72729A] bg-white/50 border border-[#EAE9F6] opacity-40 cursor-not-allowed select-none">
                     Siguiente →
                   </span>
                 )}
@@ -299,10 +302,10 @@ export default async function ExpensesPage({
 
       {/* Record Expense Form */}
       {manage && (
-        <details className={`${ui.card} p-6 border-white/10`}>
-          <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300 hover:text-white transition flex items-center justify-between">
+        <details className="clay-card p-6 sm:p-7 rounded-3xl">
+          <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] font-bold text-[#18182E] hover:text-[#5E48E8] transition flex items-center justify-between">
             <span>Registrar Nuevo Gasto o Factura</span>
-            <span className="text-rose-400 font-mono text-xs">+ Abrir formulario</span>
+            <span className="text-[#5E48E8] font-bold text-xs">+ Abrir formulario</span>
           </summary>
           <div className="pt-6">
             <ActionForm action={saveExpense} className="space-y-4">

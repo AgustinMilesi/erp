@@ -136,9 +136,9 @@ export function AppShell({
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#EEF0FA] text-[#18182E]">
       {/* 1. Header Superior Unificado con Botón Hamburguesa */}
-      <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-2.5 bg-slate-950/90 backdrop-blur-md border-b border-white/10 shrink-0 h-14">
+      <header className="sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 py-2.5 bg-white/85 backdrop-blur-md border-b border-[#EAE9F6] shrink-0 h-16 shadow-[0_4px_20px_rgba(94,72,232,0.04)]">
         <div className="flex items-center gap-3">
           {/* Botón Hamburguesa (funciona en móvil y escritorio para dar más espacio) */}
           <button
@@ -150,7 +150,7 @@ export function AppShell({
                 toggleDesktopSidebar();
               }
             }}
-            className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition border border-white/10 flex items-center justify-center active:scale-95 shadow-sm"
+            className="p-2.5 rounded-2xl text-[#5E48E8] hover:bg-[#F3F2FD] transition-all duration-200 border border-[#EAE9F6] shadow-xs flex items-center justify-center active:scale-95"
             title="Alternar menú / Más espacio"
             aria-label="Abrir o cerrar menú"
           >
@@ -158,25 +158,27 @@ export function AppShell({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth="2"
+                strokeWidth="2.2"
                 d="M4 6h16M4 12h16M4 18h16"
               />
             </svg>
           </button>
 
-          <div className="flex items-center gap-2">
-            <span className="text-rose-400 font-black text-lg">⚡</span>
-            <span className="text-white font-bold text-sm sm:text-base tracking-tight truncate max-w-[200px] sm:max-w-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="size-9 rounded-2xl bg-gradient-to-br from-[#6852F6] to-[#5538EA] text-white flex items-center justify-center shadow-[0_4px_12px_rgba(85,56,234,0.35)] text-base font-bold shrink-0">
+              ⚡
+            </span>
+            <span className="text-[#18182E] font-black text-base sm:text-lg tracking-tight truncate max-w-[200px] sm:max-w-xs">
               {organizationName}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <PreferencesControls />
           <Link
             href="/app/settings"
-            className="p-2 border border-white/15 hover:border-rose-400 hover:text-rose-400 text-slate-300 rounded-full transition-colors flex items-center justify-center shrink-0"
+            className="p-2.5 border border-[#EAE9F6] hover:border-[#5E48E8] hover:text-[#5E48E8] text-[#72729A] bg-white rounded-2xl transition-all duration-200 flex items-center justify-center shrink-0 shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-95"
             title={settingsLabel}
             aria-label={settingsLabel}
           >
@@ -197,7 +199,7 @@ export function AppShell({
       <div className="flex-1 flex items-start">
         {/* Sidebar de Escritorio (Collapsible & Pinned to Viewport, does NOT stretch with page) */}
         {desktopOpen && (
-          <aside className="hidden md:flex w-64 flex-col shrink-0 border-r border-white/10 p-4 sm:p-5 bg-slate-950/40 sticky top-14 h-[calc(100dvh-3.5rem)] self-start overflow-hidden">
+          <aside className="hidden md:flex w-64 flex-col shrink-0 border-r border-[#EAE9F6] p-5 bg-white/80 backdrop-blur-md sticky top-16 h-[calc(100dvh-4rem)] self-start overflow-hidden shadow-[4px_0_24px_rgba(94,72,232,0.02)]">
             {sidebarContent}
           </aside>
         )}
@@ -207,18 +209,18 @@ export function AppShell({
           <div className="md:hidden fixed inset-0 z-50 flex">
             {/* Backdrop oscuro */}
             <div
-              className="fixed inset-0 bg-black/75 backdrop-blur-xs transition-opacity"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
               onClick={() => setMobileOpen(false)}
             />
             {/* Panel lateral deslizante */}
-            <div className="relative w-72 max-w-[85vw] bg-slate-950 border-r border-white/10 p-5 flex flex-col z-10 shadow-2xl h-[100dvh]">
+            <div className="relative w-72 max-w-[85vw] bg-white border-r border-[#EAE9F6] p-5 flex flex-col z-10 shadow-2xl h-[100dvh]">
               {sidebarContent}
             </div>
           </div>
         )}
 
         {/* Contenido Principal (ocupa todo el espacio si se colapsa el sidebar) */}
-        <main className="flex-1 min-w-0 p-4 md:p-6 w-full max-w-[1600px] mx-auto">
+        <main className="flex-1 min-w-0 p-4 md:p-8 w-full max-w-[1600px] mx-auto animate-smooth-in">
           {children}
         </main>
       </div>

@@ -88,10 +88,10 @@ export default async function SalesPage({
             <Link
               key={filter.value}
               href={href(1, filter.value)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider transition select-none ${
+              className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 select-none border cursor-pointer ${
                 active
-                  ? "bg-rose-500/20 text-rose-300 border border-rose-400/50 shadow-sm"
-                  : "bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.08] border border-white/10"
+                  ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white border-transparent shadow-[0_8px_20px_rgba(85,56,234,0.32)] -translate-y-0.5"
+                  : "bg-white text-[#72729A] hover:text-[#18182E] hover:bg-[#F8F9FE] border-[#EAE9F6] shadow-xs"
               }`}
             >
               {filter.label}
@@ -101,44 +101,52 @@ export default async function SalesPage({
       </div>
 
       {sales.length === 0 ? (
-        <div className={`${ui.card} p-8 text-center space-y-2 border-white/10`}>
-          <p className="text-white font-medium">{t.noSalesEmpty}</p>
-          <p className="text-xs text-slate-400">
-            <Link href="/app/pos" className="text-rose-400 hover:underline">
+        <div className="clay-card p-12 text-center space-y-3 rounded-3xl">
+          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-2xl">
+            🧾
+          </div>
+          <p className="text-[#18182E] font-bold text-base">{t.noSalesEmpty}</p>
+          <p className="text-xs text-[#72729A]">
+            <Link href="/app/pos" className="text-[#5E48E8] font-bold hover:underline">
               {t.openPosFirst}
             </Link>
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          <ul className="divide-y divide-white/10 border-y border-white/10">
+        <div className="clay-card p-6 sm:p-7 rounded-3xl space-y-4">
+          <ul className="divide-y divide-[#EAE9F6]">
             {sales.map((sale) => (
               <li key={sale.id}>
                 <Link
                   href={`/app/sales/${sale.id}`}
-                  className="flex items-center justify-between gap-4 py-4 hover:bg-white/[0.02] px-2 rounded-xl transition"
+                  className="flex items-center justify-between gap-4 py-4 hover:bg-[#F8F9FE] px-3 rounded-2xl transition group"
                 >
-                  <span className="min-w-0">
-                    <span
-                      className={`block font-medium truncate ${
-                        sale.status === "VOIDED" ? "text-slate-500 line-through" : "text-white"
-                      }`}
-                    >
-                      {t.saleNumber}{sale.number}
-                      {sale.status === "VOIDED" && (
-                        <span className="ml-2 text-[11px] uppercase tracking-wider text-rose-400 no-underline font-mono px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20">
-                          {t.voidedBadge}
-                        </span>
-                      )}
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="size-10 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] group-hover:bg-[#5E48E8] group-hover:text-white flex items-center justify-center text-sm font-bold transition shadow-xs">
+                      🧾
+                    </div>
+                    <span className="min-w-0">
+                      <span
+                        className={`block font-bold text-sm truncate ${
+                          sale.status === "VOIDED" ? "text-[#72729A] line-through" : "text-[#18182E] group-hover:text-[#5E48E8] transition"
+                        }`}
+                      >
+                        {t.saleNumber}{sale.number}
+                        {sale.status === "VOIDED" && (
+                          <span className="ml-2 text-[10px] uppercase font-bold tracking-wider text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200">
+                            {t.voidedBadge}
+                          </span>
+                        )}
+                      </span>
+                      <span className="block text-xs text-[#72729A] truncate mt-0.5 font-medium">
+                        {formatDate(sale.createdAt)} · {sale.cashier.name}
+                        {sale.contact ? ` · ${sale.contact.name}` : ""}
+                      </span>
                     </span>
-                    <span className="block text-xs text-slate-400 truncate mt-0.5">
-                      {formatDate(sale.createdAt)} · {sale.cashier.name}
-                      {sale.contact ? ` · ${sale.contact.name}` : ""}
-                    </span>
-                  </span>
+                  </div>
                   <span
-                    className={`font-mono font-bold text-sm sm:text-base whitespace-nowrap ${
-                      sale.status === "VOIDED" ? "text-slate-500 line-through" : "text-white"
+                    className={`font-mono font-black text-base whitespace-nowrap ${
+                      sale.status === "VOIDED" ? "text-[#72729A] line-through" : "text-[#18182E]"
                     }`}
                   >
                     {formatMoney(sale.totalCents, organization.currency, organization.showDecimals)}
@@ -150,35 +158,41 @@ export default async function SalesPage({
 
           {/* Pagination Controls */}
           {total > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/10 text-xs">
-              <div className="text-slate-400">
-                Mostrando <span className="text-white font-mono font-bold">{(page - 1) * PAGE_SIZE + 1}</span> a{" "}
-                <span className="text-white font-mono font-bold">{Math.min(page * PAGE_SIZE, total)}</span> de{" "}
-                <span className="text-white font-mono font-bold">{total}</span> ventas
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-5 border-t border-[#EAE9F6] text-xs">
+              <div className="text-[#72729A]">
+                Mostrando <span className="text-[#18182E] font-mono font-bold">{(page - 1) * PAGE_SIZE + 1}</span> a{" "}
+                <span className="text-[#18182E] font-mono font-bold">{Math.min(page * PAGE_SIZE, total)}</span> de{" "}
+                <span className="text-[#18182E] font-mono font-bold">{total}</span> ventas
               </div>
 
               {pages > 1 && (
                 <div className="flex items-center gap-2">
                   {page > 1 ? (
-                    <Link href={href(page - 1)} className={ui.ghost}>
+                    <Link
+                      href={href(page - 1)}
+                      className="px-4 py-2 rounded-full text-xs font-bold text-[#18182E] bg-white border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs transition"
+                    >
                       ← Anterior
                     </Link>
                   ) : (
-                    <span className={`${ui.ghost} opacity-30 cursor-not-allowed select-none`}>
+                    <span className="px-4 py-2 rounded-full text-xs font-bold text-[#72729A] bg-white/50 border border-[#EAE9F6] opacity-40 cursor-not-allowed select-none">
                       ← Anterior
                     </span>
                   )}
 
-                  <span className="text-slate-400 font-mono text-xs px-2">
+                  <span className="text-[#72729A] font-mono text-xs px-2 font-bold">
                     {page} / {pages}
                   </span>
 
                   {page < pages ? (
-                    <Link href={href(page + 1)} className={ui.ghost}>
+                    <Link
+                      href={href(page + 1)}
+                      className="px-4 py-2 rounded-full text-xs font-bold text-[#18182E] bg-white border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs transition"
+                    >
                       Siguiente →
                     </Link>
                   ) : (
-                    <span className={`${ui.ghost} opacity-30 cursor-not-allowed select-none`}>
+                    <span className="px-4 py-2 rounded-full text-xs font-bold text-[#72729A] bg-white/50 border border-[#EAE9F6] opacity-40 cursor-not-allowed select-none">
                       Siguiente →
                     </span>
                   )}

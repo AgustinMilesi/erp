@@ -80,21 +80,21 @@ export default async function DebtorsPage({
       </div>
 
       {/* KPI Cards */}
-      <div className="grid sm:grid-cols-3 gap-4">
-        <div className={`${ui.card} p-5`}>
-          <p className={ui.label}>Deuda Total Pendiente</p>
-          <p className="text-3xl font-light text-rose-400 tracking-tight">{money(totalOrgDebt)}</p>
-          <p className="text-xs text-slate-500 mt-1">Suma acumulada de fiados</p>
+      <div className="grid sm:grid-cols-3 gap-5">
+        <div className="clay-card p-6 rounded-3xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">Deuda Total Pendiente</p>
+          <p className="text-3xl font-extrabold text-rose-600 tracking-tight mt-1">{money(totalOrgDebt)}</p>
+          <p className="text-xs text-[#72729A] mt-1">Suma acumulada de fiados</p>
         </div>
-        <div className={`${ui.card} p-5`}>
-          <p className={ui.label}>Fiados Activos</p>
-          <p className="text-3xl font-light text-white tracking-tight">{activeDebtors.length}</p>
-          <p className="text-xs text-slate-500 mt-1">Clientes con deuda pendiente</p>
+        <div className="clay-card p-6 rounded-3xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">Fiados Activos</p>
+          <p className="text-3xl font-extrabold text-[#18182E] tracking-tight mt-1">{activeDebtors.length}</p>
+          <p className="text-xs text-[#72729A] mt-1">Clientes con deuda pendiente</p>
         </div>
-        <div className={`${ui.card} p-5`}>
-          <p className={ui.label}>Clientes al Día ($0)</p>
-          <p className="text-3xl font-light text-emerald-400 tracking-tight">{zeroDebtors.length}</p>
-          <p className="text-xs text-slate-500 mt-1">En carpeta minimizable</p>
+        <div className="clay-card p-6 rounded-3xl">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">Clientes al Día ($0)</p>
+          <p className="text-3xl font-extrabold text-emerald-600 tracking-tight mt-1">{zeroDebtors.length}</p>
+          <p className="text-xs text-[#72729A] mt-1">En carpeta minimizable</p>
         </div>
       </div>
 
@@ -115,11 +115,14 @@ export default async function DebtorsPage({
 
       {/* Debtors List */}
       {debtorCards.length === 0 ? (
-        <div className={`${ui.card} p-8 text-center space-y-2 border-white/10`}>
-          <p className="text-white font-medium">
+        <div className="clay-card p-12 text-center space-y-3 rounded-3xl">
+          <div className="size-14 rounded-3xl bg-[#EEF0FA] text-[#72729A] flex items-center justify-center mx-auto text-2xl">
+            📒
+          </div>
+          <p className="text-[#18182E] font-bold text-base">
             {q ? "No hay deudores que coincidan con la búsqueda." : "Aún no tenés cuentas corrientes registradas."}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#72729A]">
             Podés registrar un nuevo cliente deudor con el formulario de abajo o importar tu backup desde Configuración.
           </p>
         </div>
@@ -127,26 +130,26 @@ export default async function DebtorsPage({
         <div className="space-y-8">
           {/* 1. SECCIÓN: FIADOS ACTIVOS (CON DEUDA PENDIENTE) */}
           <section className="space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <div className="flex items-center gap-2">
-                <span className={`size-2.5 rounded-full ${activeDebtors.length > 0 ? "bg-rose-400 animate-pulse" : "bg-emerald-400"}`} />
-                <h2 className="text-base font-bold text-white">
+            <div className="flex items-center justify-between border-b border-[#EAE9F6] pb-3">
+              <div className="flex items-center gap-2.5">
+                <span className={`size-3 rounded-full ${activeDebtors.length > 0 ? "bg-rose-500 animate-pulse" : "bg-emerald-500"}`} />
+                <h2 className="text-base font-extrabold text-[#18182E]">
                   Fiados Activos ({activeDebtors.length})
                 </h2>
               </div>
               {activeDebtors.length > 0 && (
-                <span className="text-xs text-rose-300 font-mono font-semibold">
+                <span className="text-xs text-rose-600 font-mono font-bold">
                   Deuda por cobrar: {money(totalOrgDebt)}
                 </span>
               )}
             </div>
 
             {activeDebtors.length === 0 ? (
-              <div className={`${ui.card} p-6 text-center space-y-1.5 border-white/10 bg-emerald-500/[0.02]`}>
-                <p className="text-emerald-300 font-medium text-sm">
+              <div className="clay-card p-8 text-center space-y-2 rounded-3xl bg-emerald-50/40 border-emerald-200">
+                <p className="text-emerald-800 font-bold text-sm">
                   🎉 ¡Al día! No hay clientes con deuda pendiente.
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#72729A]">
                   Todas las cuentas están saldadas en $0. Cuando fíes una compra o agregues un ítem, el cliente pasará automáticamente a esta lista activa.
                 </p>
               </div>
@@ -162,39 +165,41 @@ export default async function DebtorsPage({
           {/* 2. SECCIÓN: CARPETA MINIMIZABLE DE CLIENTES AL DÍA ($0) */}
           <section>
             <details
-              className={`${ui.card} p-5 border-white/10 group/folder`}
+              className="clay-card p-6 rounded-3xl group/folder"
               open={Boolean(q && zeroDebtors.length > 0)}
             >
               <summary className="cursor-pointer list-none flex flex-wrap items-center justify-between gap-4 select-none">
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="text-2xl">📁</span>
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="size-12 rounded-2xl bg-[#EEF0FA] flex items-center justify-center text-2xl shadow-xs">
+                    📁
+                  </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-white font-bold text-sm">
+                      <span className="text-[#18182E] font-extrabold text-base">
                         Carpeta: Clientes al Día / Sin Deuda ($0)
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
                         {zeroDebtors.length}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-[#72729A] mt-0.5">
                       Cuentas corrientes sin saldo deudor. Al sumarles una deuda o venta fiada, pasarán automáticamente a Fiados Activos.
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-slate-400 group-hover/folder:text-white transition">
+                <div className="flex items-center gap-2 text-xs text-[#72729A] font-bold group-hover/folder:text-[#5E48E8] transition">
                   <span className="group-open/folder:hidden">Abrir carpeta</span>
                   <span className="hidden group-open/folder:inline">Minimizar carpeta</span>
-                  <span className="text-slate-500 group-open/folder:rotate-180 transition-transform">
+                  <span className="text-[#72729A] group-open/folder:rotate-180 transition-transform">
                     ▼
                   </span>
                 </div>
               </summary>
 
-              <div className="pt-6 mt-4 border-t border-white/10 space-y-3">
+              <div className="pt-6 mt-4 border-t border-[#EAE9F6] space-y-3">
                 {zeroDebtors.length === 0 ? (
-                  <p className="text-xs text-slate-500 italic text-center py-4">
+                  <p className="text-xs text-[#72729A] italic text-center py-4">
                     No hay clientes en esta carpeta.
                   </p>
                 ) : (
@@ -289,15 +294,15 @@ function DebtorCard({
 }) {
   return (
     <details
-      className={`${ui.card} p-5 border-white/10 hover:border-white/20 transition group`}
+      className="clay-card p-6 rounded-3xl transition-all group"
     >
       <summary className="cursor-pointer list-none flex flex-wrap items-center justify-between gap-4 select-none">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
-            <span className="text-white font-bold text-base truncate">{d.name}</span>
-            {d.phone && <span className="text-xs text-slate-500 font-mono">{d.phone}</span>}
+            <span className="text-[#18182E] font-extrabold text-base truncate">{d.name}</span>
+            {d.phone && <span className="text-xs text-[#72729A] font-mono">{d.phone}</span>}
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-[#72729A] mt-0.5">
             {d.items.length} ítems fiados · {d.payments.length} pagos registrados
           </p>
         </div>
@@ -305,24 +310,24 @@ function DebtorCard({
         <div className="flex items-center gap-6">
           <div className="text-right">
             <span
-              className={`block font-bold text-base ${
-                d.balance > BigInt(0) ? "text-rose-400" : "text-emerald-400"
+              className={`block font-black font-mono text-base ${
+                d.balance > BigInt(0) ? "text-rose-600" : "text-emerald-600"
               }`}
             >
               {money(d.balance)}
             </span>
-            <span className="block text-[11px] text-slate-500 uppercase tracking-wider">
+            <span className="block text-[11px] text-[#72729A] uppercase tracking-wider font-bold">
               {d.balance > BigInt(0) ? "Debe pagar" : "Al día"}
             </span>
           </div>
-          <span className="text-xs text-slate-500 group-open:rotate-180 transition-transform">
+          <span className="text-xs text-[#72729A] group-open:rotate-180 transition-transform">
             ▼
           </span>
         </div>
       </summary>
 
       {/* Expanded details */}
-      <div className="pt-6 mt-4 border-t border-white/10 space-y-6">
+      <div className="pt-6 mt-4 border-t border-[#EAE9F6] space-y-6">
         {d.notes && (
           <p className="text-xs text-slate-400 bg-white/[0.02] p-3 rounded-lg border border-white/5">
             📝 {d.notes}

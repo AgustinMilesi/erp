@@ -70,24 +70,24 @@ export default async function CashPage() {
       {open && summary ? (
         <>
           {/* 1. Status Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10">
+          <div className="clay-card p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="size-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                <p className="text-white font-bold text-sm">Caja Abierta y Operativa</p>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[11px] font-mono font-semibold border border-emerald-500/20">
+              <div className="flex items-center gap-2.5">
+                <span className="size-3 rounded-full bg-emerald-500 animate-pulse" />
+                <p className="text-[#18182E] font-bold text-sm">Caja Abierta y Operativa</p>
+                <span className="px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-mono font-bold border border-emerald-200">
                   Turno en curso
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                Iniciada por <strong className="text-slate-200">{open.openedBy.name}</strong> el {formatDate(open.openedAt)}
+              <p className="text-xs text-[#72729A]">
+                Iniciada por <strong className="text-[#18182E]">{open.openedBy.name}</strong> el {formatDate(open.openedAt)}
                 {open.note ? ` · "${open.note}"` : ""}
               </p>
             </div>
 
             <Link
               href="/app/pos"
-              className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-rose-500 text-slate-950 hover:bg-rose-400 transition shadow-lg shadow-rose-500/20 flex items-center gap-2 select-none"
+              className="px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] hover:-translate-y-0.5 active:scale-95 transition shadow-[0_8px_20px_rgba(85,56,234,0.32)] flex items-center gap-2 select-none"
             >
               <span>⚡</span> Ir al Punto de Venta (POS) →
             </Link>
@@ -96,113 +96,113 @@ export default async function CashPage() {
           {/* 2. Key KPI Cards (Simplified for Small Business) */}
           <div className="grid md:grid-cols-3 gap-5">
             {/* Card 1: STAR CARD - Cash in drawer (Plata en mano) */}
-            <div className={`${ui.card} p-5 sm:p-6 border-emerald-400/30 bg-emerald-400/[0.02] flex flex-col justify-between`}>
+            <div className="clay-card p-6 flex flex-col justify-between">
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
                     💵 Efectivo en el Cajón
                   </p>
-                  <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-400/10 text-emerald-300 border border-emerald-400/20">
+                  <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                     Plata en mano
                   </span>
                 </div>
-                <p className="text-3xl sm:text-4xl font-bold font-mono text-emerald-400 tracking-tight">
+                <p className="text-3xl sm:text-4xl font-black font-mono text-emerald-600 tracking-tight mt-1">
                   {money(summary.expectedCashCents)}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#72729A]">
                   Dinero que debés tener físicamente en billetes y monedas.
                 </p>
               </div>
 
               {/* Visual Formula: Exactly explains why! */}
-              <div className="mt-5 pt-3 border-t border-white/10 space-y-1 text-xs">
-                <div className="flex justify-between text-slate-400">
+              <div className="mt-5 pt-3 border-t border-[#EAE9F6] space-y-1 text-xs">
+                <div className="flex justify-between text-[#72729A]">
                   <span>🏁 Fondo de inicio:</span>
-                  <span className="font-mono text-slate-300">{money(summary.openingCents)}</span>
+                  <span className="font-mono text-[#18182E] font-medium">{money(summary.openingCents)}</span>
                 </div>
-                <div className="flex justify-between text-emerald-400/90">
+                <div className="flex justify-between text-emerald-700">
                   <span>➕ Cobros en efectivo:</span>
-                  <span className="font-mono font-medium">+{money(summary.byMethod.CASH)}</span>
+                  <span className="font-mono font-bold">+{money(summary.byMethod.CASH)}</span>
                 </div>
                 {summary.cashInCents > 0 && (
-                  <div className="flex justify-between text-sky-400">
+                  <div className="flex justify-between text-sky-700">
                     <span>➕ Entradas extras:</span>
-                    <span className="font-mono font-medium">+{money(summary.cashInCents)}</span>
+                    <span className="font-mono font-bold">+{money(summary.cashInCents)}</span>
                   </div>
                 )}
                 {summary.cashOutCents > 0 && (
-                  <div className="flex justify-between text-rose-400">
+                  <div className="flex justify-between text-rose-600">
                     <span>➖ Retiros / Gastos:</span>
-                    <span className="font-mono font-medium">−{money(summary.cashOutCents)}</span>
+                    <span className="font-mono font-bold">−{money(summary.cashOutCents)}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-bold text-white pt-1.5 border-t border-white/5">
+                <div className="flex justify-between font-bold text-[#18182E] pt-2 border-t border-[#EAE9F6]">
                   <span>Total a tener en mano:</span>
-                  <span className="font-mono text-emerald-400">{money(summary.expectedCashCents)}</span>
+                  <span className="font-mono text-emerald-600 font-black">{money(summary.expectedCashCents)}</span>
                 </div>
               </div>
             </div>
 
             {/* Card 2: Total Sales */}
-            <div className={`${ui.card} p-5 sm:p-6 flex flex-col justify-between`}>
+            <div className="clay-card p-6 flex flex-col justify-between">
               <div className="space-y-1">
-                <p className={ui.label}>🛍️ Total Ventas del Turno</p>
-                <p className="text-3xl sm:text-4xl font-bold font-mono text-white tracking-tight">
+                <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">🛍️ Total Ventas del Turno</p>
+                <p className="text-3xl sm:text-4xl font-extrabold font-mono text-[#18182E] tracking-tight mt-1">
                   {money(summary.totalSalesCents)}
                 </p>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#72729A]">
                   {summary.salesCount} {summary.salesCount === 1 ? "ticket cobrado" : "tickets cobrados"}
                   {summary.voidedCount > 0 ? ` (${summary.voidedCount} anuladas)` : ""}
                 </p>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-white/10 text-xs text-slate-400 leading-relaxed">
+              <div className="mt-5 pt-3 border-t border-[#EAE9F6] text-xs text-[#72729A] leading-relaxed">
                 Monto facturado en este turno sumando todos los métodos de cobro (efectivo, transferencias y tarjetas).
               </div>
             </div>
 
             {/* Card 3: Payment Breakdown */}
-            <div className={`${ui.card} p-5 sm:p-6 flex flex-col justify-between space-y-4`}>
+            <div className="clay-card p-6 flex flex-col justify-between space-y-4">
               <div>
-                <p className={ui.label}>💳 ¿Cómo te pagaron?</p>
-                <p className="text-xs text-slate-400 mt-1">Desglose según el medio de pago:</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#72729A]">💳 ¿Cómo te pagaron?</p>
+                <p className="text-xs text-[#72729A] mt-1">Desglose según el medio de pago:</p>
               </div>
 
               <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.02] border border-white/5">
+                <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                   <div className="flex items-center gap-2">
                     <span>💵</span>
-                    <span className="text-slate-300 font-medium">Efectivo</span>
-                    <span className="text-[10px] text-emerald-400 font-mono">(al cajón)</span>
+                    <span className="text-[#18182E] font-bold">Efectivo</span>
+                    <span className="text-[10px] text-emerald-600 font-mono font-bold">(al cajón)</span>
                   </div>
-                  <span className="font-mono font-bold text-white">{money(summary.byMethod.CASH)}</span>
+                  <span className="font-mono font-black text-[#18182E]">{money(summary.byMethod.CASH)}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.02] border border-white/5">
+                <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                   <div className="flex items-center gap-2">
                     <span>📱</span>
-                    <span className="text-slate-300 font-medium">Transferencia / MP</span>
-                    <span className="text-[10px] text-sky-400 font-mono">(en banco)</span>
+                    <span className="text-[#18182E] font-bold">Transferencia / MP</span>
+                    <span className="text-[10px] text-sky-600 font-mono font-bold">(en banco)</span>
                   </div>
-                  <span className="font-mono font-bold text-white">{money(summary.byMethod.TRANSFER)}</span>
+                  <span className="font-mono font-black text-[#18182E]">{money(summary.byMethod.TRANSFER)}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.02] border border-white/5">
+                <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                   <div className="flex items-center gap-2">
                     <span>💳</span>
-                    <span className="text-slate-300 font-medium">Tarjetas Débito / Crédito</span>
-                    <span className="text-[10px] text-purple-400 font-mono">(en posnet)</span>
+                    <span className="text-[#18182E] font-bold">Tarjetas Débito / Crédito</span>
+                    <span className="text-[10px] text-[#5E48E8] font-mono font-bold">(en posnet)</span>
                   </div>
-                  <span className="font-mono font-bold text-white">{money(summary.byMethod.CARD)}</span>
+                  <span className="font-mono font-black text-[#18182E]">{money(summary.byMethod.CARD)}</span>
                 </div>
 
                 {summary.byMethod.OTHER > 0 && (
-                  <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.02] border border-white/5">
+                  <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                     <div className="flex items-center gap-2">
                       <span>🏷️</span>
-                      <span className="text-slate-300 font-medium">Otro</span>
+                      <span className="text-[#18182E] font-bold">Otro</span>
                     </div>
-                    <span className="font-mono font-bold text-white">{money(summary.byMethod.OTHER)}</span>
+                    <span className="font-mono font-black text-[#18182E]">{money(summary.byMethod.OTHER)}</span>
                   </div>
                 )}
               </div>
@@ -217,36 +217,36 @@ export default async function CashPage() {
             <div className="space-y-2">
               <p className={ui.label}>Movimientos registrados en este turno</p>
               {open.movements.length === 0 ? (
-                <div className={`${ui.card} p-5 text-center text-xs text-slate-400 border-dashed border-white/10`}>
+                <div className="clay-card p-6 text-center text-xs text-[#72729A] rounded-3xl">
                   No se registraron movimientos manuales de dinero en este turno. Todo el efectivo proviene directamente de las ventas.
                 </div>
               ) : (
-                <div className={`${ui.card} divide-y divide-white/5 overflow-hidden`}>
+                <div className="clay-card divide-y divide-[#EAE9F6] overflow-hidden rounded-3xl">
                   {open.movements.map((m) => (
                     <div
                       key={m.id}
-                      className="p-3.5 sm:p-4 flex items-center justify-between gap-4 hover:bg-white/[0.02] transition"
+                      className="p-4 sm:p-5 flex items-center justify-between gap-4 hover:bg-[#F8F9FE] transition"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span
                           className={`size-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                             m.type === "IN"
-                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                              : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-rose-50 text-rose-700 border border-rose-200"
                           }`}
                         >
                           {m.type === "IN" ? "+" : "−"}
                         </span>
                         <div className="min-w-0">
-                          <p className="text-white text-sm font-medium truncate">{m.reason}</p>
-                          <p className="text-xs text-slate-400">
+                          <p className="text-[#18182E] text-sm font-bold truncate">{m.reason}</p>
+                          <p className="text-xs text-[#72729A]">
                             {formatDate(m.createdAt)} · {m.user.name}
                           </p>
                         </div>
                       </div>
                       <div
-                        className={`font-mono font-bold text-sm sm:text-base whitespace-nowrap ${
-                          m.type === "IN" ? "text-emerald-400" : "text-rose-400"
+                        className={`font-mono font-black text-sm sm:text-base whitespace-nowrap ${
+                          m.type === "IN" ? "text-emerald-600" : "text-rose-600"
                         }`}
                       >
                         {m.type === "IN" ? "+" : "−"} {money(m.amountCents)}

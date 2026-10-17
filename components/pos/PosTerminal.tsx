@@ -568,7 +568,7 @@ export function PosTerminal({
   return (
     <div className="space-y-5">
       {/* 1. Barra de Pestañas de Pedidos (3 Pedidos Fijos) */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-4 overflow-x-auto gap-4">
+      <div className="flex items-center justify-between border-b border-[#EAE9F6] pb-4 overflow-x-auto gap-4">
         <div className="flex items-center gap-2.5">
           {tabs.slice(0, 3).map((tab) => {
             const isActive = tab.id === activeTabId;
@@ -579,17 +579,17 @@ export function PosTerminal({
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTabId(tab.id)}
-                className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] font-bold transition-all select-none border ${
+                className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] font-bold transition-all duration-200 select-none border ${
                   isActive
-                    ? "bg-rose-400 text-slate-950 border-rose-300 shadow-lg shadow-rose-400/25 active:scale-95"
-                    : "bg-white/[0.03] text-slate-400 hover:text-white hover:bg-white/[0.08] border-white/10"
+                    ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white border-transparent shadow-[0_10px_24px_rgba(85,56,234,0.35)] -translate-y-0.5 active:scale-95 cursor-pointer"
+                    : "bg-white text-[#72729A] hover:text-[#18182E] hover:bg-[#F8F9FE] border-[#EAE9F6] shadow-xs hover:shadow-sm cursor-pointer"
                 }`}
               >
                 <span>{tab.label}</span>
                 {countDisplay > 0 && (
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-black ${
-                      isActive ? "bg-slate-950 text-rose-300" : "bg-rose-500/20 text-rose-300"
+                      isActive ? "bg-white/25 text-white" : "bg-[#5E48E8]/10 text-[#5E48E8]"
                     }`}
                   >
                     {countDisplay}
@@ -601,7 +601,7 @@ export function PosTerminal({
         </div>
 
         {pendingSales.length > 0 && (
-          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-amber-300 font-bold px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30">
+          <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-amber-600 font-bold px-4 py-1.5 rounded-full bg-amber-50 border border-amber-200 shadow-xs">
             <span>⏸️ {pendingSales.length} en espera</span>
           </div>
         )}
@@ -611,7 +611,7 @@ export function PosTerminal({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* COLUMNA 1: Buscar & Catálogo de Productos (Span 4) */}
         <div className="lg:col-span-4 space-y-4">
-          <div className={`${ui.card} p-5 space-y-4`}>
+          <div className="clay-card p-5 space-y-4">
             <p className={ui.label}>Buscar y Agregar Producto</p>
             <div className="space-y-3">
               <input
@@ -627,7 +627,7 @@ export function PosTerminal({
                 }}
                 autoFocus
                 placeholder="Nombre, código de barra o SKU..."
-                className="w-full bg-white/[0.03] border border-white/15 focus:border-rose-400 focus:bg-white/[0.06] rounded-full px-5 py-3 text-sm text-white placeholder:text-slate-600 outline-none transition"
+                className="w-full bg-[#F8F9FE] border border-[#EAE9F6] focus:border-[#5E48E8] focus:bg-white focus:ring-2 focus:ring-[#5E48E8]/10 rounded-full px-5 py-3 text-sm text-[#18182E] placeholder:text-[#72729A] outline-none transition-all"
               />
 
               <div className="flex items-center gap-2">
@@ -643,7 +643,7 @@ export function PosTerminal({
                         handleAddClick();
                       }
                     }}
-                    className="w-full bg-white/[0.04] border border-white/15 focus:border-rose-400 focus:bg-white/[0.07] rounded-full py-2.5 px-3 text-center font-bold font-mono text-sm text-white outline-none transition placeholder:text-slate-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full bg-[#F8F9FE] border border-[#EAE9F6] focus:border-[#5E48E8] focus:bg-white rounded-full py-2.5 px-3 text-center font-bold font-mono text-sm text-[#18182E] outline-none transition placeholder:text-[#72729A] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     placeholder="Cant / gr"
                     title="Cantidad o gramos (ej: 100, 250, 500, 1000)"
                   />
@@ -651,7 +651,7 @@ export function PosTerminal({
                 <button
                   type="button"
                   onClick={handleAddClick}
-                  className="flex-1 py-2.5 px-5 bg-rose-400 hover:bg-rose-300 active:scale-95 text-slate-950 font-black rounded-full transition-all text-xs uppercase tracking-wider shadow-lg shadow-rose-400/20 flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 px-5 bg-gradient-to-r from-[#6852F6] to-[#5538EA] hover:-translate-y-0.5 active:scale-95 text-white font-bold rounded-full transition-all text-xs uppercase tracking-wider shadow-[0_8px_20px_rgba(85,56,234,0.32)] flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>+ Agregar al Pedido</span>
                 </button>
@@ -661,7 +661,7 @@ export function PosTerminal({
             {/* Listado rápido de productos encontrados */}
             <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1 pt-1">
               {results.length === 0 ? (
-                <p className="text-xs text-slate-500 italic py-6 text-center">
+                <p className="text-xs text-[#72729A] italic py-8 text-center">
                   {query ? "No se encontraron productos coincidentes." : "Escribí o escaneá para ver productos."}
                 </p>
               ) : (
@@ -678,35 +678,35 @@ export function PosTerminal({
                         const qty = isWeight && quantityInput === "1" ? 100 : parseQuantity(quantityInput, isWeight);
                         addProductToCart(p, qty);
                       }}
-                      className={`group flex items-center justify-between p-3 rounded-2xl border text-xs cursor-pointer transition-all select-none ${
+                      className={`group flex items-center justify-between p-3.5 rounded-2xl border text-xs cursor-pointer transition-all select-none ${
                         isSelected
-                          ? "border-rose-400/90 bg-rose-400/10 shadow-sm ring-1 ring-rose-400/30"
-                          : "border-white/5 hover:border-rose-400/40 bg-white/[0.015] hover:bg-white/[0.04]"
+                          ? "border-[#5E48E8] bg-[#F4F3FF] shadow-sm ring-2 ring-[#5E48E8]/20"
+                          : "border-[#EAE9F6] hover:border-[#5E48E8]/40 bg-white hover:bg-[#F8F9FE] shadow-xs hover:shadow-sm hover:-translate-y-0.5"
                       } ${isOut ? "opacity-40 cursor-not-allowed" : "active:scale-[0.99]"}`}
                     >
                       <div className="min-w-0 pr-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <p className="text-white font-medium group-hover:text-rose-200 transition truncate">
+                          <p className="text-[#18182E] font-bold group-hover:text-[#5E48E8] transition truncate">
                             {p.name}
                           </p>
                           {isWeight && (
-                            <span className="text-[10px] px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded-full font-bold border border-rose-500/30">
+                            <span className="text-[10px] px-2 py-0.5 bg-[#5E48E8]/10 text-[#5E48E8] rounded-full font-bold border border-[#5E48E8]/20">
                               ⚖️ x Kilo
                             </span>
                           )}
                           {p.size && (
-                            <span className="text-[10px] px-2 py-0.5 bg-white/10 text-slate-300 rounded-full font-mono">
+                            <span className="text-[10px] px-2 py-0.5 bg-[#EEF0FA] text-[#72729A] rounded-full font-mono">
                               {p.size}
                             </span>
                           )}
                         </div>
                       </div>
                       <div className="text-right whitespace-nowrap">
-                        <span className="text-rose-400 font-black font-mono block text-sm">
-                          {money(p.priceCents)}{isWeight ? <span className="text-[10px] font-normal text-slate-400">/kg</span> : ""}
+                        <span className="text-[#5E48E8] font-extrabold font-mono block text-sm">
+                          {money(p.priceCents)}{isWeight ? <span className="text-[10px] font-normal text-[#72729A]">/kg</span> : ""}
                         </span>
                         {p.trackStock && (
-                          <span className={`text-[10px] font-mono ${isOut ? "text-rose-400 font-bold" : "text-slate-500"}`}>
+                          <span className={`text-[10px] font-mono ${isOut ? "text-rose-500 font-bold" : "text-[#72729A]"}`}>
                             {isOut ? "Sin stock" : `${p.stock} disp.`}
                           </span>
                         )}
@@ -721,12 +721,12 @@ export function PosTerminal({
 
         {/* COLUMNA 2: Pedido Actual (Lista de Ítems) (Span 4) */}
         <div className="lg:col-span-4 space-y-4">
-          <div className={`${ui.card} p-5 space-y-4`}>
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="clay-card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#EAE9F6] pb-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.15em] font-bold text-slate-300 flex items-center gap-2">
+                <p className="text-xs uppercase tracking-[0.15em] font-bold text-[#18182E] flex items-center gap-2">
                   <span>{activeTab.label}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 font-mono font-bold">
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#5E48E8]/10 text-[#5E48E8] font-mono font-bold">
                     {activeTab.lines.length} {activeTab.lines.length === 1 ? "ítem" : "ítems"}
                   </span>
                 </p>
@@ -736,7 +736,7 @@ export function PosTerminal({
                 <button
                   type="button"
                   onClick={clearActiveTab}
-                  className="text-xs uppercase tracking-wider text-slate-500 hover:text-rose-400 transition font-semibold"
+                  className="text-xs uppercase tracking-wider text-[#72729A] hover:text-rose-500 transition font-semibold cursor-pointer"
                 >
                   Vaciar
                 </button>
@@ -745,16 +745,16 @@ export function PosTerminal({
 
             {activeTab.lines.length === 0 ? (
               <div className="text-center py-20 space-y-3">
-                <div className="size-12 rounded-full bg-white/[0.03] border border-white/10 flex items-center justify-center mx-auto text-xl text-slate-500">
+                <div className="size-14 rounded-3xl bg-[#EEF0FA] flex items-center justify-center mx-auto text-2xl text-[#72729A] shadow-inner-xs">
                   🛒
                 </div>
-                <p className="text-slate-400 text-xs uppercase tracking-wider font-semibold">Pedido vacío</p>
-                <p className="text-[11px] text-slate-600">
-                  Agregá productos de la izquierda o escaneá un código
+                <p className="text-[#18182E] text-xs uppercase tracking-wider font-bold">Pedido vacío</p>
+                <p className="text-xs text-[#72729A]">
+                  Agregá productos del catálogo o escaneá un código
                 </p>
               </div>
             ) : (
-              <ul className="divide-y divide-white/5 max-h-[460px] overflow-y-auto pr-1">
+              <ul className="divide-y divide-[#EAE9F6] max-h-[460px] overflow-y-auto pr-1">
                 {activeTab.lines.map((item, idx) => {
                   const isWeight = item.saleType === "WEIGHT";
                   const lineTotal = Math.round(
@@ -767,32 +767,32 @@ export function PosTerminal({
                     <li key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <p className="text-white font-medium truncate">
-                            <span className="text-slate-500 font-mono mr-1">{idx + 1}.</span>
+                          <p className="text-[#18182E] font-bold truncate">
+                            <span className="text-[#72729A] font-mono mr-1">{idx + 1}.</span>
                             {item.name}
                           </p>
                           {isWeight && (
-                            <span className="text-[9px] px-1.5 py-0.5 bg-rose-500/15 text-rose-300 rounded-full font-bold border border-rose-500/30">
+                            <span className="text-[9px] px-1.5 py-0.5 bg-[#5E48E8]/10 text-[#5E48E8] rounded-full font-bold border border-[#5E48E8]/20">
                               ⚖️ x Kilo
                             </span>
                           )}
                           {item.size && (
-                            <span className="text-[9px] px-1.5 py-0.5 bg-white/10 text-slate-300 rounded-full font-mono">
+                            <span className="text-[9px] px-1.5 py-0.5 bg-[#EEF0FA] text-[#72729A] rounded-full font-mono">
                               {item.size}
                             </span>
                           )}
                         </div>
-                        <p className="text-slate-400 text-[11px] mt-0.5 font-mono">
+                        <p className="text-[#72729A] text-[11px] mt-0.5 font-mono">
                           {money(item.priceCents)} {isWeight ? "/kg" : "c/u"}
                         </p>
                       </div>
 
                       <div className="flex items-center gap-2.5">
-                        <div className="flex items-center bg-white/[0.04] border border-white/10 rounded-full p-0.5">
+                        <div className="flex items-center bg-[#F8F9FE] border border-[#EAE9F6] rounded-full p-0.5">
                           <button
                             type="button"
                             onClick={() => adjustLineQty(item.id, -1)}
-                            className="size-7 flex items-center justify-center text-slate-400 hover:text-rose-300 hover:bg-rose-400/20 rounded-full font-bold transition active:scale-90"
+                            className="size-7 flex items-center justify-center text-[#72729A] hover:text-[#5E48E8] hover:bg-white rounded-full font-bold transition active:scale-90 cursor-pointer"
                             title={isWeight ? "Restar 100gr" : "Restar 1"}
                           >
                             −
@@ -809,31 +809,31 @@ export function PosTerminal({
                                   e.currentTarget.blur();
                                 }
                               }}
-                              className="w-14 text-center font-bold text-white font-mono bg-transparent border-0 focus:bg-white/10 focus:ring-1 focus:ring-rose-400 rounded-full py-0.5 text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              className="w-14 text-center font-extrabold text-[#18182E] font-mono bg-transparent border-0 focus:bg-white focus:ring-1 focus:ring-[#5E48E8] rounded-full py-0.5 text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               title="Escribí los gramos con el teclado (ej: 100, 250, 500, 1000) y pulsá Enter"
                             />
-                            <span className="text-[10px] text-slate-400 font-mono ml-0.5">
+                            <span className="text-[10px] text-[#72729A] font-mono ml-0.5">
                               {isWeight ? "gr" : "u"}
                             </span>
                           </div>
                           <button
                             type="button"
                             onClick={() => adjustLineQty(item.id, 1)}
-                            className="size-7 flex items-center justify-center text-slate-400 hover:text-rose-300 hover:bg-rose-400/20 rounded-full font-bold transition active:scale-90"
+                            className="size-7 flex items-center justify-center text-[#72729A] hover:text-[#5E48E8] hover:bg-white rounded-full font-bold transition active:scale-90 cursor-pointer"
                             title={isWeight ? "Sumar 100gr" : "Sumar 1"}
                           >
                             +
                           </button>
                         </div>
 
-                        <span className="text-white font-black w-16 text-right font-mono text-sm">
+                        <span className="text-[#18182E] font-black w-16 text-right font-mono text-sm">
                           {money(lineTotal)}
                         </span>
 
                         <button
                           type="button"
                           onClick={() => removeLine(item.id)}
-                          className="size-6 flex items-center justify-center text-slate-500 hover:text-rose-400 hover:bg-rose-400/10 rounded-full transition text-xs"
+                          className="size-6 flex items-center justify-center text-[#72729A] hover:text-rose-500 hover:bg-rose-50 rounded-full transition text-xs cursor-pointer"
                           title="Eliminar del pedido"
                         >
                           ✕
@@ -849,15 +849,12 @@ export function PosTerminal({
 
         {/* COLUMNA 3: Totales, Métodos de Pago y Acciones (Span 4) */}
         <div className="lg:col-span-4 space-y-4">
-          <div className={`${ui.card} p-6 space-y-6 border-white/10 shadow-2xl relative overflow-hidden backdrop-blur-md`}>
-            {/* Ambient subtle glow */}
-            <div className="absolute -top-16 -right-16 size-48 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
-
+          <div className="clay-card p-6 space-y-6 relative overflow-hidden">
             {/* Total Grande */}
-            <div className="flex items-baseline justify-between border-b border-white/10 pb-4">
+            <div className="flex items-baseline justify-between border-b border-[#EAE9F6] pb-4">
               <div>
-                <p className={ui.label}>Total a Cobrar</p>
-                <p className="text-4xl sm:text-5xl font-black text-white tracking-tight font-mono mt-1">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#72729A]">Total a Cobrar</p>
+                <p className="text-4xl sm:text-5xl font-black text-[#18182E] tracking-tight font-mono mt-1">
                   {money(totals.totalCents)}
                 </p>
               </div>
@@ -868,7 +865,7 @@ export function PosTerminal({
                     value={activeTab.discount}
                     onChange={(e) => updateActiveTab({ discount: e.target.value })}
                     placeholder="Desc. $"
-                    className="w-full bg-transparent border-0 border-b border-white/15 focus:border-rose-400 text-xs text-white text-right outline-none py-1 placeholder:text-slate-600 font-mono transition"
+                    className="w-full bg-[#F8F9FE] border border-[#EAE9F6] rounded-xl focus:border-[#5E48E8] text-xs text-[#18182E] text-right outline-none py-1.5 px-2 placeholder:text-[#72729A] font-mono transition"
                     title="Descuento en pesos"
                   />
                 </div>
@@ -877,7 +874,7 @@ export function PosTerminal({
 
             {/* Selector de Método de Pago Directo */}
             <div className="space-y-2.5">
-              <p className={ui.label}>Método de Pago</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#72729A]">Método de Pago</p>
 
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -891,10 +888,10 @@ export function PosTerminal({
                       key={m.id}
                       type="button"
                       onClick={() => updateActiveTab({ paymentMethod: m.id })}
-                      className={`py-3.5 px-2 rounded-2xl text-xs uppercase tracking-wider font-bold transition-all flex flex-col items-center justify-center gap-1.5 select-none border active:scale-95 ${
+                      className={`py-3 px-2 rounded-2xl text-xs uppercase tracking-wider font-bold transition-all flex flex-col items-center justify-center gap-1.5 select-none border cursor-pointer ${
                         isSelected
-                          ? "bg-rose-400 text-slate-950 border-rose-300 shadow-lg shadow-rose-400/25"
-                          : "bg-white/[0.03] text-slate-300 border-white/10 hover:border-white/25 hover:bg-white/[0.07]"
+                          ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white border-transparent shadow-[0_8px_20px_rgba(85,56,234,0.3)] -translate-y-0.5"
+                          : "bg-white text-[#72729A] border-[#EAE9F6] hover:text-[#18182E] hover:bg-[#F8F9FE] shadow-xs"
                       }`}
                     >
                       <span className="text-lg">{m.icon}</span>
@@ -911,11 +908,11 @@ export function PosTerminal({
                 type="button"
                 disabled={activeTab.lines.length === 0 || busy}
                 onClick={() => handleQuickCharge()}
-                className="w-full py-4 px-6 bg-rose-400 hover:bg-rose-300 disabled:opacity-30 disabled:hover:bg-rose-400 text-slate-950 font-black text-sm uppercase tracking-[0.15em] rounded-full transition-all shadow-xl shadow-rose-400/25 active:scale-[0.98] flex items-center justify-between"
+                className="w-full py-4 px-6 bg-gradient-to-r from-[#6852F6] to-[#5538EA] hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-40 disabled:hover:translate-y-0 text-white font-extrabold text-sm uppercase tracking-[0.15em] rounded-full transition-all shadow-[0_12px_28px_rgba(85,56,234,0.35)] flex items-center justify-between cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <span>Cobrar</span>
-                  <span className="text-[11px] font-mono font-black px-2.5 py-0.5 rounded-full bg-slate-950/20">
+                  <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-white/20">
                     {activeTab.paymentMethod === "CASH"
                       ? "Efectivo"
                       : activeTab.paymentMethod === "TRANSFER"
@@ -940,7 +937,7 @@ export function PosTerminal({
                     setSplitDebtorAmount("");
                     setShowSplitModal(true);
                   }}
-                  className={`${ui.ghost} w-full text-center truncate py-2.5`}
+                  className="w-full py-2.5 px-3 rounded-full text-xs uppercase tracking-wider font-bold bg-white text-[#18182E] border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs hover:shadow-sm transition cursor-pointer text-center truncate disabled:opacity-40"
                 >
                   Dividir Pago
                 </button>
@@ -949,7 +946,7 @@ export function PosTerminal({
                   type="button"
                   disabled={activeTab.lines.length === 0}
                   onClick={handleMoveToPending}
-                  className="px-5 py-2.5 border border-amber-400/30 hover:border-amber-400 hover:bg-amber-400/10 disabled:opacity-40 rounded-full transition-all text-xs uppercase tracking-wider text-amber-300 font-semibold active:scale-95 w-full text-center truncate"
+                  className="w-full py-2.5 px-3 border border-amber-300 bg-amber-50 hover:bg-amber-100 disabled:opacity-40 rounded-full transition text-xs uppercase tracking-wider text-amber-800 font-bold active:scale-95 shadow-xs text-center truncate cursor-pointer"
                   title="Poner venta en espera para atender a otro cliente"
                 >
                   ⏸️ En Espera
@@ -958,17 +955,17 @@ export function PosTerminal({
             </div>
 
             {/* Sección: Enviar a Deudor (Fiado) */}
-            <div className="pt-4 border-t border-white/10 space-y-3">
-              <p className={ui.label}>A Cuenta de Deudor (Fiado)</p>
+            <div className="pt-4 border-t border-[#EAE9F6] space-y-3">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#72729A]">A Cuenta de Deudor (Fiado)</p>
 
               <select
                 value={activeTab.debtorId}
                 onChange={(e) => updateActiveTab({ debtorId: e.target.value })}
-                className="w-full bg-white/[0.03] border border-white/15 focus:border-rose-400 rounded-xl px-3.5 py-2.5 text-xs text-white outline-none transition"
+                className="w-full bg-[#F8F9FE] border border-[#EAE9F6] focus:border-[#5E48E8] rounded-2xl px-3.5 py-2.5 text-xs text-[#18182E] outline-none transition"
               >
-                <option value="" className="bg-slate-950 text-slate-400">Seleccionar cliente deudor...</option>
+                <option value="" className="text-[#72729A]">Seleccionar cliente deudor...</option>
                 {debtors.map((d) => (
-                  <option key={d.id} value={d.id} className="bg-slate-950 text-white">
+                  <option key={d.id} value={d.id} className="text-[#18182E]">
                     {d.name} {d.saldoFavorCents > 0 ? `(Favor: ${money(d.saldoFavorCents)})` : ""}
                   </option>
                 ))}
@@ -978,7 +975,7 @@ export function PosTerminal({
                 type="button"
                 disabled={!activeTab.debtorId || activeTab.lines.length === 0 || busy}
                 onClick={handleSendToDebtor}
-                className={`${ui.ghost} w-full text-center py-2.5 hover:border-amber-400 hover:text-amber-300`}
+                className="w-full py-2.5 px-3 rounded-full text-xs uppercase tracking-wider font-bold bg-white text-[#72729A] border border-[#EAE9F6] hover:border-amber-400 hover:bg-amber-50 hover:text-amber-800 shadow-xs transition cursor-pointer disabled:opacity-40"
               >
                 📒 Enviar al Fiado
               </button>
@@ -987,19 +984,19 @@ export function PosTerminal({
 
           {/* Sección Lateral: Pendientes de Pago */}
           {pendingSales.length > 0 && (
-            <div className={`${ui.card} p-5 space-y-3 border-amber-500/30 bg-amber-500/[0.02]`}>
+            <div className="clay-card p-5 space-y-3 border-amber-200 bg-amber-50/50">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <p className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
                   <span>⏸️ Pendientes de Pago ({pendingSales.length})</span>
                 </p>
               </div>
 
-              <ul className="divide-y divide-white/5 space-y-2 max-h-60 overflow-y-auto pr-1">
+              <ul className="divide-y divide-amber-200/50 space-y-2 max-h-60 overflow-y-auto pr-1">
                 {pendingSales.map((p) => (
                   <li key={p.id} className="pt-2 flex items-center justify-between gap-3 text-xs">
                     <div>
-                      <span className="text-white font-bold block">{money(p.totalCents)}</span>
-                      <span className="text-slate-400 text-[10px]">
+                      <span className="text-[#18182E] font-bold block">{money(p.totalCents)}</span>
+                      <span className="text-[#72729A] text-[10px]">
                         {p.timeStr} · {p.lines.length} {p.lines.length === 1 ? "ítem" : "ítems"}
                         {p.debtorName ? ` · ${p.debtorName}` : ""}
                       </span>
@@ -1009,14 +1006,14 @@ export function PosTerminal({
                       <button
                         type="button"
                         onClick={() => handleRestorePending(p)}
-                        className="px-3 py-1 bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 border border-amber-400/30 rounded-full text-xs font-bold transition active:scale-95"
+                        className="px-3 py-1 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-full text-xs font-bold transition active:scale-95 cursor-pointer shadow-xs"
                       >
                         Recuperar
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDiscardPending(p.id)}
-                        className="text-slate-500 hover:text-rose-400 p-1"
+                        className="text-[#72729A] hover:text-rose-500 p-1 cursor-pointer"
                         title="Descartar"
                       >
                         ✕
@@ -1045,24 +1042,24 @@ export function PosTerminal({
         const debtorMissing = splitDebtorCents > 0 && !splitDebtorId;
 
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-            <div className={`${ui.card} max-w-lg w-full p-6 space-y-5 border-rose-500/40 shadow-2xl max-h-[90vh] overflow-y-auto`}>
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <p className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18182E]/40 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="clay-card max-w-lg w-full p-6 sm:p-7 space-y-5 rounded-3xl border border-[#EAE9F6] shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-[#EAE9F6] pb-3">
+                <p className="text-base font-extrabold text-[#18182E] uppercase tracking-wider flex items-center gap-2">
                   <span>⚡</span> Dividir Pago de la Venta
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowSplitModal(false)}
-                  className="text-slate-400 hover:text-white"
+                  className="text-[#72729A] hover:text-[#18182E] text-lg font-bold cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="flex items-baseline justify-between bg-white/[0.03] p-4 rounded-2xl border border-white/10">
+              <div className="flex items-baseline justify-between bg-[#F8F9FE] p-4 rounded-2xl border border-[#EAE9F6]">
                 <span className={ui.label}>Total a Cubrir</span>
-                <span className="text-2xl font-black text-rose-400 font-mono">{money(totals.totalCents)}</span>
+                <span className="text-2xl font-black text-[#5E48E8] font-mono">{money(totals.totalCents)}</span>
               </div>
 
               <div className="space-y-4">
@@ -1106,9 +1103,9 @@ export function PosTerminal({
                 </div>
 
                 {/* 📒 Enviar a Fiado / Deudor */}
-                <div className="p-4 rounded-2xl bg-white/[0.02] border border-amber-400/30 space-y-3">
+                <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 space-y-3">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                    <label className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
                       <span>📒</span> Enviar al Fiado / Deudor
                     </label>
                     {remainderForDebtor > 0 && (
@@ -1117,7 +1114,7 @@ export function PosTerminal({
                         onClick={() =>
                           setSplitDebtorAmount(String(remainderForDebtor / 100))
                         }
-                        className="text-[11px] font-mono text-rose-300 hover:text-rose-200 underline"
+                        className="text-[11px] font-mono text-[#5E48E8] hover:text-[#4F38D8] font-bold cursor-pointer underline"
                       >
                         Mandar resto ({money(remainderForDebtor)})
                       </button>
@@ -1138,7 +1135,7 @@ export function PosTerminal({
                   </select>
 
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-sm font-bold">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#72729A] font-mono text-sm font-bold">
                       $
                     </span>
                     <input
@@ -1155,11 +1152,11 @@ export function PosTerminal({
 
               {/* Status Box */}
               {debtorMissing ? (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+                <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium">
                   ⚠️ Ingresaste un monto de fiado pero no seleccionaste ningún cliente deudor.
                 </div>
               ) : remainingCents > 0 ? (
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300 flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center justify-between">
                   <span>⚠️ Faltan <strong className="font-mono">{money(remainingCents)}</strong> para cubrir el total.</span>
                   {splitDebtorId && (
                     <button
@@ -1169,23 +1166,23 @@ export function PosTerminal({
                         const newDebtorCents = Math.round(currentDebtor * 100) + remainingCents;
                         setSplitDebtorAmount(String(newDebtorCents / 100));
                       }}
-                      className="px-2 py-1 rounded bg-amber-400/20 text-amber-200 font-bold hover:bg-amber-400/30 transition text-[11px]"
+                      className="px-2.5 py-1 rounded-full bg-amber-200 text-amber-900 font-bold hover:bg-amber-300 transition text-[11px] cursor-pointer"
                     >
                       + Sumar al fiado
                     </button>
                   )}
                 </div>
               ) : remainingCents === 0 ? (
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 flex items-center justify-between">
+                <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-medium flex items-center justify-between">
                   <span>✅ Total cubierto exactamente.</span>
                   {splitDebtorCents > 0 && (
-                    <span className="font-mono font-bold text-amber-300">
+                    <span className="font-mono font-bold text-amber-800">
                       (Fiado: {money(splitDebtorCents)})
                     </span>
                   )}
                 </div>
               ) : (
-                <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/30 text-xs text-sky-300">
+                <div className="p-3 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-800">
                   💵 Vuelto en efectivo a entregar: <strong className="font-mono">{money(-remainingCents)}</strong>
                 </div>
               )}
@@ -1194,7 +1191,7 @@ export function PosTerminal({
                 <button
                   type="button"
                   onClick={() => setShowSplitModal(false)}
-                  className={`${ui.ghost} flex-1 text-center`}
+                  className="flex-1 py-3 px-4 rounded-full text-xs uppercase tracking-wider font-bold bg-white text-[#72729A] border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs transition cursor-pointer text-center"
                 >
                   Cancelar
                 </button>
@@ -1202,7 +1199,7 @@ export function PosTerminal({
                   type="button"
                   disabled={busy || !isCovered || debtorMissing}
                   onClick={handleConfirmSplit}
-                  className={`${ui.button} flex-1 text-center disabled:opacity-40 disabled:cursor-not-allowed`}
+                  className="flex-1 py-3 px-4 rounded-full text-xs uppercase tracking-wider font-extrabold text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] shadow-[0_8px_20px_rgba(85,56,234,0.32)] hover:-translate-y-0.5 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-center"
                 >
                   Confirmar Cobro
                 </button>
@@ -1214,24 +1211,24 @@ export function PosTerminal({
 
       {/* 4. Modal de Venta Registrada con Éxito */}
       {doneSale && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className={`${ui.card} max-w-sm w-full p-6 text-center space-y-6 border-rose-500/40 shadow-2xl`}>
-            <div className="size-16 rounded-full bg-rose-500/20 text-rose-400 border border-rose-400/30 flex items-center justify-center mx-auto text-3xl font-black">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18182E]/40 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="clay-card max-w-sm w-full p-8 text-center space-y-6 rounded-3xl border border-[#EAE9F6] shadow-2xl">
+            <div className="size-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto text-3xl font-black shadow-xs">
               ✓
             </div>
 
             <div className="space-y-1">
-              <p className={ui.label}>Venta Registrada</p>
-              <p className="text-3xl font-black text-white">Ticket #{doneSale.number}</p>
-              <p className="text-2xl font-black text-rose-400 font-mono mt-1">{money(doneSale.totalCents)}</p>
-              <p className="text-xs text-slate-400">{doneSale.methodLabel}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#72729A]">Venta Registrada</p>
+              <p className="text-2xl font-black text-[#18182E]">Ticket #{doneSale.number}</p>
+              <p className="text-3xl font-black text-[#5E48E8] font-mono mt-1">{money(doneSale.totalCents)}</p>
+              <p className="text-xs text-[#72729A]">{doneSale.methodLabel}</p>
             </div>
 
             <div className="flex flex-col gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setDoneSale(null)}
-                className={`${ui.button} w-full text-sm py-3.5`}
+                className="w-full py-3.5 px-5 rounded-full text-xs uppercase tracking-wider font-bold text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] shadow-[0_8px_20px_rgba(85,56,234,0.32)] hover:-translate-y-0.5 active:scale-95 transition cursor-pointer"
               >
                 Siguiente Venta
               </button>
@@ -1240,7 +1237,7 @@ export function PosTerminal({
                 <Link
                   href={`/pos/receipt/${doneSale.id}`}
                   target="_blank"
-                  className={`${ui.ghost} w-full text-xs text-center block py-2.5`}
+                  className="w-full py-2.5 px-4 rounded-full text-xs font-bold text-[#72729A] hover:text-[#18182E] bg-white border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs transition text-center block"
                 >
                   Ver / Imprimir Recibo
                 </Link>

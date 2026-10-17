@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation";
 import type { Locale, TranslationDict } from "@/lib/i18n";
 import { translations } from "@/lib/i18n";
 
-export type Theme = "rose" | "emerald" | "amber" | "indigo" | "cyan";
+export type Theme = "violet" | "rose" | "emerald" | "amber" | "indigo" | "cyan";
 
 export const THEMES: { id: Theme; name: string; colorClass: string; hex: string }[] = [
+  { id: "violet", name: "Clay Violet", colorClass: "bg-[#5E48E8]", hex: "#5e48e8" },
+  { id: "indigo", name: "Electric Indigo", colorClass: "bg-indigo-400", hex: "#6366f1" },
   { id: "rose", name: "Rose Neon", colorClass: "bg-rose-400", hex: "#fb7185" },
-  { id: "emerald", name: "Emerald", colorClass: "bg-emerald-400", hex: "#34d399" },
-  { id: "amber", name: "Amber Gold", colorClass: "bg-amber-400", hex: "#fbbf24" },
-  { id: "indigo", name: "Electric Indigo", colorClass: "bg-indigo-400", hex: "#818cf8" },
-  { id: "cyan", name: "Cyber Cyan", colorClass: "bg-cyan-400", hex: "#22d3ee" },
+  { id: "emerald", name: "Emerald", colorClass: "bg-emerald-400", hex: "#10b981" },
+  { id: "amber", name: "Amber Gold", colorClass: "bg-amber-400", hex: "#f59e0b" },
+  { id: "cyan", name: "Cyber Cyan", colorClass: "bg-cyan-400", hex: "#06b6d4" },
 ];
 
 export type TranslationKeys = keyof (typeof translations)["es"];
@@ -35,7 +36,7 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
       const saved = localStorage.getItem("erp-theme") as Theme | null;
       if (saved && THEMES.some((t) => t.id === saved)) return saved;
     }
-    return "rose";
+    return "violet";
   });
 
   const [locale, setLocaleState] = useState<Locale>(() => {

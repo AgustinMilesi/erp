@@ -28,16 +28,16 @@ export function CashOpenCard({
   ];
 
   return (
-    <div className={`${ui.card} p-6 sm:p-8 border-rose-400/30 bg-rose-400/[0.02] space-y-6 max-w-2xl`}>
+    <div className="clay-card p-6 sm:p-8 space-y-6 max-w-2xl rounded-3xl">
       <div className="space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/20">
-          <span className="size-2 rounded-full bg-rose-400" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
+          <span className="size-2 rounded-full bg-amber-500" />
           Caja actualmente cerrada
         </div>
-        <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-[#18182E] tracking-tight">
           Comenzar Nuevo Turno de Caja
         </h2>
-        <p className="text-sm text-slate-300">
+        <p className="text-sm text-[#72729A]">
           Para habilitar las ventas en el Punto de Venta (POS), ingresá con cuánto dinero en efectivo
           arrancás (tu fondo de cambio o caja chica). Si no tenés plata previa, podés iniciar con $0.
         </p>
@@ -49,7 +49,7 @@ export function CashOpenCard({
             Fondo de cambio inicial en efectivo
           </label>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-base font-bold">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#72729A] font-mono text-base font-bold">
               $
             </span>
             <input
@@ -59,20 +59,20 @@ export function CashOpenCard({
               value={amountStr}
               onChange={(e) => setAmountStr(e.target.value)}
               placeholder="0,00"
-              className={`${ui.input} pl-9 text-lg font-mono font-bold text-white`}
+              className={`${ui.input} pl-9 text-lg font-mono font-bold text-[#18182E]`}
               autoFocus
             />
           </div>
 
           {/* Quick presets */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="text-xs text-slate-400">Montos rápidos:</span>
+            <span className="text-xs text-[#72729A] font-medium">Montos rápidos:</span>
             {quickPresets.map((preset) => (
               <button
                 key={preset.value}
                 type="button"
                 onClick={() => setAmountStr(preset.value)}
-                className="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition"
+                className="px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#F8F9FE] hover:bg-[#EEF0FA] text-[#18182E] border border-[#EAE9F6] transition shadow-xs cursor-pointer"
               >
                 {preset.label}
               </button>
@@ -126,12 +126,12 @@ export function CashMovementCard() {
   ];
 
   return (
-    <div className={`${ui.card} p-5 sm:p-6 space-y-5 border-white/10`}>
+    <div className="clay-card p-6 sm:p-7 space-y-5 rounded-3xl">
       <div className="space-y-1">
-        <h3 className="text-base font-bold text-white flex items-center gap-2">
+        <h3 className="text-base font-extrabold text-[#18182E] flex items-center gap-2">
           <span>💸</span> Registrar Entrada o Salida de Dinero
         </h3>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-[#72729A]">
           Anotá cualquier plata física que entre o salga del cajón durante el turno para que el arqueo final sea exacto.
         </p>
       </div>
@@ -151,14 +151,14 @@ export function CashMovementCard() {
                 setType("OUT");
                 setReason("");
               }}
-              className={`p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-xs sm:text-sm transition select-none border ${
+              className={`p-3 rounded-full flex items-center justify-center gap-2 font-bold text-xs sm:text-sm transition-all select-none border cursor-pointer ${
                 type === "OUT"
-                  ? "bg-rose-500/20 text-rose-300 border-rose-400/50 shadow-sm"
-                  : "bg-white/[0.03] text-slate-400 border-white/5 hover:bg-white/[0.06] hover:text-white"
+                  ? "bg-rose-50 border-rose-300 text-rose-700 shadow-xs"
+                  : "bg-white text-[#72729A] border-[#EAE9F6] hover:bg-[#F8F9FE] hover:text-[#18182E]"
               }`}
             >
               <span className="text-base">🔴</span>
-              <span className="font-bold">Sacar plata (Salida / Gasto)</span>
+              <span>Sacar plata (Salida / Gasto)</span>
             </button>
 
             <button
@@ -167,14 +167,14 @@ export function CashMovementCard() {
                 setType("IN");
                 setReason("");
               }}
-              className={`p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-xs sm:text-sm transition select-none border ${
+              className={`p-3 rounded-full flex items-center justify-center gap-2 font-bold text-xs sm:text-sm transition-all select-none border cursor-pointer ${
                 type === "IN"
-                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-sm"
-                  : "bg-white/[0.03] text-slate-400 border-white/5 hover:bg-white/[0.06] hover:text-white"
+                  ? "bg-emerald-50 border-emerald-300 text-emerald-800 shadow-xs"
+                  : "bg-white text-[#72729A] border-[#EAE9F6] hover:bg-[#F8F9FE] hover:text-[#18182E]"
               }`}
             >
               <span className="text-base">🟢</span>
-              <span className="font-bold">Meter plata (Entrada / Ingreso)</span>
+              <span>Meter plata (Entrada / Ingreso)</span>
             </button>
           </div>
 
@@ -182,14 +182,14 @@ export function CashMovementCard() {
         </div>
 
         {/* Dynamic Context Helper */}
-        <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-xs text-slate-300">
+        <div className="p-3.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6] text-xs text-[#18182E]">
           {type === "OUT" ? (
             <p>
-              💡 <span className="font-semibold text-rose-300">Salida de dinero:</span> Usalo cuando saques billetes del cajón para pagar a proveedores, gastos diarios, fletes o retiros personales.
+              💡 <span className="font-bold text-rose-600">Salida de dinero:</span> Usalo cuando saques billetes del cajón para pagar a proveedores, gastos diarios, fletes o retiros personales.
             </p>
           ) : (
             <p>
-              💡 <span className="font-semibold text-emerald-300">Entrada de dinero:</span> Usalo si trajiste billetes de cambio para tener en la caja o agregaste dinero de tu bolsillo.
+              💡 <span className="font-bold text-emerald-700">Entrada de dinero:</span> Usalo si trajiste billetes de cambio para tener en la caja o agregaste dinero de tu bolsillo.
             </p>
           )}
         </div>
@@ -200,7 +200,7 @@ export function CashMovementCard() {
               Monto a {type === "OUT" ? "retirar" : "ingresar"}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-mono font-bold text-sm">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#72729A] font-mono font-bold text-sm">
                 $
               </span>
               <input
@@ -209,7 +209,7 @@ export function CashMovementCard() {
                 required
                 inputMode="decimal"
                 placeholder="0,00"
-                className={`${ui.input} pl-8 font-mono font-bold text-white`}
+                className={`${ui.input} pl-8 font-mono font-bold text-[#18182E]`}
               />
             </div>
           </div>
@@ -238,13 +238,13 @@ export function CashMovementCard() {
 
         {/* Quick Suggestion Chips */}
         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-          <span className="text-[11px] text-slate-500">Sugerencias rápidas:</span>
+          <span className="text-[11px] text-[#72729A] font-medium">Sugerencias rápidas:</span>
           {(type === "OUT" ? outChips : inChips).map((chip) => (
             <button
               key={chip}
               type="button"
               onClick={() => setReason(chip)}
-              className="px-2 py-0.5 rounded-md text-[11px] bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/5 transition"
+              className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#F8F9FE] hover:bg-[#EEF0FA] text-[#18182E] border border-[#EAE9F6] transition shadow-xs cursor-pointer"
             >
               + {chip}
             </button>
@@ -287,28 +287,28 @@ export function CashCloseCard({
   const differenceCents = hasCounted ? countedCents - expectedCents : 0;
 
   return (
-    <div className={`${ui.card} p-5 sm:p-7 space-y-6 border-white/10 bg-white/[0.01]`}>
+    <div className="clay-card p-6 sm:p-7 space-y-6 rounded-3xl">
       <div className="space-y-1">
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/5 text-slate-300 border border-white/10">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#EEF0FA] text-[#5E48E8] border border-[#EAE9F6]">
           <span>🏁</span> Fin de turno / Arqueo final
         </div>
-        <h3 className="text-lg font-bold text-white">
+        <h3 className="text-xl font-extrabold text-[#18182E]">
           Cerrar Caja y Control de Efectivo
         </h3>
-        <p className="text-xs text-slate-300">
+        <p className="text-xs text-[#72729A]">
           Al terminar el día o cambiar de cajero, contá los billetes y monedas que tenés en el cajón y cargalo aquí para comprobar que todo coincida.
         </p>
       </div>
 
       {/* Target expected cash display */}
-      <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <span className="text-xs text-slate-400 block">Efectivo esperado según el sistema:</span>
-          <span className="text-2xl font-mono font-bold text-white tracking-tight">
+          <span className="text-xs text-[#72729A] block font-medium">Efectivo esperado según el sistema:</span>
+          <span className="text-2xl font-mono font-black text-[#18182E] tracking-tight">
             {money(expectedCents)}
           </span>
         </div>
-        <div className="text-xs text-slate-400 max-w-xs">
+        <div className="text-xs text-[#72729A] max-w-xs">
           (Fondo inicial + Ventas cobradas en efectivo + Entradas − Salidas)
         </div>
       </div>
@@ -325,7 +325,7 @@ export function CashCloseCard({
             ¿Cuánto dinero en efectivo contaste físicamente?
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-lg font-bold">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#72729A] font-mono text-lg font-bold">
               $
             </span>
             <input
@@ -336,7 +336,7 @@ export function CashCloseCard({
               value={countedStr}
               onChange={(e) => setCountedStr(e.target.value)}
               placeholder="0,00"
-              className={`${ui.input} pl-9 text-xl font-mono font-bold text-white`}
+              className={`${ui.input} pl-9 text-xl font-mono font-bold text-[#18182E]`}
             />
           </div>
         </div>
@@ -344,12 +344,12 @@ export function CashCloseCard({
         {/* Interactive Live Audit Feedback */}
         {hasCounted && (
           <div
-            className={`p-4 rounded-xl border text-sm transition-all animate-in fade-in duration-200 ${
+            className={`p-4 rounded-2xl border text-sm transition-all animate-in fade-in duration-200 ${
               differenceCents === 0
-                ? "bg-emerald-500/10 border-emerald-400/40 text-emerald-200"
+                ? "bg-emerald-50 border-emerald-300 text-emerald-800"
                 : differenceCents > 0
-                ? "bg-sky-500/10 border-sky-400/40 text-sky-200"
-                : "bg-rose-500/10 border-rose-400/40 text-rose-200"
+                ? "bg-sky-50 border-sky-300 text-sky-800"
+                : "bg-rose-50 border-rose-300 text-rose-800"
             }`}
           >
             <div className="flex items-start gap-3">
