@@ -29,5 +29,5 @@ test("rejects things that are not amounts", () => {
 test("shows cents back as an input value", () => {
   assert.equal(centsToInput(123450), "1234,50");
   assert.equal(centsToInput(5), "0,05");
-  assert.match(formatMoney(123450), /1\.234,50/);
+  assert.match(formatMoney(123450, "ARS", true), /1\.234,50/);
 });
