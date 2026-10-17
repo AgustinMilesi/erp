@@ -130,29 +130,40 @@ export function DataImporter() {
           : [];
 
         if (rawDebtors.length > 0) {
-          setProgressPct(45);
-          setProgressMsg(`Importando ${rawDebtors.length} cuentas deudoras...`);
-          await sendChunk("debtors", rawDebtors);
+          const CHUNK_DEBTORS = 10;
+          for (let i = 0; i < rawDebtors.length; i += CHUNK_DEBTORS) {
+            const slice = rawDebtors.slice(i, i + CHUNK_DEBTORS);
+            const pct = Math.round(40 + (i / rawDebtors.length) * 15);
+            setProgressPct(pct);
+            setProgressMsg(`Importando deudores: ${i + slice.length} de ${rawDebtors.length}...`);
+            await sendChunk("debtors", slice);
+          }
         }
 
         // 3. Expenses / Facturas
-        const rawExpensesObj = data?.loDeMari_allExpenses || {};
+        const rawExpensesObj = data?.loDeMari_allExpenses || data?.allExpenses || data?.expenses || {};
         const expenseList: any[] = [];
-        for (const [dateStr, expList] of Object.entries(rawExpensesObj)) {
-          if (Array.isArray(expList)) {
-            for (const exp of expList as any[]) {
-              if (exp.description && exp.amount) {
-                expenseList.push({ ...exp, date: dateStr });
+        if (Array.isArray(rawExpensesObj)) {
+          for (const exp of rawExpensesObj) {
+            if (exp.description && exp.amount) expenseList.push(exp);
+          }
+        } else if (typeof rawExpensesObj === "object") {
+          for (const [dateStr, expList] of Object.entries(rawExpensesObj)) {
+            if (Array.isArray(expList)) {
+              for (const exp of expList as any[]) {
+                if (exp.description && exp.amount) {
+                  expenseList.push({ ...exp, date: dateStr });
+                }
               }
             }
           }
         }
 
         if (expenseList.length > 0) {
-          const CHUNK = 500;
+          const CHUNK = 200;
           for (let i = 0; i < expenseList.length; i += CHUNK) {
             const slice = expenseList.slice(i, i + CHUNK);
-            const pct = Math.round(50 + (i / expenseList.length) * 20);
+            const pct = Math.round(55 + (i / expenseList.length) * 15);
             setProgressPct(pct);
             setProgressMsg(`Importando gastos y facturas: ${i + slice.length} de ${expenseList.length}...`);
             await sendChunk("expenses", slice);
@@ -162,7 +173,7 @@ export function DataImporter() {
         // 4. Sales History
         const rawSales = Array.isArray(data?.loDeMari_salesHistory) ? data.loDeMari_salesHistory : [];
         if (rawSales.length > 0) {
-          const CHUNK = 500;
+          const CHUNK = 200;
           for (let i = 0; i < rawSales.length; i += CHUNK) {
             const slice = rawSales.slice(i, i + CHUNK);
             const pct = Math.round(70 + (i / rawSales.length) * 28);

@@ -16,7 +16,8 @@ export default async function OverviewPage() {
     getServerTranslations(),
   ]);
   const orgId = organization.id;
-  const money = (cents: number | bigint) => formatMoney(cents, organization.currency);
+  const money = (cents: number | bigint) =>
+    formatMoney(cents, organization.currency, organization.showDecimals);
 
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);

@@ -3,8 +3,28 @@
 const LOCALE = "es-AR";
 const MAX_CENTS = 1_000_000_000_000_00; // one trillion, far above any real sale
 
-export function formatMoney(cents: number | bigint, currency = "ARS") {
-  return new Intl.NumberFormat(LOCALE, { style: "currency", currency }).format(Number(cents) / 100);
+export function formatMoney(
+  cents: number | bigint,
+  currency = "ARS",
+  showDecimals = false
+) {
+  const fractionDigits = showDecimals ? 2 : 0;
+  return new Intl.NumberFormat(LOCALE, {
+    style: "currency",
+    currency,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  }).format(Number(cents) / 100);
+}
+
+// marierp rounding rule: rounds up/down to clean 50/100 peso steps
+export function roundPrice(price: number): number {
+  if (price <= 0) return 0;
+  const remainder = price % 100;
+  const base = Math.floor(price / 100) * 100;
+  if (remainder === 0) return price;
+  if (remainder <= 50) return base + 50;
+  return base + 100;
 }
 
 // Turns what a person types ("1.234,50", "1234.5", "$ 80") into cents.

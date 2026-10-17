@@ -103,7 +103,7 @@ export default async function SalesPage({
                   </span>
                 </span>
                 <span className={`whitespace-nowrap ${sale.status === "VOIDED" ? "text-slate-500" : "text-white"}`}>
-                  {formatMoney(sale.totalCents, organization.currency)}
+                  {formatMoney(sale.totalCents, organization.currency, organization.showDecimals)}
                 </span>
               </Link>
             </li>

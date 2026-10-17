@@ -25,15 +25,17 @@ const newKey = () => crypto.randomUUID().replace(/-/g, "");
 
 export function PosTerminal({
   currency,
+  showDecimals = false,
   allowNegativeStock,
   canDiscount,
 }: {
   currency: string;
+  showDecimals?: boolean;
   allowNegativeStock: boolean;
   canDiscount: boolean;
 }) {
   const { t } = usePreferences();
-  const money = (cents: number) => formatMoney(cents, currency);
+  const money = (cents: number) => formatMoney(cents, currency, showDecimals);
 
   const methods: { value: PaymentMethodName; label: string }[] = [
     { value: "CASH", label: t.methodCash },

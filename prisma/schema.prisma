@@ -108,6 +108,7 @@ model Organization {
   // Point of sale settings. Sale numbers come from saleCounter, which is
   // incremented inside the sale transaction, so they never repeat or skip.
   currency           String   @default("ARS")
+  showDecimals       Boolean  @default(false)
   timezone           String   @default("America/Argentina/Buenos_Aires")
   allowNegativeStock Boolean  @default(false)
   saleCounter        Int      @default(0)

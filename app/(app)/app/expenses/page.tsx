@@ -61,7 +61,8 @@ export default async function ExpensesPage({
     }),
   ]);
 
-  const money = (cents: number | bigint) => formatMoney(cents, organization.currency);
+  const money = (cents: number | bigint) =>
+    formatMoney(cents, organization.currency, organization.showDecimals);
   const manage = canManage(role);
 
   const monthTotal = monthAgg._sum.amountCents ?? BigInt(0);

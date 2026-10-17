@@ -369,7 +369,50 @@ export async function saveModulesSettings(formData: FormData): Promise<ActionRes
   });
 
   refresh();
-  return ok("Módulos actualizados correctamente.");
+  return ok("Configuración de módulos actualizada.");
 }
+
+export async function resetOrganizationData(formData: FormData): Promise<ActionResult> {
+  const { organization, role } = await requireSession();
+  if (role !== "OWNER") return fail("Solo el propietario del negocio puede borrar los datos.");
+
+  const scope = String(formData.get("scope") || "all");
+  const orgId = organization.id;
+
+  if (scope === "all" || scope === "sales") {
+    // Delete payments, sale items, sales, and cash movements/sessions
+    await db.payment.deleteMany({ where: { sale: { organizationId: orgId } } });
+    await db.saleItem.deleteMany({ where: { sale: { organizationId: orgId } } });
+    await db.sale.deleteMany({ where: { organizationId: orgId } });
+    await db.cashMovement.deleteMany({ where: { organizationId: orgId } });
+    await db.cashSession.deleteMany({ where: { organizationId: orgId } });
+    await db.organization.update({ where: { id: orgId }, data: { saleCounter: 0 } });
+  }
+
+  if (scope === "all" || scope === "debtors") {
+    await db.debtorPayment.deleteMany({ where: { debtor: { organizationId: orgId } } });
+    await db.debtorItem.deleteMany({ where: { debtor: { organizationId: orgId } } });
+    await db.debtor.deleteMany({ where: { organizationId: orgId } });
+  }
+
+  if (scope === "all" || scope === "expenses") {
+    await db.expense.deleteMany({ where: { organizationId: orgId } });
+  }
+
+  if (scope === "all" || scope === "products") {
+    await db.stockMovement.deleteMany({ where: { organizationId: orgId } });
+    await db.product.deleteMany({ where: { organizationId: orgId } });
+    await db.category.deleteMany({ where: { organizationId: orgId } });
+  }
+
+  if (scope === "all" || scope === "contacts") {
+    await db.message.deleteMany({ where: { organizationId: orgId } });
+    await db.contact.deleteMany({ where: { organizationId: orgId } });
+  }
+
+  refresh();
+  return ok("Datos eliminados correctamente.");
+}
+
 
 

@@ -3,7 +3,14 @@ import { ActionForm } from "@/components/ActionForm";
 import { PageTitle } from "@/components/Headline";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ui } from "@/components/ui";
-import { addDebtorItem, deleteDebtor, registerDebtorPayment, saveDebtor } from "@/app/actions/debtors";
+import {
+  addDebtorItem,
+  clearDebtorDebt,
+  deleteDebtor,
+  registerDebtorPayment,
+  removeDebtorItem,
+  saveDebtor,
+} from "@/app/actions/debtors";
 import { canManage, requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
@@ -34,7 +41,8 @@ export default async function DebtorsPage({
     },
   });
 
-  const money = (cents: number | bigint) => formatMoney(cents, organization.currency);
+  const money = (cents: number | bigint) =>
+    formatMoney(cents, organization.currency, organization.showDecimals);
   const manage = canManage(role);
 
   // Compute totals
@@ -44,7 +52,9 @@ export default async function DebtorsPage({
   const debtorCards = debtors.map((d) => {
     const totalItems = d.items.reduce((acc, it) => acc + it.totalCents, BigInt(0));
     const totalPayments = d.payments.reduce((acc, p) => acc + p.amountCents, BigInt(0));
-    const balance = totalItems - totalPayments - d.saldoFavorCents;
+    // In marierp, debtor.items are the active unpaid items. Debt = items - saldoFavor.
+    const rawBalance = totalItems - d.saldoFavorCents;
+    const balance = rawBalance > BigInt(0) ? rawBalance : BigInt(0);
     if (balance > BigInt(0)) {
       totalOrgDebt += balance;
       debtorsWithBalance++;
@@ -170,18 +180,43 @@ export default async function DebtorsPage({
                       <ul className="divide-y divide-white/5 max-h-56 overflow-y-auto pr-1 text-xs">
                         {d.items.map((it) => (
                           <li key={it.id} className="py-2 flex items-center justify-between gap-2">
-                            <div>
+                            <div className="min-w-0">
                               <span className="text-slate-200 block truncate">{it.productName}</span>
                               <span className="text-slate-500 text-[10px]">
                                 {it.quantity} × {money(it.unitPriceCents)} · {formatDate(it.addedAt)}
                               </span>
                             </div>
-                            <span className="text-slate-300 font-medium whitespace-nowrap">
-                              {money(it.totalCents)}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-300 font-medium whitespace-nowrap">
+                                {money(it.totalCents)}
+                              </span>
+                              {manage && (
+                                <ActionForm action={removeDebtorItem} confirm="¿Eliminar este ítem fiado?">
+                                  <input type="hidden" name="itemId" value={it.id} />
+                                  <button
+                                    type="submit"
+                                    className="text-slate-500 hover:text-rose-400 p-0.5 text-xs transition leading-none"
+                                    title="Eliminar ítem"
+                                  >
+                                    ✕
+                                  </button>
+                                </ActionForm>
+                              )}
+                            </div>
                           </li>
                         ))}
                       </ul>
+                    )}
+
+                    {manage && d.items.length > 0 && (
+                      <div className="pt-1 flex justify-end">
+                        <ActionForm action={clearDebtorDebt} confirm={`¿Saldar y borrar todos los ítems de ${d.name}?`}>
+                          <input type="hidden" name="debtorId" value={d.id} />
+                          <button type="submit" className="text-[11px] text-rose-400/80 hover:text-rose-400 underline">
+                            Saldar cuenta completa
+                          </button>
+                        </ActionForm>
+                      </div>
                     )}
 
                     {/* Add Item form */}

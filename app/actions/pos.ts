@@ -312,10 +312,14 @@ export async function savePosSettings(formData: FormData): Promise<ActionResult>
   return run(async () => {
     await db.organization.update({
       where: { id: organization.id },
-      data: { currency: parsed.data.currency, allowNegativeStock: parsed.data.allowNegativeStock },
+      data: {
+        currency: parsed.data.currency,
+        showDecimals: parsed.data.showDecimals,
+        allowNegativeStock: parsed.data.allowNegativeStock,
+      },
     });
     refresh();
-    return ok("Point of sale settings saved.");
+    return ok("Configuración de punto de venta y moneda guardada.");
   });
 }
 

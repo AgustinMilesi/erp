@@ -16,7 +16,7 @@ export default async function PosPage() {
     }),
     db.organization.findUniqueOrThrow({
       where: { id: organization.id },
-      select: { currency: true, allowNegativeStock: true },
+      select: { currency: true, showDecimals: true, allowNegativeStock: true },
     }),
   ]);
 
@@ -27,6 +27,7 @@ export default async function PosPage() {
   return (
     <PosTerminal
       currency={org.currency}
+      showDecimals={org.showDecimals}
       allowNegativeStock={org.allowNegativeStock}
       canDiscount={canManage(role)}
     />

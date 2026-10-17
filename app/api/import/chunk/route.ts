@@ -130,6 +130,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (kind === "debtors") {
+      // 1. Fetch products to resolve names, units, and weights
+      const existingProducts = await db.product.findMany({
+        where: { organizationId: orgId },
+        select: { id: true, externalId: true, name: true, priceCents: true },
+      });
+      const prodByExtId = new Map(existingProducts.filter((p) => p.externalId).map((p) => [p.externalId!, p]));
+
       for (const d of items) {
         const name = String(d.name || "").trim();
         if (!name) continue;
@@ -147,6 +154,9 @@ export async function POST(req: NextRequest) {
             where: { id: existing.id },
             data: { name, saldoFavorCents },
           });
+          // Delete old items and payments if re-importing this debtor to avoid duplicates
+          await db.debtorItem.deleteMany({ where: { debtorId: existing.id } });
+          await db.debtorPayment.deleteMany({ where: { debtorId: existing.id } });
         } else {
           const created = await db.debtor.create({
             data: {
@@ -160,22 +170,86 @@ export async function POST(req: NextRequest) {
           debtorId = created.id;
         }
 
-        if (debtorId && Array.isArray(d.items) && d.items.length > 0) {
-          const itemRows = d.items.map((it: any) => {
-            const qty = Math.max(1, Math.round(Number(it.quantity || 1)));
-            const unitPriceCents = BigInt(Math.max(0, Math.round(Number(it.lockedPrice || 0) * 100)));
-            const totalCents = unitPriceCents * BigInt(qty);
+        // Collect items from both d.items and d.savedDebts
+        const allPendingItems: any[] = [];
+        if (Array.isArray(d.items)) {
+          allPendingItems.push(...d.items);
+        }
+        if (Array.isArray(d.savedDebts)) {
+          for (const sd of d.savedDebts) {
+            if (Array.isArray(sd.items)) {
+              allPendingItems.push(...sd.items);
+            }
+          }
+        }
+
+        if (debtorId && allPendingItems.length > 0) {
+          const itemRows = allPendingItems.map((it: any) => {
+            const rawQty = Number(it.quantity || 1);
+            let pName = String(it.name || "").trim();
+            const matchedProd = it.productId ? prodByExtId.get(it.productId) : null;
+            if (matchedProd && !pName) {
+              pName = matchedProd.name;
+            }
+
+            const isCumulative =
+              it.productId === "summary-item" ||
+              it.productId === "cumulative-debt-id" ||
+              it.productId === "CUMULATIVE_DEBT_ID";
+
+            if (isCumulative) {
+              const amountInPesos = rawQty;
+              return {
+                debtorId,
+                productId: null,
+                productName: "Fiado Acumulado",
+                quantity: 1,
+                unitPriceCents: BigInt(Math.max(0, Math.round(amountInPesos * 100))),
+                totalCents: BigInt(Math.max(0, Math.round(amountInPesos * 100))),
+                addedAt: it.addedAt ? new Date(it.addedAt) : new Date(),
+              };
+            }
+
+            // Unit or weight
+            const isWeight = it.type === "Peso" || it.type === "Kilo";
+            let unitPrice = Number(it.lockedPrice || 0);
+            if (matchedProd) {
+              const catalogPrice = Number(matchedProd.priceCents) / 100;
+              unitPrice = Math.max(unitPrice, catalogPrice);
+            }
+
+            let totalInPesos = 0;
+            let displayQty = 1;
+            let displayUnitPrice = unitPrice;
+
+            if (isWeight) {
+              // rawQty is in grams (e.g. 250 g), unitPrice is in $/kg
+              // total = (unitPrice / 1000) * rawQty
+              totalInPesos = (unitPrice / 1000) * rawQty;
+              displayQty = Math.max(1, Math.round(rawQty));
+              displayUnitPrice = unitPrice;
+              if (!pName) pName = "Producto por peso";
+              pName = `${pName} (${displayQty}g)`;
+            } else {
+              displayQty = Math.max(1, Math.round(rawQty));
+              totalInPesos = unitPrice * displayQty;
+              if (!pName) pName = "Ítem fiado";
+            }
+
+            const totalCents = BigInt(Math.max(0, Math.round(totalInPesos * 100)));
+            const unitPriceCents = BigInt(Math.max(0, Math.round(displayUnitPrice * 100)));
 
             return {
               debtorId,
-              productId: null,
-              productName: `Ítem fiado (${it.type || "Unidad"})`,
-              quantity: qty,
+              productId: matchedProd?.id || null,
+              productName: pName,
+              quantity: displayQty,
               unitPriceCents,
               totalCents,
               addedAt: it.addedAt ? new Date(it.addedAt) : new Date(),
             };
           });
+
           await db.debtorItem.createMany({ data: itemRows });
         }
 
@@ -184,7 +258,7 @@ export async function POST(req: NextRequest) {
             debtorId,
             amountCents: BigInt(Math.max(0, Math.round(Number(p.amount || 0) * 100))),
             date: p.date ? new Date(p.date) : new Date(),
-            note: `Pago de deuda (${p.type || "pago"})`,
+            note: `Pago registrado (${p.type || "pago"})`,
           }));
           await db.debtorPayment.createMany({ data: paymentRows });
         }

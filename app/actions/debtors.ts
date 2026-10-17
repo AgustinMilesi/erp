@@ -70,9 +70,11 @@ export async function registerDebtorPayment(formData: FormData): Promise<ActionR
 
   const debtor = await db.debtor.findFirst({
     where: { id: debtorId, organizationId: organization.id },
+    include: { items: { orderBy: { addedAt: "asc" } } },
   });
   if (!debtor) return fail("Cliente no encontrado.");
 
+  // Record payment in audit log
   await db.debtorPayment.create({
     data: {
       debtorId,
@@ -81,9 +83,76 @@ export async function registerDebtorPayment(formData: FormData): Promise<ActionR
     },
   });
 
+  // Pay off items FIFO (as done in MariERP)
+  let availablePayment = amountCents;
+  for (const item of debtor.items) {
+    if (availablePayment <= BigInt(0)) break;
+
+    if (availablePayment >= item.totalCents) {
+      availablePayment -= item.totalCents;
+      await db.debtorItem.delete({ where: { id: item.id } });
+    } else if (item.quantity > 1 && item.unitPriceCents > BigInt(0)) {
+      const unitsToPay = availablePayment / item.unitPriceCents;
+      if (unitsToPay > BigInt(0)) {
+        const costToDeduct = unitsToPay * item.unitPriceCents;
+        availablePayment -= costToDeduct;
+        await db.debtorItem.update({
+          where: { id: item.id },
+          data: {
+            quantity: item.quantity - Number(unitsToPay),
+            totalCents: item.totalCents - costToDeduct,
+          },
+        });
+      }
+      break;
+    } else {
+      break;
+    }
+  }
+
+  // Any surplus goes to saldoFavorCents
+  if (availablePayment > BigInt(0)) {
+    await db.debtor.update({
+      where: { id: debtorId },
+      data: { saldoFavorCents: debtor.saldoFavorCents + availablePayment },
+    });
+  }
+
   revalidatePath("/app/debtors");
-  revalidatePath(`/app/debtors/${debtorId}`);
-  return ok("Pago registrado con éxito.");
+  return ok("Pago registrado y cuenta actualizada.");
+}
+
+export async function removeDebtorItem(formData: FormData): Promise<ActionResult> {
+  const { organization } = await requireSession();
+  const itemId = String(formData.get("itemId") || "");
+
+  const item = await db.debtorItem.findFirst({
+    where: { id: itemId, debtor: { organizationId: organization.id } },
+  });
+  if (!item) return fail("Ítem no encontrado.");
+
+  await db.debtorItem.delete({ where: { id: itemId } });
+  revalidatePath("/app/debtors");
+  return ok("Ítem eliminado de la cuenta.");
+}
+
+export async function clearDebtorDebt(formData: FormData): Promise<ActionResult> {
+  const { organization } = await requireSession();
+  const debtorId = String(formData.get("debtorId") || "");
+
+  const debtor = await db.debtor.findFirst({
+    where: { id: debtorId, organizationId: organization.id },
+  });
+  if (!debtor) return fail("Cliente no encontrado.");
+
+  await db.debtorItem.deleteMany({ where: { debtorId } });
+  await db.debtor.update({
+    where: { id: debtorId },
+    data: { saldoFavorCents: BigInt(0) },
+  });
+
+  revalidatePath("/app/debtors");
+  return ok("Cuenta saldada y vaciada por completo.");
 }
 
 export async function deleteDebtor(formData: FormData): Promise<ActionResult> {

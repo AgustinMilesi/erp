@@ -9,6 +9,7 @@ import {
   cancelInvitation,
   inviteMember,
   removeMember,
+  resetOrganizationData,
   revokeApiKey,
   rotateWebhookSecret,
   saveModulesSettings,
@@ -53,6 +54,7 @@ export default async function SettingsPage() {
         webhookUrl: true,
         webhookSecret: true,
         currency: true,
+        showDecimals: true,
         allowNegativeStock: true,
         timezone: true,
         enabledModules: true,
@@ -214,22 +216,87 @@ export default async function SettingsPage() {
 
       <section className="space-y-4">
         <p className={ui.label}>{t.posSection}</p>
-        <ActionForm action={savePosSettings} keepValues className="space-y-2">
-          <div>
-            <label className={ui.label} htmlFor="currency">Currency</label>
-            <select id="currency" name="currency" defaultValue={org.currency} className={ui.input}>
-              {CURRENCIES.map((code) => (
-                <option key={code} value={code}>{code}</option>
-              ))}
-            </select>
+        <ActionForm action={savePosSettings} keepValues className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-4 items-center">
+            <div>
+              <label className={ui.label} htmlFor="currency">Moneda de Cobro (Currency)</label>
+              <select id="currency" name="currency" defaultValue={org.currency} className={ui.input}>
+                {CURRENCIES.map((code) => (
+                  <option key={code} value={code}>{code}</option>
+                ))}
+              </select>
+            </div>
+            <div className="pt-2 sm:pt-6">
+              <label className="flex items-center gap-3 text-slate-300 text-sm cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  name="showDecimals"
+                  defaultChecked={org.showDecimals}
+                  className="accent-rose-400 size-4"
+                />
+                <span>Mostrar centavos / decimales (,00)</span>
+              </label>
+              <p className="text-xs text-slate-500 mt-1">
+                En Argentina no se usa (ej: $ 2.900). En EE.UU. u otros países sí (ej: $ 2.900,00).
+              </p>
+            </div>
           </div>
-          <label className="flex items-center gap-3 pt-4 text-slate-300 text-sm">
-            <input type="checkbox" name="allowNegativeStock" defaultChecked={org.allowNegativeStock} className="accent-rose-400 size-4" />
-            {t.allowNegativeStock}
-          </label>
-          <p className="text-xs text-slate-500">{t.allowNegativeStockHelp}</p>
-          <div className="pt-6"><SubmitButton>{t.savePosBtn}</SubmitButton></div>
+
+          <div>
+            <label className="flex items-center gap-3 text-slate-300 text-sm cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="allowNegativeStock"
+                defaultChecked={org.allowNegativeStock}
+                className="accent-rose-400 size-4"
+              />
+              <span>{t.allowNegativeStock}</span>
+            </label>
+            <p className="text-xs text-slate-500 mt-1">{t.allowNegativeStockHelp}</p>
+          </div>
+
+          <div className="pt-2"><SubmitButton>{t.savePosBtn}</SubmitButton></div>
         </ActionForm>
+      </section>
+
+      {/* Zona de Peligro / Borrar Datos */}
+      <section className="space-y-4">
+        <div>
+          <p className="text-sm font-semibold text-rose-400">Zona de Peligro · Borrar Datos</p>
+          <p className="text-xs text-slate-400">
+            Podés reiniciar o vaciar datos de prueba o módulos específicos de tu negocio. Se solicitará confirmación en pantalla antes de ejecutar la acción.
+          </p>
+        </div>
+
+        <div className={`${ui.card} p-6 border-rose-500/30 bg-rose-500/[0.03] space-y-4`}>
+          <ActionForm
+            action={resetOrganizationData}
+            confirm="¿Estás completamente seguro de que querés borrar estos datos? Esta acción es definitiva y no se puede deshacer."
+            className="space-y-4"
+          >
+            <div>
+              <label className={ui.label} htmlFor="scope">¿Qué datos querés eliminar?</label>
+              <select id="scope" name="scope" defaultValue="all" className={ui.input}>
+                <option value="all">⚠️ Todo el sistema (Ventas, Caja, Fiados, Gastos, Catálogo y Contactos)</option>
+                <option value="sales">Solo Historial de Ventas y Turnos de Caja</option>
+                <option value="debtors">Solo Deudores y Cuentas Corrientes (Fiados)</option>
+                <option value="expenses">Solo Gastos y Facturas</option>
+                <option value="products">Solo Productos y Categorías de Inventario</option>
+                <option value="contacts">Solo Contactos y Clientes</option>
+              </select>
+            </div>
+
+            <p className="text-xs text-rose-300/80">
+              Al presionar el botón se abrirá una ventana emergente de confirmación (&quot;¿Estás seguro?&quot;) para evitar accidentes.
+            </p>
+
+            <div>
+              <SubmitButton variant="danger" pendingText="Borrando...">
+                Borrar Datos Seleccionados
+              </SubmitButton>
+            </div>
+          </ActionForm>
+        </div>
       </section>
 
       <section className="space-y-6">

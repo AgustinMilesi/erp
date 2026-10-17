@@ -19,7 +19,8 @@ export default async function CashPage() {
     requireSession(),
     getServerTranslations(),
   ]);
-  const money = (cents: number | bigint) => formatMoney(cents, organization.currency);
+  const money = (cents: number | bigint) =>
+    formatMoney(cents, organization.currency, organization.showDecimals);
 
   const methods = [
     { key: "CASH", label: t.methodCash },

@@ -241,6 +241,7 @@ export const voidSaleSchema = z.object({
 
 export const posSettingsSchema = z.object({
   currency: z.enum(CURRENCIES),
+  showDecimals: checkbox,
   allowNegativeStock: checkbox,
 });
 

@@ -111,7 +111,7 @@ export default async function ProductsPage({
                     <span className="block text-sm text-slate-500 truncate">{p.sku}</span>
                   </span>
                   <span className="text-right whitespace-nowrap">
-                    <span className="block text-white">{formatMoney(p.priceCents, organization.currency)}</span>
+                    <span className="block text-white">{formatMoney(p.priceCents, organization.currency, organization.showDecimals)}</span>
                     <span className={`block text-sm ${isLow ? "text-rose-400" : "text-slate-500"}`}>
                       {p.trackStock ? `${p.stock} ${t.inStock}` : t.noStockTracking}
                     </span>
