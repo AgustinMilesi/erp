@@ -22,6 +22,7 @@ export function NavLinks({ items }: { items: Item[] }) {
           <Link
             key={item.href}
             href={item.href}
+            prefetch={false}
             className={`flex items-center justify-between gap-3 px-4 py-2.5 rounded-full text-sm uppercase tracking-wider transition-colors whitespace-nowrap ${
               active ? "bg-white/10 text-white font-semibold" : "text-slate-400 hover:text-white"
             }`}
