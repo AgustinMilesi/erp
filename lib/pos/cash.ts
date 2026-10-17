@@ -83,7 +83,7 @@ export async function openSession(actor: Actor, openingCents: number, note?: str
       where: { organizationId, status: "OPEN" },
       select: { id: true },
     });
-    if (open) throw new PosError("There is already an open cash register.");
+    if (open) throw new PosError("Ya existe una caja abierta en curso.");
 
     return tx.cashSession.create({
       data: { organizationId, openedById: userId, openingCents: BigInt(openingCents), note: note?.trim() || null },
@@ -97,18 +97,18 @@ export async function closeSession(actor: Actor, sessionId: string, countedCents
 
   return db.$transaction(async (tx) => {
     const lockedId = await lockOpenSession(tx, organizationId, "exclusive");
-    if (!lockedId || lockedId !== sessionId) throw new PosError("That cash register is already closed.");
+    if (!lockedId || lockedId !== sessionId) throw new PosError("Esa caja ya ha sido cerrada.");
 
     const session = await tx.cashSession.findUniqueOrThrow({
       where: { id: sessionId },
       select: { openedById: true },
     });
     if (session.openedById !== userId && !canManage(actor.role)) {
-      throw new PosError("Only the person who opened the register, or an admin, can close it.");
+      throw new PosError("Solo la persona que abrió la caja o un administrador pueden cerrarla.");
     }
 
     const summary = await sessionSummary(tx, organizationId, sessionId);
-    if (!summary) throw new PosError("We couldn't find that cash register.");
+    if (!summary) throw new PosError("No pudimos encontrar esa sesión de caja.");
 
     await tx.cashSession.update({
       where: { id: sessionId },
@@ -134,12 +134,12 @@ export async function addCashMovement(
 
   return db.$transaction(async (tx) => {
     const sessionId = await lockOpenSession(tx, organizationId, "share");
-    if (!sessionId) throw new PosError("Open the cash register first.");
+    if (!sessionId) throw new PosError("Debés abrir la caja registradora primero.");
 
     if (input.type === "OUT") {
       const summary = await sessionSummary(tx, organizationId, sessionId);
       if (summary && input.amountCents > summary.expectedCashCents) {
-        throw new PosError("There isn't that much cash in the drawer.");
+        throw new PosError("No hay suficiente dinero en efectivo en el cajón para realizar este retiro.");
       }
     }
 

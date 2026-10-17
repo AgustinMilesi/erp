@@ -235,7 +235,7 @@ export async function openRegister(formData: FormData): Promise<ActionResult> {
   return run(async () => {
     await openSession({ organizationId: organization.id, userId: user.id, role }, parsed.data.opening, parsed.data.note);
     refresh();
-    return ok("Cash register open.", { redirectTo: "/app/cash" });
+    return ok("Caja abierta correctamente. Ya podés registrar ventas.", { redirectTo: "/app/cash" });
   });
 }
 
@@ -253,9 +253,13 @@ export async function closeRegister(formData: FormData): Promise<ActionResult> {
     );
     refresh();
     const diff = result.differenceCents;
-    return ok(diff === 0 ? "Register closed. The cash matches." : "Register closed. There is a difference, see the report.", {
-      redirectTo: "/app/cash",
-    });
+    const msg =
+      diff === 0
+        ? "Caja cerrada con éxito. El dinero en efectivo coincide exactamente ($0)."
+        : diff > 0
+        ? "Caja cerrada. Se registró un sobrante de efectivo en el arqueo."
+        : "Caja cerrada. Se registró un faltante de efectivo en el arqueo.";
+    return ok(msg, { redirectTo: "/app/cash" });
   });
 }
 
@@ -270,7 +274,11 @@ export async function moveCash(formData: FormData): Promise<ActionResult> {
       { type: parsed.data.type, amountCents: parsed.data.amount, reason: parsed.data.reason },
     );
     refresh();
-    return ok(parsed.data.type === "IN" ? "Cash added to the drawer." : "Cash taken out of the drawer.");
+    return ok(
+      parsed.data.type === "IN"
+        ? "Ingreso de efectivo registrado en el cajón."
+        : "Salida / retiro de efectivo registrado en el cajón."
+    );
   });
 }
 
