@@ -278,6 +278,7 @@ export const saleInputSchema = z.object({
   expectedTotalCents: z.number().int().min(1).max(MAX_CENTS),
   contactId: z.string().max(40).nullish(),
   debtorId: z.string().max(40).nullish(),
+  debtorAmountCents: z.number().int().min(1).max(MAX_CENTS).nullish(),
   note: z.string().trim().max(200).nullish(),
 });
 export type SaleInput = z.infer<typeof saleInputSchema>;

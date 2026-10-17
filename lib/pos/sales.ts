@@ -163,16 +163,38 @@ async function runSale(tx: Tx, actor: Actor, input: SaleInput) {
       where: { id: input.debtorId, organizationId },
     });
     if (debtor) {
-      await tx.debtorItem.createMany({
-        data: lines.map(({ product, quantity }, i) => ({
-          debtorId: debtor.id,
-          productId: product.id,
-          productName: product.name,
-          quantity,
-          unitPriceCents: product.priceCents,
-          totalCents: BigInt(totals.lineTotals[i]),
-        })),
-      });
+      const debtorDebt =
+        input.debtorAmountCents && input.debtorAmountCents < totals.totalCents
+          ? input.debtorAmountCents
+          : totals.totalCents;
+
+      if (debtorDebt === totals.totalCents) {
+        // Full sale went to debtor
+        await tx.debtorItem.createMany({
+          data: lines.map(({ product, quantity }, i) => ({
+            debtorId: debtor.id,
+            productId: product.id,
+            productName: product.name,
+            quantity,
+            unitPriceCents: product.priceCents,
+            totalCents: BigInt(totals.lineTotals[i]),
+          })),
+        });
+      } else {
+        // Partial sale went to debtor (e.g. $60 out of $100)
+        const productSummary = lines
+          .map((l) => `${l.quantity > 1 ? `${l.quantity}x ` : ""}${l.product.name}`)
+          .join(", ");
+        await tx.debtorItem.create({
+          data: {
+            debtorId: debtor.id,
+            productName: `Saldo fiado Venta #${saleCounter}: ${productSummary}`.slice(0, 190),
+            quantity: 1,
+            unitPriceCents: BigInt(debtorDebt),
+            totalCents: BigInt(debtorDebt),
+          },
+        });
+      }
     }
   }
 

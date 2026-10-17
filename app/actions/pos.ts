@@ -33,6 +33,9 @@ const PRODUCT_LIMIT = 20_000;
 const refresh = () => {
   revalidatePath("/app", "layout");
   revalidatePath("/app/pos");
+  revalidatePath("/app/debtors");
+  revalidatePath("/app/cash");
+  revalidatePath("/app/sales");
 };
 
 const toObject = (formData: FormData) => Object.fromEntries(formData);

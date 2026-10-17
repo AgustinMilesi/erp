@@ -115,6 +115,8 @@ export function PosTerminal({
   const [splitCash, setSplitCash] = useState("");
   const [splitTransfer, setSplitTransfer] = useState("");
   const [splitPosnet, setSplitPosnet] = useState("");
+  const [splitDebtorId, setSplitDebtorId] = useState("");
+  const [splitDebtorAmount, setSplitDebtorAmount] = useState("");
 
   const searchBox = useRef<HTMLInputElement>(null);
   const searchSeq = useRef(0);
@@ -490,12 +492,19 @@ export function PosTerminal({
     const cashVal = parseFloat(splitCash) || 0;
     const transVal = parseFloat(splitTransfer) || 0;
     const posVal = parseFloat(splitPosnet) || 0;
+    const debtorVal = parseFloat(splitDebtorAmount) || 0;
 
     const cashCents = Math.round(cashVal * 100);
     const transCents = Math.round(transVal * 100);
     const posCents = Math.round(posVal * 100);
+    const debtorCents = Math.round(debtorVal * 100);
 
-    const totalEntered = cashCents + transCents + posCents;
+    if (debtorCents > 0 && !splitDebtorId) {
+      toast.error("Por favor seleccioná el cliente deudor para asignarle el saldo fiado.");
+      return;
+    }
+
+    const totalEntered = cashCents + transCents + posCents + debtorCents;
     if (totalEntered < totals.totalCents) {
       toast.error(`Faltan ${money(totals.totalCents - totalEntered)} para cubrir el total.`);
       return;
@@ -505,6 +514,9 @@ export function PosTerminal({
     if (cashCents > 0) payments.push({ method: "CASH", amountCents: cashCents });
     if (transCents > 0) payments.push({ method: "TRANSFER", amountCents: transCents });
     if (posCents > 0) payments.push({ method: "CARD", amountCents: posCents });
+    if (debtorCents > 0) payments.push({ method: "OTHER", amountCents: debtorCents });
+
+    const selectedDebtor = debtors.find((d) => d.id === splitDebtorId);
 
     setBusy(true);
     try {
@@ -514,7 +526,12 @@ export function PosTerminal({
         payments,
         discountCents: totals.discountCents,
         expectedTotalCents: totals.totalCents,
-        note: "Pago dividido / mixto",
+        debtorId: debtorCents > 0 ? splitDebtorId : undefined,
+        debtorAmountCents: debtorCents > 0 ? debtorCents : undefined,
+        note:
+          debtorCents > 0
+            ? `Pago dividido (Fiado a ${selectedDebtor?.name || "cliente"}: ${money(debtorCents)})`
+            : "Pago dividido / mixto",
       });
 
       if (!result.ok) {
@@ -522,13 +539,21 @@ export function PosTerminal({
         return;
       }
 
-      toast.success(result.message ?? "Venta dividida registrada.");
+      toast.success(
+        result.message ??
+          (debtorCents > 0
+            ? `Venta registrada. ${money(debtorCents)} enviados a la cuenta de ${selectedDebtor?.name || "cliente"}.`
+            : "Venta dividida registrada.")
+      );
       setDoneSale({
         id: result.data?.id ?? "",
         number: result.data?.number ?? "",
         totalCents: totals.totalCents,
         changeCents: Math.max(0, totalEntered - totals.totalCents),
-        methodLabel: "Pago Dividido",
+        methodLabel:
+          debtorCents > 0
+            ? `Pago Dividido (${selectedDebtor?.name ? `Fiado: ${selectedDebtor.name}` : "Fiado"})`
+            : "Pago Dividido",
       });
 
       setShowSplitModal(false);
@@ -911,6 +936,8 @@ export function PosTerminal({
                     setSplitCash(centsToInput(totals.totalCents));
                     setSplitTransfer("");
                     setSplitPosnet("");
+                    setSplitDebtorId(activeTab.debtorId || "");
+                    setSplitDebtorAmount("");
                     setShowSplitModal(true);
                   }}
                   className={`${ui.ghost} w-full text-center truncate py-2.5`}
@@ -1004,89 +1031,186 @@ export function PosTerminal({
       </div>
 
       {/* 3. Modal de Dividir Pago (Split Payment) */}
-      {showSplitModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className={`${ui.card} max-w-md w-full p-6 space-y-5 border-rose-500/40 shadow-2xl`}>
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <p className="text-base font-black text-white uppercase tracking-wider">Dividir Pago de la Venta</p>
-              <button
-                type="button"
-                onClick={() => setShowSplitModal(false)}
-                className="text-slate-400 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
+      {showSplitModal && (() => {
+        const splitCashCents = Math.round((parseFloat(splitCash) || 0) * 100);
+        const splitTransCents = Math.round((parseFloat(splitTransfer) || 0) * 100);
+        const splitPosCents = Math.round((parseFloat(splitPosnet) || 0) * 100);
+        const splitDebtorCents = Math.round((parseFloat(splitDebtorAmount) || 0) * 100);
 
-            <div className="flex items-baseline justify-between bg-white/[0.03] p-4 rounded-2xl border border-white/10">
-              <span className={ui.label}>Total a Cubrir</span>
-              <span className="text-2xl font-black text-rose-400 font-mono">{money(totals.totalCents)}</span>
-            </div>
+        const totalEnteredCents = splitCashCents + splitTransCents + splitPosCents + splitDebtorCents;
+        const remainingCents = totals.totalCents - totalEnteredCents;
+        const nonDebtorCents = splitCashCents + splitTransCents + splitPosCents;
+        const remainderForDebtor = Math.max(0, totals.totalCents - nonDebtorCents);
+        const isCovered = totalEnteredCents >= totals.totalCents;
+        const debtorMissing = splitDebtorCents > 0 && !splitDebtorId;
 
-            <div className="space-y-4">
-              <div>
-                <label className={ui.label}>
-                  💵 Efectivo ($)
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  value={splitCash}
-                  onChange={(e) => setSplitCash(e.target.value)}
-                  placeholder="0"
-                  className={ui.input}
-                />
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+            <div className={`${ui.card} max-w-lg w-full p-6 space-y-5 border-rose-500/40 shadow-2xl max-h-[90vh] overflow-y-auto`}>
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <p className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+                  <span>⚡</span> Dividir Pago de la Venta
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowSplitModal(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  ✕
+                </button>
               </div>
 
-              <div>
-                <label className={ui.label}>
-                  📲 Transferencia ($)
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  value={splitTransfer}
-                  onChange={(e) => setSplitTransfer(e.target.value)}
-                  placeholder="0"
-                  className={ui.input}
-                />
+              <div className="flex items-baseline justify-between bg-white/[0.03] p-4 rounded-2xl border border-white/10">
+                <span className={ui.label}>Total a Cubrir</span>
+                <span className="text-2xl font-black text-rose-400 font-mono">{money(totals.totalCents)}</span>
               </div>
 
-              <div>
-                <label className={ui.label}>
-                  💳 Posnet / Tarjeta ($)
-                </label>
-                <input
-                  type="number"
-                  step="any"
-                  value={splitPosnet}
-                  onChange={(e) => setSplitPosnet(e.target.value)}
-                  placeholder="0"
-                  className={ui.input}
-                />
-              </div>
-            </div>
+              <div className="space-y-4">
+                {/* 💵 Efectivo */}
+                <div>
+                  <label className={ui.label}>💵 Efectivo ($)</label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={splitCash}
+                    onChange={(e) => setSplitCash(e.target.value)}
+                    placeholder="0"
+                    className={ui.input}
+                  />
+                </div>
 
-            <div className="pt-2 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setShowSplitModal(false)}
-                className={`${ui.ghost} flex-1 text-center`}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={handleConfirmSplit}
-                className={`${ui.button} flex-1 text-center`}
-              >
-                Confirmar Cobro
-              </button>
+                {/* 📲 Transferencia */}
+                <div>
+                  <label className={ui.label}>📲 Transferencia / MP ($)</label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={splitTransfer}
+                    onChange={(e) => setSplitTransfer(e.target.value)}
+                    placeholder="0"
+                    className={ui.input}
+                  />
+                </div>
+
+                {/* 💳 Posnet */}
+                <div>
+                  <label className={ui.label}>💳 Posnet / Tarjeta ($)</label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={splitPosnet}
+                    onChange={(e) => setSplitPosnet(e.target.value)}
+                    placeholder="0"
+                    className={ui.input}
+                  />
+                </div>
+
+                {/* 📒 Enviar a Fiado / Deudor */}
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-amber-400/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                      <span>📒</span> Enviar al Fiado / Deudor
+                    </label>
+                    {remainderForDebtor > 0 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSplitDebtorAmount(String(remainderForDebtor / 100))
+                        }
+                        className="text-[11px] font-mono text-rose-300 hover:text-rose-200 underline"
+                      >
+                        Mandar resto ({money(remainderForDebtor)})
+                      </button>
+                    )}
+                  </div>
+
+                  <select
+                    value={splitDebtorId}
+                    onChange={(e) => setSplitDebtorId(e.target.value)}
+                    className={ui.input}
+                  >
+                    <option value="">-- Seleccionar cliente fiado --</option>
+                    {debtors.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name} {d.saldoFavorCents > 0 ? `(A favor: ${money(d.saldoFavorCents)})` : ""}
+                      </option>
+                    ))}
+                  </select>
+
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-sm font-bold">
+                      $
+                    </span>
+                    <input
+                      type="number"
+                      step="any"
+                      value={splitDebtorAmount}
+                      onChange={(e) => setSplitDebtorAmount(e.target.value)}
+                      placeholder="Monto a mandar a cuenta corriente (0)"
+                      className={`${ui.input} pl-8 font-mono`}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Status Box */}
+              {debtorMissing ? (
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300">
+                  ⚠️ Ingresaste un monto de fiado pero no seleccionaste ningún cliente deudor.
+                </div>
+              ) : remainingCents > 0 ? (
+                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300 flex items-center justify-between">
+                  <span>⚠️ Faltan <strong className="font-mono">{money(remainingCents)}</strong> para cubrir el total.</span>
+                  {splitDebtorId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const currentDebtor = parseFloat(splitDebtorAmount) || 0;
+                        const newDebtorCents = Math.round(currentDebtor * 100) + remainingCents;
+                        setSplitDebtorAmount(String(newDebtorCents / 100));
+                      }}
+                      className="px-2 py-1 rounded bg-amber-400/20 text-amber-200 font-bold hover:bg-amber-400/30 transition text-[11px]"
+                    >
+                      + Sumar al fiado
+                    </button>
+                  )}
+                </div>
+              ) : remainingCents === 0 ? (
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 flex items-center justify-between">
+                  <span>✅ Total cubierto exactamente.</span>
+                  {splitDebtorCents > 0 && (
+                    <span className="font-mono font-bold text-amber-300">
+                      (Fiado: {money(splitDebtorCents)})
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/30 text-xs text-sky-300">
+                  💵 Vuelto en efectivo a entregar: <strong className="font-mono">{money(-remainingCents)}</strong>
+                </div>
+              )}
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowSplitModal(false)}
+                  className={`${ui.ghost} flex-1 text-center`}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  disabled={busy || !isCovered || debtorMissing}
+                  onClick={handleConfirmSplit}
+                  className={`${ui.button} flex-1 text-center disabled:opacity-40 disabled:cursor-not-allowed`}
+                >
+                  Confirmar Cobro
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* 4. Modal de Venta Registrada con Éxito */}
       {doneSale && (
