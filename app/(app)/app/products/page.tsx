@@ -118,7 +118,11 @@ export default async function ProductsPage({
                       )}
                       {!p.active && <span className="ml-1 text-xs uppercase tracking-wider text-slate-500 font-mono">{t.hidden}</span>}
                     </span>
-                    <span className="block text-sm text-slate-500 truncate">{p.sku}{p.brand ? ` · ${p.brand}` : ""}</span>
+                    {((p.sku && !p.sku.includes("-")) || p.brand) && (
+                      <span className="block text-sm text-slate-500 truncate">
+                        {[!p.sku.includes("-") ? p.sku : null, p.brand].filter(Boolean).join(" · ")}
+                      </span>
+                    )}
                   </span>
                   <span className="text-right whitespace-nowrap">
                     <span className="block text-white font-semibold">

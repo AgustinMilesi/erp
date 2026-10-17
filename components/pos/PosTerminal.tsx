@@ -669,7 +669,6 @@ export function PosTerminal({
                             </span>
                           )}
                         </div>
-                        <p className="text-slate-500 font-mono text-[10px] truncate">{p.sku}</p>
                       </div>
                       <div className="text-right whitespace-nowrap">
                         <span className="text-rose-300 font-bold block">
