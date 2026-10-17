@@ -3,6 +3,7 @@ import { ActionForm } from "@/components/ActionForm";
 import { ApiKeyCreator } from "@/components/ApiKeyCreator";
 import { CopyButton } from "@/components/CopyButton";
 import { PageTitle } from "@/components/Headline";
+import { PreferencesBlock } from "@/components/PreferencesBlock";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ui } from "@/components/ui";
 import {
@@ -88,6 +89,9 @@ export default async function SettingsPage() {
         <PageTitle light={titleLight} bold={titleBold} />
         <p className={`${ui.muted} mt-2`}>{t.settingsSubtitle}</p>
       </div>
+
+      {/* Visual Preferences Block */}
+      <PreferencesBlock />
 
       <section className="space-y-4">
         <p className={ui.label}>{t.workspaceSection}</p>
