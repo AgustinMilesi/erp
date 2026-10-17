@@ -64,7 +64,7 @@ export function DataImporter() {
     }
   }
 
-  async function sendChunk(kind: string, items: any[]) {
+  async function sendChunk(kind: string, items: unknown[]) {
     const res = await fetch("/api/import/chunk", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -142,7 +142,7 @@ export function DataImporter() {
 
         // 3. Expenses / Facturas
         const rawExpensesObj = data?.loDeMari_allExpenses || data?.allExpenses || data?.expenses || {};
-        const expenseList: any[] = [];
+        const expenseList: Record<string, unknown>[] = [];
         if (Array.isArray(rawExpensesObj)) {
           for (const exp of rawExpensesObj) {
             if (exp.description && exp.amount) expenseList.push(exp);
@@ -150,7 +150,7 @@ export function DataImporter() {
         } else if (typeof rawExpensesObj === "object") {
           for (const [dateStr, expList] of Object.entries(rawExpensesObj)) {
             if (Array.isArray(expList)) {
-              for (const exp of expList as any[]) {
+              for (const exp of expList as Record<string, unknown>[]) {
                 if (exp.description && exp.amount) {
                   expenseList.push({ ...exp, date: dateStr });
                 }
@@ -193,7 +193,7 @@ export function DataImporter() {
         if (!firstSheetName) throw new Error("La planilla no contiene hojas de cálculo.");
 
         const sheet = workbook.Sheets[firstSheetName];
-        const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet, { defval: "" });
+        const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" });
 
         if (rows.length === 0) throw new Error("La planilla de Excel está vacía.");
 

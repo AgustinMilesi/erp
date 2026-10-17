@@ -12,15 +12,10 @@ import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
 import { formatMoney } from "@/lib/money";
 import { sessionSummary } from "@/lib/pos/cash";
-import { getServerTranslations } from "@/lib/i18n-server";
-
 export const metadata: Metadata = { title: "Control de Caja" };
 
 export default async function CashPage() {
-  const [{ organization }, { t }] = await Promise.all([
-    requireSession(),
-    getServerTranslations(),
-  ]);
+  const { organization } = await requireSession();
 
   const money = (cents: number | bigint) =>
     formatMoney(cents, organization.currency, organization.showDecimals);

@@ -12,7 +12,6 @@ import {
 } from "@/app/actions/pos";
 import { centsToInput, formatMoney, parseMoney } from "@/lib/money";
 import { computeTotals } from "@/lib/pos/sale-math";
-import { usePreferences } from "@/components/PreferencesProvider";
 
 export type Line = TillProduct & { quantity: number };
 
@@ -64,7 +63,6 @@ export function PosTerminal({
   canDiscount: boolean;
   debtors?: { id: string; name: string; saldoFavorCents: number }[];
 }) {
-  const { t } = usePreferences();
   const money = (cents: number | bigint) => formatMoney(cents, currency, showDecimals);
 
   // Tabs state: Pedido 1, Pedido 2, Pedido 3
@@ -123,37 +121,40 @@ export function PosTerminal({
 
   // Load state from localStorage on initial client mount
   useEffect(() => {
-    try {
-      const savedTabs = localStorage.getItem(STORAGE_KEY_TABS);
-      if (savedTabs) {
-        const parsed = JSON.parse(savedTabs);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const initial3 = ["tab-1", "tab-2", "tab-3"].map((id, index) => {
-            const existing = parsed.find((p) => p.id === id) || parsed[index];
-            return {
-              id,
-              label: `Pedido ${index + 1}`,
-              lines: existing?.lines || [],
-              paymentMethod: existing?.paymentMethod || "CASH",
-              debtorId: existing?.debtorId || "",
-              discount: existing?.discount || "",
-              saleKey: existing?.saleKey || newKey(),
-            };
-          });
-          setTabs(initial3);
-          setActiveTabId("tab-1");
+    const handle = requestAnimationFrame(() => {
+      try {
+        const savedTabs = localStorage.getItem(STORAGE_KEY_TABS);
+        if (savedTabs) {
+          const parsed = JSON.parse(savedTabs);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const initial3 = ["tab-1", "tab-2", "tab-3"].map((id, index) => {
+              const existing = parsed.find((p) => p.id === id) || parsed[index];
+              return {
+                id,
+                label: `Pedido ${index + 1}`,
+                lines: existing?.lines || [],
+                paymentMethod: existing?.paymentMethod || "CASH",
+                debtorId: existing?.debtorId || "",
+                discount: existing?.discount || "",
+                saleKey: existing?.saleKey || newKey(),
+              };
+            });
+            setTabs(initial3);
+            setActiveTabId("tab-1");
+          }
         }
-      }
-      const savedPending = localStorage.getItem(STORAGE_KEY_PENDING);
-      if (savedPending) {
-        const parsedPending = JSON.parse(savedPending);
-        if (Array.isArray(parsedPending)) {
-          setPendingSales(parsedPending);
+        const savedPending = localStorage.getItem(STORAGE_KEY_PENDING);
+        if (savedPending) {
+          const parsedPending = JSON.parse(savedPending);
+          if (Array.isArray(parsedPending)) {
+            setPendingSales(parsedPending);
+          }
         }
+      } catch {
+        // Ignored
       }
-    } catch {
-      // Ignored
-    }
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   // Save tabs & pending to localStorage whenever they change

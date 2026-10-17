@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Punto de Venta" };
 export default async function IntegratedPosPage() {
   const { organization, role, user } = await requireSession();
 
-  let [open, org, debtors] = await Promise.all([
+  const [existingOpen, org, debtors] = await Promise.all([
     db.cashSession.findFirst({
       where: { organizationId: organization.id, status: "OPEN" },
       select: { id: true },
@@ -24,8 +24,9 @@ export default async function IntegratedPosPage() {
     }),
   ]);
 
-  if (!open) {
-    open = await db.cashSession.create({
+  const open =
+    existingOpen ??
+    (await db.cashSession.create({
       data: {
         organizationId: organization.id,
         openedById: user.id,
@@ -34,8 +35,7 @@ export default async function IntegratedPosPage() {
         note: "Turno iniciado automáticamente desde el Punto de Venta",
       },
       select: { id: true },
-    });
-  }
+    }));
 
   return (
     <PosTerminal

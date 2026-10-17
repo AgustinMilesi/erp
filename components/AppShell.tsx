@@ -53,14 +53,17 @@ export function AppShell({
 
   // Restore desktop sidebar preference from localStorage
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("erp_sidebar_open");
-      if (saved !== null) {
-        setDesktopOpen(saved === "true");
+    const handle = requestAnimationFrame(() => {
+      try {
+        const saved = localStorage.getItem("erp_sidebar_open");
+        if (saved !== null) {
+          setDesktopOpen(saved === "true");
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
+    });
+    return () => cancelAnimationFrame(handle);
   }, []);
 
   function toggleDesktopSidebar() {

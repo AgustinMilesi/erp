@@ -1,7 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import { Prisma } from "@prisma/client";
 import { getSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
+
+interface RawImportItem {
+  id?: string;
+  name?: string;
+  productId?: string;
+  quantity?: number | string;
+  lockedPrice?: number | string;
+  price?: number | string;
+  amount?: number | string;
+  type?: string;
+  addedAt?: string | number | Date;
+  date?: string | number | Date;
+  description?: string;
+  notes?: string;
+  timestamp?: string | number | Date;
+  totalAmount?: number | string;
+  paymentMethods?: { Posnet?: boolean; Transferencia?: boolean; Deudor?: boolean };
+  items?: RawImportItem[];
+  savedDebts?: { items?: RawImportItem[] }[];
+  history?: RawImportItem[];
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -171,7 +193,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Collect items from both d.items and d.savedDebts
-        const allPendingItems: any[] = [];
+        const allPendingItems: RawImportItem[] = [];
         if (Array.isArray(d.items)) {
           allPendingItems.push(...d.items);
         }
@@ -184,7 +206,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (debtorId && allPendingItems.length > 0) {
-          const itemRows = allPendingItems.map((it: any) => {
+          const itemRows = allPendingItems.map((it: RawImportItem) => {
             const rawQty = Number(it.quantity || 1);
             let pName = String(it.name || "").trim();
             const matchedProd = it.productId ? prodByExtId.get(it.productId) : null;
@@ -254,7 +276,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (debtorId && Array.isArray(d.history) && d.history.length > 0) {
-          const paymentRows = d.history.map((p: any) => ({
+          const paymentRows = d.history.map((p: RawImportItem) => ({
             debtorId,
             amountCents: BigInt(Math.max(0, Math.round(Number(p.amount || 0) * 100))),
             date: p.date ? new Date(p.date) : new Date(),
@@ -267,7 +289,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (kind === "expenses") {
-      const expenseRows = items.map((exp: any) => {
+      const expenseRows = items.map((exp: RawImportItem) => {
         const desc = String(exp.description || "").trim();
         const amount = Number(exp.amount || 0);
         const date = exp.date ? new Date(exp.date) : new Date();
@@ -331,9 +353,9 @@ export async function POST(req: NextRequest) {
       const existingKeys = new Set(existingSales.map((s) => s.idempotencyKey));
       let saleNum = existingSales.reduce((max, s) => Math.max(max, s.number), 0);
 
-      const saleRows: any[] = [];
-      const itemRows: any[] = [];
-      const paymentRows: any[] = [];
+      const saleRows: Prisma.SaleCreateManyInput[] = [];
+      const itemRows: Prisma.SaleItemCreateManyInput[] = [];
+      const paymentRows: Prisma.PaymentCreateManyInput[] = [];
 
       for (const s of items) {
         const key = `marierp_${s.id}`;

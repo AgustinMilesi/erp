@@ -45,18 +45,13 @@ export default async function DebtorsPage({
     formatMoney(cents, organization.currency, organization.showDecimals);
   const manage = canManage(role);
 
-  // Compute totals
-  let totalOrgDebt = BigInt(0);
-
+  // Compute cards and totals
   const debtorCards = debtors.map((d) => {
     const totalItems = d.items.reduce((acc, it) => acc + it.totalCents, BigInt(0));
     const totalPayments = d.payments.reduce((acc, p) => acc + p.amountCents, BigInt(0));
     // In marierp, debtor.items are the active unpaid items. Debt = items - saldoFavor.
     const rawBalance = totalItems - d.saldoFavorCents;
     const balance = rawBalance > BigInt(0) ? rawBalance : BigInt(0);
-    if (balance > BigInt(0)) {
-      totalOrgDebt += balance;
-    }
 
     return {
       ...d,
@@ -65,6 +60,11 @@ export default async function DebtorsPage({
       balance,
     };
   });
+
+  const totalOrgDebt = debtorCards.reduce(
+    (acc, d) => (d.balance > BigInt(0) ? acc + d.balance : acc),
+    BigInt(0)
+  );
 
   // Separate active debtors (with debt) and zero debtors (settled / al día)
   const activeDebtors = debtorCards.filter((d) => d.balance > BigInt(0));

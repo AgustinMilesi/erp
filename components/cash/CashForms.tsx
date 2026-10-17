@@ -20,11 +20,11 @@ export function CashOpenCard({
   const [amountStr, setAmountStr] = useState("");
 
   const quickPresets = [
-    { label: "$0 (Sin cambio)", value: "0" },
-    { label: "$5.000", value: "5000" },
-    { label: "$10.000", value: "10000" },
-    { label: "$20.000", value: "20000" },
-    { label: "$50.000", value: "50000" },
+    { label: `${formatMoney(0, currency, showDecimals)} (Sin cambio)`, value: "0" },
+    { label: formatMoney(500000, currency, showDecimals), value: "5000" },
+    { label: formatMoney(1000000, currency, showDecimals), value: "10000" },
+    { label: formatMoney(2000000, currency, showDecimals), value: "20000" },
+    { label: formatMoney(5000000, currency, showDecimals), value: "50000" },
   ];
 
   return (
