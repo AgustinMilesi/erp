@@ -60,12 +60,20 @@ export default async function CashPage() {
       {open && summary ? (
         <>
           <section className="space-y-6">
-            <div className="space-y-1">
-              <p className={ui.label}>{t.openRegisterSection}</p>
-              <p className={ui.muted}>
-                {t.openedByLabel} {formatDate(open.openedAt)} {t.by} {open.openedBy.name}.{" "}
-                <Link href="/pos" className={ui.link}>{t.goToTheTill}</Link>
-              </p>
+            <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="size-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <p className="text-white font-bold text-sm">{t.openRegisterSection}</p>
+                </div>
+                <p className="text-xs text-slate-400">
+                  {t.openedByLabel} {formatDate(open.openedAt)} {t.by} {open.openedBy.name}
+                </p>
+              </div>
+
+              <Link href="/pos" className={ui.button}>
+                {t.goToTheTill} (POS) →
+              </Link>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-4">

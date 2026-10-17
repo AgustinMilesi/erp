@@ -89,7 +89,14 @@ export default async function ProductsPage({
       </form>
 
       {products.length === 0 ? (
-        <p className={ui.muted}>{q || low ? t.noProductsMatchFilter : t.noProductsYetCatalog}</p>
+        <div className={`${ui.card} p-8 text-center space-y-2 border-white/10`}>
+          <p className="text-white font-medium">
+            {q || low ? t.noProductsMatchFilter : t.noProductsYetCatalog}
+          </p>
+          <p className="text-xs text-slate-400">
+            Podés agregar un producto manualmente o cargar un archivo JSON o Excel en el panel de abajo.
+          </p>
+        </div>
       ) : (
         <ul className="divide-y divide-white/10 border-y border-white/10">
           {products.map((p) => {
@@ -126,17 +133,30 @@ export default async function ProductsPage({
       )}
 
       {manage && (
-        <>
-          <details className={`${ui.card} p-6`}>
-            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">{t.addAProduct}</summary>
-            <div className="pt-6"><ProductForm categories={categories} /></div>
-          </details>
-
-          <details className={`${ui.card} p-6`}>
-            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300">{t.importCatalogTitle}</summary>
-            <div className="pt-6">
-              <DataImporter />
+        <div className="space-y-8 pt-4">
+          {/* Prominent Importer Card (Open and Visible) */}
+          <div className={`${ui.card} p-6 sm:p-8 border-rose-400/40 bg-rose-400/[0.02] space-y-4 shadow-xl`}>
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <span className="size-2.5 rounded-full bg-rose-400" />
+                <h2 className="text-sm font-bold uppercase tracking-wider text-white">
+                  {t.importCatalogTitle}
+                </h2>
+              </div>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/10 text-slate-300">
+                JSON · XLSX · XLS
+              </span>
             </div>
+            <DataImporter />
+          </div>
+
+          {/* Manual Add Product Form */}
+          <details className={`${ui.card} p-6`}>
+            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300 hover:text-white transition flex items-center justify-between">
+              <span>{t.addAProduct}</span>
+              <span className="text-rose-400 font-mono text-xs">+ Abrir</span>
+            </summary>
+            <div className="pt-6"><ProductForm categories={categories} /></div>
           </details>
 
           <section className="space-y-4">
@@ -164,7 +184,7 @@ export default async function ProductsPage({
               <SubmitButton variant="ghost" pendingText="...">{t.add}</SubmitButton>
             </ActionForm>
           </section>
-        </>
+        </div>
       )}
     </div>
   );

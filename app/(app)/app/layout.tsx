@@ -28,7 +28,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <NavLinks
           items={[
             { href: "/app", key: "overview", label: "Overview" },
-            { href: "/pos", key: "pos", label: "Point of sale" },
             { href: "/app/sales", key: "sales", label: "Sales" },
             { href: "/app/products", key: "products", label: "Products" },
             { href: "/app/cash", key: "cash", label: "Cash" },
