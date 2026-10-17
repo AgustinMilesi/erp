@@ -36,7 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const allNavItems = [
     { href: "/app", key: "overview" as const, label: "Overview" },
-    { href: "/pos", key: "pos" as const, label: "Punto de Venta" },
+    { href: "/app/pos", key: "pos" as const, label: "Punto de Venta" },
     { href: "/app/sales", key: "sales" as const, label: "Sales" },
     { href: "/app/products", key: "products" as const, label: "Products" },
     { href: "/app/debtors", key: "debtors" as const, label: "Debtors", badge: debtorsCount > 0 ? debtorsCount : undefined },
@@ -92,7 +92,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      <main className="p-6 md:p-12 w-full max-w-5xl">{children}</main>
+      <main className="p-4 md:p-8 w-full max-w-7xl">{children}</main>
     </div>
   );
 }

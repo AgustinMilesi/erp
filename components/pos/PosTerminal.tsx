@@ -126,8 +126,20 @@ export function PosTerminal({
       if (savedTabs) {
         const parsed = JSON.parse(savedTabs);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setTabs(parsed);
-          setActiveTabId(parsed[0].id);
+          const initial3 = ["tab-1", "tab-2", "tab-3"].map((id, index) => {
+            const existing = parsed.find((p) => p.id === id) || parsed[index];
+            return {
+              id,
+              label: `Pedido ${index + 1}`,
+              lines: existing?.lines || [],
+              paymentMethod: existing?.paymentMethod || "CASH",
+              debtorId: existing?.debtorId || "",
+              discount: existing?.discount || "",
+              saleKey: existing?.saleKey || newKey(),
+            };
+          });
+          setTabs(initial3);
+          setActiveTabId("tab-1");
         }
       }
       const savedPending = localStorage.getItem(STORAGE_KEY_PENDING);
@@ -394,52 +406,27 @@ export function PosTerminal({
 
   // Restore pending sale into active tab
   function handleRestorePending(pending: PendingSale) {
-    if (activeTab.lines.length > 0) {
-      // Look for an empty tab or create one
-      const emptyTab = tabs.find((t) => t.lines.length === 0);
-      if (emptyTab) {
-        setTabs((prev) =>
-          prev.map((t) =>
-            t.id === emptyTab.id
-              ? {
-                  ...t,
-                  lines: pending.lines,
-                  paymentMethod: pending.paymentMethod,
-                  debtorId: pending.debtorId || "",
-                  saleKey: newKey(),
-                }
-              : t,
-          ),
-        );
-        setActiveTabId(emptyTab.id);
-      } else {
-        const newTabId = `tab-${Date.now()}`;
-        setTabs((prev) => [
-          ...prev,
-          {
-            id: newTabId,
-            label: `Pedido ${prev.length + 1}`,
-            lines: pending.lines,
-            paymentMethod: pending.paymentMethod,
-            debtorId: pending.debtorId || "",
-            discount: "",
-            saleKey: newKey(),
-          },
-        ]);
-        setActiveTabId(newTabId);
-      }
-    } else {
-      updateActiveTab({
-        lines: pending.lines,
-        paymentMethod: pending.paymentMethod,
-        debtorId: pending.debtorId || "",
-        saleKey: newKey(),
-      });
-    }
+    const targetTab =
+      (activeTab.lines.length === 0 ? activeTab : null) ||
+      tabs.find((t) => t.lines.length === 0) ||
+      activeTab;
 
-    // Remove from pending
+    setTabs((prev) =>
+      prev.map((t) =>
+        t.id === targetTab.id
+          ? {
+              ...t,
+              lines: pending.lines,
+              paymentMethod: pending.paymentMethod,
+              debtorId: pending.debtorId || "",
+              saleKey: newKey(),
+            }
+          : t,
+      ),
+    );
+    setActiveTabId(targetTab.id);
     setPendingSales((prev) => prev.filter((p) => p.id !== pending.id));
-    toast.success("Pedido recuperado al carrito.");
+    toast.success(`Pedido recuperado en ${targetTab.label}.`);
   }
 
   // Discard pending sale
@@ -503,44 +490,12 @@ export function PosTerminal({
     }
   }
 
-  function handleAddNewTab() {
-    if (tabs.length >= 6) {
-      toast.error("Límite de 6 pedidos abiertos alcanzado.");
-      return;
-    }
-    const newTabId = `tab-${Date.now()}`;
-    const newTabLabel = `Pedido ${tabs.length + 1}`;
-    setTabs((prev) => [
-      ...prev,
-      {
-        id: newTabId,
-        label: newTabLabel,
-        lines: [],
-        paymentMethod: "CASH",
-        debtorId: "",
-        discount: "",
-        saleKey: newKey(),
-      },
-    ]);
-    setActiveTabId(newTabId);
-  }
-
-  function handleCloseTab(id: string, e: React.MouseEvent) {
-    e.stopPropagation();
-    if (tabs.length <= 1) return;
-    const remaining = tabs.filter((t) => t.id !== id);
-    setTabs(remaining);
-    if (activeTabId === id) {
-      setActiveTabId(remaining[0].id);
-    }
-  }
-
   return (
     <div className="space-y-4">
-      {/* 1. Barra de Pestañas de Pedidos (Multi-Ticket) */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-2 px-2 overflow-x-auto gap-2">
-        <div className="flex items-center gap-1.5">
-          {tabs.map((tab, idx) => {
+      {/* 1. Barra de Pestañas de Pedidos (3 Pedidos Fijos) */}
+      <div className="flex items-center justify-between border-b border-white/10 pb-3 overflow-x-auto gap-4">
+        <div className="flex items-center gap-2">
+          {tabs.slice(0, 3).map((tab) => {
             const isActive = tab.id === activeTabId;
             const count = tab.lines.reduce((acc, l) => acc + l.quantity, 0);
 
@@ -549,41 +504,21 @@ export function PosTerminal({
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTabId(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-t-xl text-sm font-semibold transition select-none ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition select-none border ${
                   isActive
-                    ? "bg-rose-500/20 text-rose-300 border-b-2 border-rose-400 font-bold shadow-sm"
-                    : "bg-white/[0.02] text-slate-400 hover:text-white hover:bg-white/[0.05]"
+                    ? "bg-rose-500/20 text-rose-300 border-rose-400 shadow-md ring-1 ring-rose-400/40"
+                    : "bg-white/[0.02] text-slate-400 hover:text-white hover:bg-white/[0.06] border-white/5"
                 }`}
               >
                 <span>{tab.label}</span>
                 {count > 0 && (
-                  <span className="bg-rose-500/30 text-rose-200 text-xs px-1.5 py-0.5 rounded-full font-mono">
+                  <span className="bg-rose-500/40 text-rose-200 text-xs px-2 py-0.5 rounded-full font-mono font-bold">
                     {count}
-                  </span>
-                )}
-                {tabs.length > 1 && tab.lines.length === 0 && (
-                  <span
-                    onClick={(e) => handleCloseTab(tab.id, e)}
-                    className="text-slate-500 hover:text-rose-400 ml-1 text-xs"
-                    title="Cerrar pestaña"
-                  >
-                    ✕
                   </span>
                 )}
               </button>
             );
           })}
-
-          {tabs.length < 6 && (
-            <button
-              type="button"
-              onClick={handleAddNewTab}
-              className="px-3 py-2 text-xs text-slate-400 hover:text-white hover:bg-white/5 rounded-lg border border-dashed border-white/10 transition"
-              title="Abrir nuevo pedido simultáneo"
-            >
-              + Nuevo Pedido
-            </button>
-          )}
         </div>
 
         {pendingSales.length > 0 && (
