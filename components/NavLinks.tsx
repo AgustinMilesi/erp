@@ -4,7 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePreferences } from "@/components/PreferencesProvider";
 
-type ItemKey = "overview" | "pos" | "sales" | "products" | "cash" | "inbox" | "contacts" | "forms" | "settings";
+type ItemKey =
+  | "overview"
+  | "pos"
+  | "sales"
+  | "products"
+  | "cash"
+  | "inbox"
+  | "contacts"
+  | "forms"
+  | "settings"
+  | "debtors"
+  | "expenses";
 type Item = { href: string; key: ItemKey; label: string; badge?: number };
 
 export function NavLinks({ items }: { items: Item[] }) {

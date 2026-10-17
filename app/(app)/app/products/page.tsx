@@ -4,7 +4,6 @@ import { ActionForm } from "@/components/ActionForm";
 import { PageTitle } from "@/components/Headline";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ProductForm } from "@/components/pos/ProductForm";
-import { DataImporter } from "@/components/pos/DataImporter";
 import { ui } from "@/components/ui";
 import { deleteCategory, saveCategory } from "@/app/actions/pos";
 import { canManage, requireSession } from "@/lib/auth/session";
@@ -134,22 +133,6 @@ export default async function ProductsPage({
 
       {manage && (
         <div className="space-y-8 pt-4">
-          {/* Prominent Importer Card (Open and Visible) */}
-          <div className={`${ui.card} p-6 sm:p-8 border-rose-400/40 bg-rose-400/[0.02] space-y-4 shadow-xl`}>
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2.5">
-                <span className="size-2.5 rounded-full bg-rose-400" />
-                <h2 className="text-sm font-bold uppercase tracking-wider text-white">
-                  {t.importCatalogTitle}
-                </h2>
-              </div>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/10 text-slate-300">
-                JSON · XLSX · XLS
-              </span>
-            </div>
-            <DataImporter />
-          </div>
-
           {/* Manual Add Product Form */}
           <details className={`${ui.card} p-6`}>
             <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] text-slate-300 hover:text-white transition flex items-center justify-between">

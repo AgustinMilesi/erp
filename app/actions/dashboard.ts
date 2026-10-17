@@ -356,3 +356,20 @@ export async function removeMember(formData: FormData): Promise<ActionResult> {
   return ok("Member removed from workspace.");
 }
 
+export async function saveModulesSettings(formData: FormData): Promise<ActionResult> {
+  const { organization, role } = await requireSession();
+  if (!canManage(role)) return fail(ONLY_ADMINS);
+
+  const modules = formData.getAll("modules").map(String);
+  if (!modules.includes("settings")) modules.push("settings");
+
+  await db.organization.update({
+    where: { id: organization.id },
+    data: { enabledModules: modules },
+  });
+
+  refresh();
+  return ok("Módulos actualizados correctamente.");
+}
+
+

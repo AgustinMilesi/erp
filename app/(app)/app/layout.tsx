@@ -13,9 +13,40 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     requireSession(),
     getServerTranslations(),
   ]);
-  const unread = await db.message.count({
-    where: { organizationId: session.organization.id, status: "NEW" },
-  });
+  const [unread, debtorsCount] = await Promise.all([
+    db.message.count({
+      where: { organizationId: session.organization.id, status: "NEW" },
+    }),
+    db.debtor.count({
+      where: { organizationId: session.organization.id },
+    }),
+  ]);
+
+  const enabled = new Set(session.organization.enabledModules || [
+    "overview",
+    "sales",
+    "products",
+    "cash",
+    "debtors",
+    "expenses",
+    "inbox",
+    "contacts",
+    "forms",
+  ]);
+
+  const allNavItems = [
+    { href: "/app", key: "overview" as const, label: "Overview" },
+    { href: "/app/sales", key: "sales" as const, label: "Sales" },
+    { href: "/app/products", key: "products" as const, label: "Products" },
+    { href: "/app/debtors", key: "debtors" as const, label: "Debtors", badge: debtorsCount > 0 ? debtorsCount : undefined },
+    { href: "/app/expenses", key: "expenses" as const, label: "Expenses" },
+    { href: "/app/cash", key: "cash" as const, label: "Cash" },
+    { href: "/app/inbox", key: "inbox" as const, label: "Inbox", badge: unread > 0 ? unread : undefined },
+    { href: "/app/contacts", key: "contacts" as const, label: "Contacts" },
+    { href: "/app/forms", key: "forms" as const, label: "Forms" },
+  ];
+
+  const filteredNavItems = allNavItems.filter((it) => enabled.has(it.key));
 
   return (
     <div className="min-h-screen md:grid md:grid-cols-[260px_1fr]">
@@ -25,17 +56,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <p className="text-white text-xl font-black leading-tight">{session.organization.name}</p>
         </div>
 
-        <NavLinks
-          items={[
-            { href: "/app", key: "overview", label: "Overview" },
-            { href: "/app/sales", key: "sales", label: "Sales" },
-            { href: "/app/products", key: "products", label: "Products" },
-            { href: "/app/cash", key: "cash", label: "Cash" },
-            { href: "/app/inbox", key: "inbox", label: "Inbox", badge: unread },
-            { href: "/app/contacts", key: "contacts", label: "Contacts" },
-            { href: "/app/forms", key: "forms", label: "Forms" },
-          ]}
-        />
+        <NavLinks items={filteredNavItems} />
 
         <div className="md:mt-auto space-y-4 pt-4 border-t border-white/10">
           <div className="flex items-center justify-between gap-2">

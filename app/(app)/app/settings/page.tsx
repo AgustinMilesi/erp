@@ -11,10 +11,12 @@ import {
   removeMember,
   revokeApiKey,
   rotateWebhookSecret,
+  saveModulesSettings,
   saveSettings,
   updateMemberRole,
 } from "@/app/actions/dashboard";
 import { savePosSettings } from "@/app/actions/pos";
+import { DataImporter } from "@/components/pos/DataImporter";
 import { canManage, requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/format";
@@ -45,7 +47,16 @@ export default async function SettingsPage() {
   const [org, keys, members, pendingInvites] = await Promise.all([
     db.organization.findUniqueOrThrow({
       where: { id: organization.id },
-      select: { name: true, notifyEmail: true, webhookUrl: true, webhookSecret: true, currency: true, allowNegativeStock: true, timezone: true },
+      select: {
+        name: true,
+        notifyEmail: true,
+        webhookUrl: true,
+        webhookSecret: true,
+        currency: true,
+        allowNegativeStock: true,
+        timezone: true,
+        enabledModules: true,
+      },
     }),
     db.apiKey.findMany({
       where: { organizationId: organization.id, revokedAt: null },
@@ -123,6 +134,82 @@ export default async function SettingsPage() {
             </div>
           </div>
         )}
+      </section>
+
+      {/* Módulos y Apartados del Sistema */}
+      <section className="space-y-4">
+        <div>
+          <p className={ui.label}>Módulos y Apartados</p>
+          <p className="text-xs text-slate-400">
+            Activá o desactivá los apartados que usás en tu negocio. Las secciones desactivadas se ocultarán de la barra de navegación lateral.
+          </p>
+        </div>
+
+        <ActionForm action={saveModulesSettings} keepValues className={`${ui.card} p-6 space-y-4`}>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {[
+              { id: "overview", label: "Vista General (Resumen y métricas)", desc: "Métricas del día, ventas recientes y alertas de stock." },
+              { id: "pos", label: "Punto de Venta (Terminal POS)", desc: "Pantalla rápida de cobro y tickets de venta." },
+              { id: "sales", label: "Historial de Ventas", desc: "Listado de todas las ventas cobradas y anuladas." },
+              { id: "products", label: "Productos / Comida / Inventario", desc: "Catálogo de artículos, precios, códigos de barra y stock." },
+              { id: "debtors", label: "Deudores y Cuentas Corrientes", desc: "Control de clientes fiados, deuda pendiente y pagos." },
+              { id: "expenses", label: "Gastos y Facturas", desc: "Egresos a proveedores, facturas de luz, agua y servicios." },
+              { id: "cash", label: "Caja Registradora", desc: "Apertura y cierre de turnos de caja, conteo y arqueo." },
+              { id: "contacts", label: "Contactos y Clientes", desc: "Libreta de clientes, proveedores y prospectos." },
+              { id: "inbox", label: "Mensajes de Clientes", desc: "Bandeja de entrada de consultas recibidas." },
+              { id: "forms", label: "Formularios Web", desc: "Formularios públicos para captar clientes en línea." },
+            ].map((m) => {
+              const isChecked = (org.enabledModules || [
+                "overview",
+                "sales",
+                "products",
+                "cash",
+                "debtors",
+                "expenses",
+                "inbox",
+                "contacts",
+                "forms",
+              ]).includes(m.id);
+
+              return (
+                <label
+                  key={m.id}
+                  className="flex items-start gap-3 p-3 rounded-xl border border-white/10 hover:border-white/20 bg-white/[0.01] hover:bg-white/[0.03] transition cursor-pointer select-none"
+                >
+                  <input
+                    type="checkbox"
+                    name="modules"
+                    value={m.id}
+                    defaultChecked={isChecked}
+                    className="mt-1 size-4 rounded accent-rose-400"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-white">{m.label}</p>
+                    <p className="text-xs text-slate-400 leading-relaxed mt-0.5">{m.desc}</p>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+
+          <div className="pt-2">
+            <SubmitButton>Guardar Módulos Activos</SubmitButton>
+          </div>
+        </ActionForm>
+      </section>
+
+      {/* Importación de Datos (JSON / Excel) */}
+      <section className="space-y-4">
+        <div>
+          <p className={ui.label}>Importación de Datos (JSON / Excel)</p>
+          <p className="text-xs text-slate-400">
+            Cargá backups completos de marierp (productos, deudores, facturas y ventas) o planillas de Excel con tu catálogo sin límites de tamaño.
+          </p>
+        </div>
+
+        <div className={`${ui.card} p-6 sm:p-8 border-rose-400/30 bg-rose-400/[0.02]`}>
+          <DataImporter />
+        </div>
       </section>
 
       <section className="space-y-4">

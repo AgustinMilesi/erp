@@ -9,7 +9,8 @@ import { usePreferences } from "@/components/PreferencesProvider";
 
 type DetectedSummary = {
   productsCount: number;
-  contactsCount: number;
+  debtorsCount: number;
+  expensesCount: number;
   salesCount: number;
 };
 
@@ -35,7 +36,8 @@ export function DataImporter() {
         const text = await file.text();
         const data = JSON.parse(text);
         let products = 0;
-        let contacts = 0;
+        let debtors = 0;
+        let expenses = 0;
         let sales = 0;
 
         if (Array.isArray(data)) {
@@ -44,14 +46,20 @@ export function DataImporter() {
           if (Array.isArray(data.loDeMari_inventory)) products = data.loDeMari_inventory.length;
           else if (Array.isArray(data.products)) products = data.products.length;
 
-          if (Array.isArray(data.loDeMari_debtors)) contacts = data.loDeMari_debtors.length;
-          else if (Array.isArray(data.debtors)) contacts = data.debtors.length;
+          if (Array.isArray(data.loDeMari_debtors)) debtors = data.loDeMari_debtors.length;
+          else if (Array.isArray(data.debtors)) debtors = data.debtors.length;
+
+          if (data.loDeMari_allExpenses && typeof data.loDeMari_allExpenses === "object") {
+            for (const list of Object.values(data.loDeMari_allExpenses)) {
+              if (Array.isArray(list)) expenses += list.length;
+            }
+          }
 
           if (Array.isArray(data.loDeMari_salesHistory)) sales = data.loDeMari_salesHistory.length;
         }
-        setDetected({ productsCount: products, contactsCount: contacts, salesCount: sales });
+        setDetected({ productsCount: products, debtorsCount: debtors, expensesCount: expenses, salesCount: sales });
       } catch {
-        // Failed parsing preview, will handle on upload
+        // Ignored
       }
     }
   }
@@ -87,7 +95,7 @@ export function DataImporter() {
         const text = await file.text();
         const data = JSON.parse(text);
 
-        // 1. Categories
+        // 1. Categories & Products
         const rawInventory = Array.isArray(data)
           ? data
           : Array.isArray(data?.loDeMari_inventory)
@@ -104,18 +112,17 @@ export function DataImporter() {
           }
           await sendChunk("categories", Array.from(catSet));
 
-          // Send products in chunks of 100
           const CHUNK = 100;
           for (let i = 0; i < rawInventory.length; i += CHUNK) {
             const slice = rawInventory.slice(i, i + CHUNK);
-            const pct = Math.round(10 + (i / rawInventory.length) * 50);
+            const pct = Math.round(10 + (i / rawInventory.length) * 30);
             setProgressPct(pct);
             setProgressMsg(`Importando productos: ${i + slice.length} de ${rawInventory.length}...`);
             await sendChunk("products", slice);
           }
         }
 
-        // 2. Debtors / Contacts
+        // 2. Debtors (Cuentas corrientes / fiados)
         const rawDebtors = Array.isArray(data?.loDeMari_debtors)
           ? data.loDeMari_debtors
           : Array.isArray(data?.debtors)
@@ -123,12 +130,36 @@ export function DataImporter() {
           : [];
 
         if (rawDebtors.length > 0) {
-          setProgressPct(65);
-          setProgressMsg(`Importando ${rawDebtors.length} clientes/deudores...`);
-          await sendChunk("contacts", rawDebtors);
+          setProgressPct(45);
+          setProgressMsg(`Importando ${rawDebtors.length} cuentas deudoras...`);
+          await sendChunk("debtors", rawDebtors);
         }
 
-        // 3. Sales History
+        // 3. Expenses / Facturas
+        const rawExpensesObj = data?.loDeMari_allExpenses || {};
+        const expenseList: any[] = [];
+        for (const [dateStr, expList] of Object.entries(rawExpensesObj)) {
+          if (Array.isArray(expList)) {
+            for (const exp of expList as any[]) {
+              if (exp.description && exp.amount) {
+                expenseList.push({ ...exp, date: dateStr });
+              }
+            }
+          }
+        }
+
+        if (expenseList.length > 0) {
+          const CHUNK = 500;
+          for (let i = 0; i < expenseList.length; i += CHUNK) {
+            const slice = expenseList.slice(i, i + CHUNK);
+            const pct = Math.round(50 + (i / expenseList.length) * 20);
+            setProgressPct(pct);
+            setProgressMsg(`Importando gastos y facturas: ${i + slice.length} de ${expenseList.length}...`);
+            await sendChunk("expenses", slice);
+          }
+        }
+
+        // 4. Sales History
         const rawSales = Array.isArray(data?.loDeMari_salesHistory) ? data.loDeMari_salesHistory : [];
         if (rawSales.length > 0) {
           const CHUNK = 500;
@@ -142,7 +173,7 @@ export function DataImporter() {
         }
 
         setProgressPct(100);
-        setProgressMsg("¡Listo! Actualizando catálogo...");
+        setProgressMsg("¡Listo! Actualizando datos...");
         toast.success("¡Importación completada con éxito!");
       } else if (filename.endsWith(".xlsx") || filename.endsWith(".xls")) {
         const buffer = await file.arrayBuffer();
@@ -179,14 +210,12 @@ export function DataImporter() {
           })
           .filter(Boolean);
 
-        // Categories
         const catSet = new Set<string>();
         for (const p of normalizedProducts) {
           if (p?.category) catSet.add(p.category);
         }
         await sendChunk("categories", Array.from(catSet));
 
-        // Chunks
         const CHUNK = 100;
         for (let i = 0; i < normalizedProducts.length; i += CHUNK) {
           const slice = normalizedProducts.slice(i, i + CHUNK);
@@ -220,10 +249,10 @@ export function DataImporter() {
     <form onSubmit={handleUpload} className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
         <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-rose-400/10 text-rose-400 border border-rose-400/20">
-          📄 JSON (marierp completo)
+          📄 Backup Completo JSON
         </span>
         <span className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
-          📊 Excel (.xlsx, .xls)
+          📊 Catálogo Excel (.xlsx, .xls)
         </span>
       </div>
 
@@ -247,7 +276,7 @@ export function DataImporter() {
             )}
           </p>
           <p className="text-xs text-slate-500 mt-1">
-            Soporta backups completos de marierp (incluso mayores a 15 MB) y planillas Excel sin límite de tamaño.
+            Detecta automáticamente productos, comidas, deudores, facturas y ventas históricas.
           </p>
           <input
             id="import-file"
@@ -265,9 +294,10 @@ export function DataImporter() {
         <div className="p-3.5 rounded-xl border border-rose-400/30 bg-rose-400/[0.04] text-xs text-slate-300 space-y-1">
           <p className="font-semibold text-rose-300">✅ Archivo de backup reconocido:</p>
           <div className="flex flex-wrap gap-4 text-slate-400 pt-0.5">
-            <span>📦 <strong>{detected.productsCount}</strong> productos</span>
-            {detected.contactsCount > 0 && <span>👤 <strong>{detected.contactsCount}</strong> clientes/deudores</span>}
-            {detected.salesCount > 0 && <span>🧾 <strong>{detected.salesCount}</strong> ventas históricas</span>}
+            <span>📦 <strong>{detected.productsCount}</strong> productos / comida</span>
+            {detected.debtorsCount > 0 && <span>👥 <strong>{detected.debtorsCount}</strong> deudores (cuentas corrientes)</span>}
+            {detected.expensesCount > 0 && <span>🧾 <strong>{detected.expensesCount}</strong> gastos y facturas</span>}
+            {detected.salesCount > 0 && <span>💳 <strong>{detected.salesCount}</strong> ventas históricas</span>}
           </div>
         </div>
       )}
@@ -293,7 +323,7 @@ export function DataImporter() {
           disabled={busy || !selectedFile}
           className={`${ui.button} disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {busy ? "Importando datos..." : t.uploadAndImport}
+          {busy ? "Importando datos..." : "Cargar e Importar"}
         </button>
 
         {selectedFile && !busy && (

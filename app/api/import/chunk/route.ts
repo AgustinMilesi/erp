@@ -129,39 +129,96 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, count: items.length });
     }
 
-    if (kind === "contacts") {
+    if (kind === "debtors") {
       for (const d of items) {
         const name = String(d.name || "").trim();
         if (!name) continue;
 
-        const itemsCount = (d.items || []).length;
-        const totalDebt = (d.items || []).reduce(
-          (acc: number, it: any) => acc + Number(it.quantity || 1) * Number(it.lockedPrice || 0),
-          0
-        );
-        const saldoFavor = Number(d.saldoFavor || 0);
-        const historyCount = (d.history || []).length;
-        const notes = `Importado de backup marierp. Deuda pendiente: $${totalDebt.toLocaleString("es-AR")} (${itemsCount} ítems). Saldo a favor: $${saldoFavor.toLocaleString("es-AR")}. Historial: ${historyCount} pagos registrados.`;
+        const saldoFavorCents = BigInt(Math.max(0, Math.round(Number(d.saldoFavor || 0) * 100)));
+        const externalId = `debtor_${d.id}`;
 
-        const externalId = `debtor_${String(d.id || name.toLowerCase().replace(/[^a-z0-9]/g, "_"))}`;
-        const email = `${name.toLowerCase().replace(/[^a-z0-9]/g, "") || "contacto"}_${String(d.id || "00").slice(0, 6)}@cliente.local`;
-
-        const existing = await db.contact.findFirst({
+        const existing = await db.debtor.findFirst({
           where: { organizationId: orgId, externalId },
         });
 
+        let debtorId = existing?.id;
         if (existing) {
-          await db.contact.update({
+          await db.debtor.update({
             where: { id: existing.id },
-            data: { name, notes },
+            data: { name, saldoFavorCents },
           });
         } else {
-          await db.contact.create({
-            data: { organizationId: orgId, name, email, notes, externalId },
+          const created = await db.debtor.create({
+            data: {
+              organizationId: orgId,
+              name,
+              saldoFavorCents,
+              externalId,
+              notes: `Cuenta corriente marierp. ${d.items?.length || 0} ítems fiados.`,
+            },
           });
+          debtorId = created.id;
+        }
+
+        if (debtorId && Array.isArray(d.items) && d.items.length > 0) {
+          const itemRows = d.items.map((it: any) => {
+            const qty = Math.max(1, Math.round(Number(it.quantity || 1)));
+            const unitPriceCents = BigInt(Math.max(0, Math.round(Number(it.lockedPrice || 0) * 100)));
+            const totalCents = unitPriceCents * BigInt(qty);
+
+            return {
+              debtorId,
+              productId: null,
+              productName: `Ítem fiado (${it.type || "Unidad"})`,
+              quantity: qty,
+              unitPriceCents,
+              totalCents,
+              addedAt: it.addedAt ? new Date(it.addedAt) : new Date(),
+            };
+          });
+          await db.debtorItem.createMany({ data: itemRows });
+        }
+
+        if (debtorId && Array.isArray(d.history) && d.history.length > 0) {
+          const paymentRows = d.history.map((p: any) => ({
+            debtorId,
+            amountCents: BigInt(Math.max(0, Math.round(Number(p.amount || 0) * 100))),
+            date: p.date ? new Date(p.date) : new Date(),
+            note: `Pago de deuda (${p.type || "pago"})`,
+          }));
+          await db.debtorPayment.createMany({ data: paymentRows });
         }
       }
       return NextResponse.json({ ok: true, count: items.length });
+    }
+
+    if (kind === "expenses") {
+      const expenseRows = items.map((exp: any) => {
+        const desc = String(exp.description || "").trim();
+        const amount = Number(exp.amount || 0);
+        const date = exp.date ? new Date(exp.date) : new Date();
+
+        let category = "General";
+        const descLower = desc.toLowerCase();
+        if (descLower.includes("luz") || descLower.includes("agua") || descLower.includes("gas") || descLower.includes("aguanort") || descLower.includes("edesur")) {
+          category = "Servicios (Luz, Agua, Gas)";
+        } else if (descLower.includes("factura") || descLower.includes("afip") || descLower.includes("arba")) {
+          category = "Facturas / Impuestos";
+        } else if (descLower.includes("pollo") || descLower.includes("coca") || descLower.includes("pan") || descLower.includes("lays") || descLower.includes("queso") || descLower.includes("huevos") || descLower.includes("dia") || descLower.includes("marcelo")) {
+          category = "Mercadería / Proveedores";
+        }
+
+        return {
+          organizationId: orgId,
+          description: desc,
+          amountCents: BigInt(Math.round(amount * 100)),
+          category,
+          date: isNaN(date.getTime()) ? new Date() : date,
+        };
+      });
+
+      await db.expense.createMany({ data: expenseRows });
+      return NextResponse.json({ ok: true, count: expenseRows.length });
     }
 
     if (kind === "sales") {

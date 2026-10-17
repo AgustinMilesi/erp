@@ -107,10 +107,11 @@ model Organization {
 
   // Point of sale settings. Sale numbers come from saleCounter, which is
   // incremented inside the sale transaction, so they never repeat or skip.
-  currency           String  @default("ARS")
-  timezone           String  @default("America/Argentina/Buenos_Aires")
-  allowNegativeStock Boolean @default(false)
-  saleCounter        Int     @default(0)
+  currency           String   @default("ARS")
+  timezone           String   @default("America/Argentina/Buenos_Aires")
+  allowNegativeStock Boolean  @default(false)
+  saleCounter        Int      @default(0)
+  enabledModules     String[] @default(["overview", "sales", "products", "cash", "debtors", "expenses", "inbox", "contacts", "forms"])
 
   memberships    Membership[]
   forms          Form[]
@@ -124,6 +125,8 @@ model Organization {
   cashMovements  CashMovement[]
   sales          Sale[]
   invitations    Invitation[]
+  expenses       Expense[]
+  debtors        Debtor[]
 }
 
 model Membership {
@@ -276,6 +279,7 @@ model Product {
   category     Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   saleItems    SaleItem[]
   movements    StockMovement[]
+  debtorItems  DebtorItem[]
 
   @@unique([organizationId, sku])
   @@unique([organizationId, barcode])
@@ -415,3 +419,73 @@ model Payment {
 
   @@index([saleId])
 }
+
+// ---------------------------------------------------------------------------
+// Expenses / Facturas
+// ---------------------------------------------------------------------------
+
+model Expense {
+  id             String   @id @default(cuid())
+  organizationId String
+  description    String
+  amountCents    BigInt
+  category       String   @default("General")
+  date           DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, date])
+}
+
+// ---------------------------------------------------------------------------
+// Debtors / Fiados / Cuentas Corrientes
+// ---------------------------------------------------------------------------
+
+model Debtor {
+  id              String   @id @default(cuid())
+  organizationId  String
+  name            String
+  saldoFavorCents BigInt   @default(0)
+  phone           String?
+  notes           String?
+  externalId      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  items        DebtorItem[]
+  payments     DebtorPayment[]
+
+  @@unique([organizationId, externalId])
+  @@index([organizationId, name])
+}
+
+model DebtorItem {
+  id             String   @id @default(cuid())
+  debtorId       String
+  productId      String?
+  productName    String
+  quantity       Int      @default(1)
+  unitPriceCents BigInt
+  totalCents     BigInt
+  addedAt        DateTime @default(now())
+
+  debtor  Debtor   @relation(fields: [debtorId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([debtorId])
+}
+
+model DebtorPayment {
+  id          String   @id @default(cuid())
+  debtorId    String
+  amountCents BigInt
+  date        DateTime @default(now())
+  note        String?
+
+  debtor Debtor @relation(fields: [debtorId], references: [id], onDelete: Cascade)
+
+  @@index([debtorId])
+}
+
