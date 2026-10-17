@@ -7,8 +7,9 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: { default: "ERP & POS", template: "%s · ERP" },
+  title: { default: "Milesi ERP & POS", template: "%s · Milesi ERP" },
   description: "Point of sale, inventory control, cash shifts and customer management.",
+  icons: { icon: "/icon.svg" },
 };
 
 import { PreferencesProvider } from "@/components/PreferencesProvider";
