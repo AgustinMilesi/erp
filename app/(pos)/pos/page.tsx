@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 export const metadata: Metadata = { title: "Point of sale" };
 
 export default async function PosPage() {
-  const { organization, role } = await requireSession();
+  const { organization, role, user } = await requireSession();
 
   const [open, org, debtors] = await Promise.all([
     db.cashSession.findFirst({
@@ -25,8 +25,18 @@ export default async function PosPage() {
     }),
   ]);
 
-  if (!open) {
-    redirect("/app/cash");
+  let sessionToUse = open;
+  if (!sessionToUse) {
+    sessionToUse = await db.cashSession.create({
+      data: {
+        organizationId: organization.id,
+        openedById: user.id,
+        status: "OPEN",
+        openingCents: BigInt(0),
+        note: "Turno iniciado automáticamente desde el Punto de Venta",
+      },
+      select: { id: true },
+    });
   }
 
   return (

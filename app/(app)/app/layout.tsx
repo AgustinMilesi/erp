@@ -36,6 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const allNavItems = [
     { href: "/app", key: "overview" as const, label: "Overview" },
+    { href: "/pos", key: "pos" as const, label: "Punto de Venta" },
     { href: "/app/sales", key: "sales" as const, label: "Sales" },
     { href: "/app/products", key: "products" as const, label: "Products" },
     { href: "/app/debtors", key: "debtors" as const, label: "Debtors", badge: debtorsCount > 0 ? debtorsCount : undefined },
