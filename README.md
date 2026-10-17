@@ -15,6 +15,18 @@ Built as a multi-tenant cloud solution, it allows retail businesses to manage sa
 
 ---
 
+## 🌐 Complete Ecosystem Suite
+
+This ERP is the central engine of a unified 3-tier enterprise software architecture:
+
+| Component | Repository | Role & Operational Focus |
+|---|---|---|
+| **Retail ERP & POS** | [AgustinMilesi/erp](https://github.com/AgustinMilesi/erp) | Core business operating system, inventory tracking, cash shifts, thermal ticket printing, and checkout POS. *(This Repository)* |
+| **Customer Inbox SaaS** | [AgustinMilesi/saas](https://github.com/AgustinMilesi/saas) | Multi-tenant customer inbox, embeddable contact forms, contact directory, and CRM leads bridge. |
+| **Contact Page Portal** | [AgustinMilesi/contact-page](https://github.com/AgustinMilesi/contact-page) | High-intent lead generation portal, anti-spam validation gateway, and email delivery dispatch. |
+
+---
+
 ## 🎯 What Problems Does This Engine Solve?
 
 Many retail stores face cash discrepancies at shift changes, duplicate charges caused by unstable network connections, and inventory mismatches between the shelves and the system. This platform is built to eliminate these operational pain points:
@@ -103,14 +115,14 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## ⚙️ Environment Variables
 
-| Variable | Required | Description |
-|---|:---:|---|
-| `DATABASE_URL` | Yes | Pooled PostgreSQL connection string for the runtime app |
-| `DIRECT_URL` | Yes | Direct connection string for Prisma schema migrations |
-| `APP_URL` | Yes | Public application URL (e.g. `https://milesi-erp.vercel.app`) |
-| `APP_TIMEZONE` | No | Default business timezone (e.g. `America/Argentina/Buenos_Aires`) |
-| `RESEND_API_KEY` | No (Dev) | API key from [Resend](https://resend.com) for team invites & password resets |
-| `EMAIL_FROM` | Yes | Sender email for transactional messages |
+| Variable | Required | Description | Example |
+|---|:---:|---|---|
+| `DATABASE_URL` | Yes | Neon pooled connection string (`-pooler.`) for Next.js runtime & queries | `postgresql://user:pass@ep-xyz-pooler.region.aws.neon.tech/erp?sslmode=require` |
+| `DIRECT_URL` | Yes | Neon direct unpooled connection string for Prisma migrations & schema changes | `postgresql://user:pass@ep-xyz.region.aws.neon.tech/erp?sslmode=require` |
+| `APP_URL` | Yes | Public application URL (e.g. `https://milesi-erp.vercel.app`) | `http://localhost:3000` / `https://milesi-erp.vercel.app` |
+| `APP_TIMEZONE` | No | Default business timezone | `America/Argentina/Buenos_Aires` |
+| `RESEND_API_KEY` | No (Dev) | API key from [Resend](https://resend.com) for team invites & password resets | `re_123456789` (prints to console in dev if omitted) |
+| `EMAIL_FROM` | Yes | Sender email for transactional messages | `Retail ERP <onboarding@resend.dev>` |
 
 ---
 
