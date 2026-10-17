@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
       { source: "/f/:path*", headers: baseHeaders },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/pos",
+        destination: "/app/pos",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

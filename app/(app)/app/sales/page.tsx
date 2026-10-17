@@ -83,7 +83,7 @@ export default async function SalesPage({
       {sales.length === 0 ? (
         <p className={ui.muted}>
           {t.noSalesEmpty}{" "}
-          <Link href="/pos" className={ui.link}>
+          <Link href="/app/pos" className={ui.link}>
             {t.openPosFirst}
           </Link>
         </p>

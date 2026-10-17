@@ -72,7 +72,7 @@ export default async function CashPage() {
                 </p>
               </div>
 
-              <Link href="/pos" className={ui.button}>
+              <Link href="/app/pos" className={ui.button}>
                 {t.goToTheTill} (POS) →
               </Link>
             </div>

@@ -101,7 +101,7 @@ export default async function OverviewPage() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Link href={openSession ? "/pos" : "/app/cash"} className={ui.button}>
+          <Link href={openSession ? "/app/pos" : "/app/cash"} className={ui.button}>
             {openSession ? t.openPosTill : t.openRegisterBtn}
           </Link>
         </div>

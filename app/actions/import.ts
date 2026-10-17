@@ -202,7 +202,7 @@ async function importJsonData(orgId: string, buffer: Buffer): Promise<ActionResu
 
   revalidatePath("/app/products");
   revalidatePath("/app/contacts");
-  revalidatePath("/pos");
+  revalidatePath("/app/pos");
 
   return ok(`Import completed successfully! ${productsCount} products and ${debtorsCount} customers/debtors processed.`);
 }
@@ -306,7 +306,7 @@ async function importExcelData(orgId: string, buffer: Buffer): Promise<ActionRes
   }
 
   revalidatePath("/app/products");
-  revalidatePath("/pos");
+  revalidatePath("/app/pos");
 
   return ok(`Excel import finished! ${imported} products were created or updated.`);
 }

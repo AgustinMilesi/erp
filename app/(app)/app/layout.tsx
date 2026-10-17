@@ -24,6 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const enabled = new Set(session.organization.enabledModules || [
     "overview",
+    "pos",
     "sales",
     "products",
     "cash",
@@ -92,7 +93,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      <main className="p-4 md:p-8 w-full max-w-7xl">{children}</main>
+      <main className="p-4 md:p-8 w-full max-w-[1600px]">{children}</main>
     </div>
   );
 }
