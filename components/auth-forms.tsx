@@ -15,6 +15,8 @@ import {
 import type { ActionResult } from "@/lib/action";
 import { forgotSchema, loginSchema, registerSchema, resetSchema } from "@/lib/validation";
 import { ui } from "@/components/ui";
+import { SocialAuthButtons } from "@/components/SocialAuthButtons";
+import { OAuthErrorNotice } from "@/components/OAuthErrorNotice";
 
 function Field({ error, children }: { error?: string; children: React.ReactNode }) {
   return (
@@ -50,48 +52,52 @@ export function LoginForm() {
   } = useForm<z.infer<typeof loginSchema>>({ resolver: zodResolver(loginSchema) });
 
   return (
-    <form onSubmit={handleSubmit(async (data) => handle(await loginAction(data)))} className="space-y-4">
-      <Field error={errors.email?.message}>
-        <label className={ui.label} htmlFor="login-email">Email</label>
-        <div className="relative">
-          <input
-            id="login-email"
-            {...register("email")}
-            type="email"
-            placeholder="usuario@comercio.com"
-            aria-label="Email"
-            autoComplete="email"
-            className={`${ui.input} !pt-1 !pb-2.5`}
-          />
-        </div>
-      </Field>
+    <div className="space-y-4">
+      <OAuthErrorNotice />
+      <SocialAuthButtons mode="login" variant="dark" />
+      <form onSubmit={handleSubmit(async (data) => handle(await loginAction(data)))} className="space-y-4 pt-1">
+        <Field error={errors.email?.message}>
+          <label className={ui.label} htmlFor="login-email">Email</label>
+          <div className="relative">
+            <input
+              id="login-email"
+              {...register("email")}
+              type="email"
+              placeholder="usuario@comercio.com"
+              aria-label="Email"
+              autoComplete="email"
+              className={`${ui.input} !pt-1 !pb-2.5`}
+            />
+          </div>
+        </Field>
 
-      <Field error={errors.password?.message}>
-        <div className="flex items-center justify-between">
-          <label className={ui.label} htmlFor="login-password">Contraseña</label>
-          <Link href="/forgot-password" className="text-xs text-slate-400 hover:text-rose-400 transition mb-2">
-            ¿Olvidaste tu contraseña?
-          </Link>
-        </div>
-        <div className="relative">
-          <input
-            id="login-password"
-            {...register("password")}
-            type="password"
-            placeholder="••••••••••••"
-            aria-label="Contraseña"
-            autoComplete="current-password"
-            className={`${ui.input} !pt-1 !pb-2.5`}
-          />
-        </div>
-      </Field>
+        <Field error={errors.password?.message}>
+          <div className="flex items-center justify-between">
+            <label className={ui.label} htmlFor="login-password">Contraseña</label>
+            <Link href="/forgot-password" className="text-xs text-slate-400 hover:text-rose-400 transition mb-2">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </div>
+          <div className="relative">
+            <input
+              id="login-password"
+              {...register("password")}
+              type="password"
+              placeholder="••••••••••••"
+              aria-label="Contraseña"
+              autoComplete="current-password"
+              className={`${ui.input} !pt-1 !pb-2.5`}
+            />
+          </div>
+        </Field>
 
-      <div className="pt-4">
-        <button type="submit" disabled={isSubmitting} className={`${ui.button} w-full text-center py-3.5`}>
-          {isSubmitting ? "Iniciando sesión..." : "Iniciar Sesión"}
-        </button>
-      </div>
-    </form>
+        <div className="pt-4">
+          <button type="submit" disabled={isSubmitting} className={`${ui.button} w-full text-center py-3.5`}>
+            {isSubmitting ? "Iniciando sesión..." : "Iniciar Sesión"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -104,25 +110,29 @@ export function RegisterForm() {
   } = useForm<z.infer<typeof registerSchema>>({ resolver: zodResolver(registerSchema) });
 
   return (
-    <form onSubmit={handleSubmit(async (data) => handle(await registerAction(data)))} className="space-y-2">
-      <Field error={errors.name?.message}>
-        <input {...register("name")} placeholder="Your name" aria-label="Your name" autoComplete="name" className={ui.input} />
-      </Field>
-      <Field error={errors.organization?.message}>
-        <input {...register("organization")} placeholder="Company or team name" aria-label="Company or team name" autoComplete="organization" className={ui.input} />
-      </Field>
-      <Field error={errors.email?.message}>
-        <input {...register("email")} type="email" placeholder="Email" aria-label="Email" autoComplete="email" className={ui.input} />
-      </Field>
-      <Field error={errors.password?.message}>
-        <input {...register("password")} type="password" placeholder="Password (10 characters or more)" aria-label="Password" autoComplete="new-password" className={ui.input} />
-      </Field>
-      <div className="pt-6">
-        <button type="submit" disabled={isSubmitting} className={ui.button}>
-          {isSubmitting ? "Creating..." : "Create account"}
-        </button>
-      </div>
-    </form>
+    <div className="space-y-4">
+      <OAuthErrorNotice />
+      <SocialAuthButtons mode="register" variant="light" />
+      <form onSubmit={handleSubmit(async (data) => handle(await registerAction(data)))} className="space-y-2 pt-1">
+        <Field error={errors.name?.message}>
+          <input {...register("name")} placeholder="Your name" aria-label="Your name" autoComplete="name" className={ui.input} />
+        </Field>
+        <Field error={errors.organization?.message}>
+          <input {...register("organization")} placeholder="Company or team name" aria-label="Company or team name" autoComplete="organization" className={ui.input} />
+        </Field>
+        <Field error={errors.email?.message}>
+          <input {...register("email")} type="email" placeholder="Email" aria-label="Email" autoComplete="email" className={ui.input} />
+        </Field>
+        <Field error={errors.password?.message}>
+          <input {...register("password")} type="password" placeholder="Password (10 characters or more)" aria-label="Password" autoComplete="new-password" className={ui.input} />
+        </Field>
+        <div className="pt-6">
+          <button type="submit" disabled={isSubmitting} className={ui.button}>
+            {isSubmitting ? "Creating..." : "Create account"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 

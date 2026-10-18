@@ -20,6 +20,13 @@ const schema = z.object({
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default("ERP <onboarding@resend.dev>"),
   APP_TIMEZONE: z.string().default("America/Argentina/Buenos_Aires"),
+  // OAuth credentials (optional until configured)
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  MICROSOFT_CLIENT_ID: z.string().optional(),
+  MICROSOFT_CLIENT_SECRET: z.string().optional(),
+  APPLE_CLIENT_ID: z.string().optional(),
+  APPLE_CLIENT_SECRET: z.string().optional(),
 });
 
 const parsed = schema.parse({
@@ -31,4 +38,3 @@ export const env = {
   ...parsed,
   APP_URL: parsed.APP_URL.replace(/\/+$/, ""),
 };
-
