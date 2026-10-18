@@ -1,6 +1,6 @@
-# 💳 Retail ERP & Point of Sale (POS) Engine
+# 💳 Retail Engine & Point of Sale (POS)
 
-A mission-critical enterprise resource planning (**ERP**) and retail point of sale (**POS**) platform engineered for high-throughput retail operations, sub-second checkout speeds, strict cash drawer reconciliation, and atomic inventory tracking.
+A mission-critical retail point of sale (**POS**) and retail management platform engineered for high-throughput retail operations, sub-second checkout speeds, strict cash drawer reconciliation, and atomic inventory tracking.
 
 Built as a multi-tenant cloud solution, it allows retail businesses to manage sales, live stock deductions, cash shifts, team roles, and customer receivables with zero tolerance for fiscal discrepancies or inventory drift.
 
@@ -10,8 +10,8 @@ Built as a multi-tenant cloud solution, it allows retail businesses to manage sa
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-00E599?style=for-the-badge&logo=postgresql)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)
-[![GitHub stars](https://img.shields.io/github/stars/AgustinMilesi/erp?style=for-the-badge&logo=github&color=gold)](https://github.com/AgustinMilesi/erp/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/AgustinMilesi/erp?style=for-the-badge&logo=github&color=blue)](https://github.com/AgustinMilesi/erp/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/AgustinMilesi/retail?style=for-the-badge&logo=github&color=gold)](https://github.com/AgustinMilesi/retail/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/AgustinMilesi/retail?style=for-the-badge&logo=github&color=blue)](https://github.com/AgustinMilesi/retail/network/members)
 
 🌐 **Production Deployment:** [milesi-erp.vercel.app](https://milesi-erp.vercel.app)
 
@@ -19,12 +19,12 @@ Built as a multi-tenant cloud solution, it allows retail businesses to manage sa
 
 ## 🌐 Complete Ecosystem Suite
 
-This ERP is the central engine of a unified 3-tier retail & commercial enterprise architecture:
+This platform is the central engine of a unified 3-tier retail & commercial enterprise architecture:
 
 | Component | Repository | Live Deployment | Role & Operational Focus |
 |---|---|---|---|
-| **Retail ERP & POS** | [AgustinMilesi/erp](https://github.com/AgustinMilesi/erp) | [milesi-erp.vercel.app](https://milesi-erp.vercel.app) | Core cloud operating system, atomic inventory ledger, blind cash shifts, thermal ticket printing, and cashier POS. *(This Repository)* |
-| **Customer Inbox SaaS** | [AgustinMilesi/saas](https://github.com/AgustinMilesi/saas) | [saas-am.vercel.app](https://saas-am.vercel.app) | Multi-tenant customer inbox, embeddable contact forms, contact directory, and CRM leads bridge. |
+| **Retail Engine & POS** | [AgustinMilesi/retail](https://github.com/AgustinMilesi/retail) | [milesi-erp.vercel.app](https://milesi-erp.vercel.app) | Core cloud operating system, atomic inventory ledger, blind cash shifts, thermal ticket printing, and cashier POS. *(This Repository)* |
+| **Customer Inbox Platform** | [AgustinMilesi/inbox](https://github.com/AgustinMilesi/inbox) | [saas-am.vercel.app](https://saas-am.vercel.app) | Multi-tenant customer inbox, embeddable contact forms, contact directory, and CRM leads bridge. |
 | **Contact Portal** | [AgustinMilesi/contact](https://github.com/AgustinMilesi/contact) | [agustinmilesi-contact.vercel.app](https://agustinmilesi-contact.vercel.app) | High-intent lead generation portal, anti-spam validation gateway, and email delivery dispatch. |
 
 ---
@@ -95,8 +95,8 @@ Many retail stores face cash discrepancies at shift changes, duplicate charges c
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/AgustinMilesi/erp.git
-cd erp
+git clone https://github.com/AgustinMilesi/retail.git
+cd retail
 
 # 2. Install dependencies
 npm install
@@ -168,7 +168,7 @@ npm test
 
 If you find this project useful or interesting, please give it a **Star** on GitHub! It helps more developers discover the ecosystem.
 
-[![Star on GitHub](https://img.shields.io/static/v1?label=Star%20Repo&message=%E2%AD%90&color=yellow&style=for-the-badge&logo=github)](https://github.com/AgustinMilesi/erp)
+[![Star on GitHub](https://img.shields.io/static/v1?label=Star%20Repo&message=%E2%AD%90&color=yellow&style=for-the-badge&logo=github)](https://github.com/AgustinMilesi/retail)
 
 ---
 
