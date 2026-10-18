@@ -19,14 +19,13 @@ Built as a multi-tenant cloud solution, it allows retail businesses to manage sa
 
 ## 🌐 Complete Ecosystem Suite
 
-This ERP is the central engine of a unified 4-tier retail & commercial enterprise architecture:
+This ERP is the central engine of a unified 3-tier retail & commercial enterprise architecture:
 
 | Component | Repository | Live Deployment | Role & Operational Focus |
 |---|---|---|---|
 | **Retail ERP & POS** | [AgustinMilesi/erp](https://github.com/AgustinMilesi/erp) | [milesi-erp.vercel.app](https://milesi-erp.vercel.app) | Core cloud operating system, atomic inventory ledger, blind cash shifts, thermal ticket printing, and cashier POS. *(This Repository)* |
 | **Customer Inbox SaaS** | [AgustinMilesi/saas](https://github.com/AgustinMilesi/saas) | [saas-am.vercel.app](https://saas-am.vercel.app) | Multi-tenant customer inbox, embeddable contact forms, contact directory, and CRM leads bridge. |
 | **Contact Portal** | [AgustinMilesi/contact](https://github.com/AgustinMilesi/contact) | [agustinmilesi-contact.vercel.app](https://agustinmilesi-contact.vercel.app) | High-intent lead generation portal, anti-spam validation gateway, and email delivery dispatch. |
-| **Offline Retail ERP** | [AgustinMilesi/marierp](https://github.com/AgustinMilesi/marierp) | [GitHub Repository](https://github.com/AgustinMilesi/marierp) | 100% offline-first grocery & retail POS with IndexedDB storage, order tabs, and luxury teal/gold interface. |
 
 ---
 
