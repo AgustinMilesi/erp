@@ -1,177 +1,86 @@
 # 💳 Retail Engine & Point of Sale (POS)
 
-A mission-critical retail point of sale (**POS**) and retail management platform engineered for high-throughput retail operations, sub-second checkout speeds, strict cash drawer reconciliation, and atomic inventory tracking.
+Sistema de gestión comercial y punto de venta (**POS**) de alto rendimiento en la nube. Diseñado para operaciones minoristas exigentes: cobro ultra veloz con lector de código de barras, turnos y arqueos ciegos de caja, inventario atómico sin riesgo de sobreventas e impresión de tickets térmicos.
 
-Built as a multi-tenant cloud solution, it allows retail businesses to manage sales, live stock deductions, cash shifts, team roles, and customer receivables with zero tolerance for fiscal discrepancies or inventory drift.
-
-![Production Status](https://img.shields.io/badge/Status-Live%20in%20Production-success?style=for-the-badge)
-![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
-![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-00E599?style=for-the-badge&logo=postgresql)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)
-[![GitHub stars](https://img.shields.io/github/stars/AgustinMilesi/retail?style=for-the-badge&logo=github&color=gold)](https://github.com/AgustinMilesi/retail/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/AgustinMilesi/retail?style=for-the-badge&logo=github&color=blue)](https://github.com/AgustinMilesi/retail/network/members)
-
-🌐 **Production Deployment:** [milesi-erp.vercel.app](https://milesi-erp.vercel.app)
+<p align="left">
+  <a href="https://milesi-erp.vercel.app"><img src="https://img.shields.io/badge/Demo%20en%20Vivo-milesi--erp.vercel.app-f43f5e?style=for-the-badge&logo=vercel" alt="Live Demo" /></a>
+  <a href="https://milesi-erp.vercel.app/demo"><img src="https://img.shields.io/badge/Acceso%20Demo%201--Click-Invitado-10b981?style=for-the-badge&logo=shield" alt="1-Click Demo" /></a>
+  <img src="https://img.shields.io/badge/Next.js-16.4-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React-19.3-20232a?style=for-the-badge&logo=react" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178c6?style=for-the-badge&logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Neon-00E599?style=for-the-badge&logo=postgresql" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma" alt="Prisma" />
+</p>
 
 ---
 
-## 🌐 Complete Ecosystem Suite
+## 🎯 ¿Para qué sirve?
 
-This platform is the central engine of a unified 4-tier commercial software suite:
-
-| Component | Repository | Live Deployment | Role & Operational Focus |
-|---|---|---|---|
-| **Retail Engine & POS** | [AgustinMilesi/retail](https://github.com/AgustinMilesi/retail) | [milesi-erp.vercel.app](https://milesi-erp.vercel.app) | Core cloud operating system, atomic inventory ledger, blind cash shifts, thermal ticket printing, and cashier POS. *(This Repository)* |
-| **Customer Inbox Platform** | [AgustinMilesi/inbox](https://github.com/AgustinMilesi/inbox) | [saas-am.vercel.app](https://saas-am.vercel.app) | Multi-tenant customer inquiry inbox, embeddable contact forms, contact directory, and CRM leads bridge. |
-| **OneCargo (Freight Logistics OS)** | [AgustinMilesi/cargo](https://github.com/AgustinMilesi/cargo) | [cargo-am.vercel.app](https://cargo-am.vercel.app) | International freight forwarding, container GPS milestones, customs dispatch, and rate settlements. |
+- **Operación en caja sin demoras**: Terminal de cobro pensada para teclado físico o escáner de barras, con soporte para pagos mixtos (efectivo, transferencia, tarjeta) y cálculo exacto de cambio.
+- **Control financiero estricto**: No permite ventas sin un turno de caja abierto. Al cerrar el turno, el cajero realiza un arqueo ciego y el sistema audita faltantes o sobrantes de forma automática.
+- **Inventario consistente y transaccional**: Deducciones de stock inmediatas en base de datos bajo transacciones atómicas seguras (`BigInt` en centavos para eliminar errores de redondeo de punto flotante).
+- **Emisión de tickets térmicos**: Recibos listos para imprimir en impresoras térmicas comerciales estándar de 58mm y 80mm.
+- **Importador de catálogos**: Carga masiva de artículos y listas de precios desde planillas Excel (`.xlsx`, `.xls`) o backups JSON.
 
 ---
 
-## 🎯 What Problems Does This Engine Solve?
+## ✨ Módulos Principales
 
-Many retail stores face cash discrepancies at shift changes, duplicate charges caused by unstable network connections, and inventory mismatches between the shelves and the system. This platform is built to eliminate these operational pain points:
-
-- ⚡ **High-Speed POS Checkout:** Optimized for physical barcode scanners and full-keyboard navigation. Accepts Cash, Cards, Bank Transfers, and Split Payments with automatic change calculation.
-- 🔒 **Enforced Cash Shifts (Drawer Audits):** Sales are strictly locked unless a shift register is open. At closing, cashiers perform a blind count; the system compares counted cash against calculated cash and audits discrepancies.
-- 📦 **Atomic Inventory Ledger:** Stock is decremented in real-time within atomic database transactions. If two cashiers scan the last remaining item at the exact same millisecond, concurrency locks ensure only one sale goes through without overselling.
-- 🧾 **Thermal Ticket Printing:** Instant receipt generation formatted for standard 80mm and 58mm thermal printers (Epson, Hasar, custom mini POS).
-- 📥 **Zero-Loss Data Importer:** Import catalogs directly from legacy **marierp** backups (`.json`) or spreadsheet files (`.xlsx`, `.xls`).
-- 🌐 **Comprehensive Multilingual Engine:** Full support for **Spanish**, **English**, **Portuguese**, and **Chinese** with server/client instant synchronization.
-- 🎨 **Personalization:** Multiple color themes, customizable business timezones, and role permissions.
-
----
-
-## 🏢 Core Modules
-
-| Module | Route | Capabilities |
+| Módulo | Ruta | Funcionalidad |
 |---|---|---|
-| **Command Center (Overview)** | `/app` | Live sales KPIs, daily revenue, cash register status, recent receipts, and low-stock alerts. |
-| **Point of Sale Terminal** | `/pos` | Fullscreen cashier terminal with barcode scanner search, cart adjustments, customer attachment, and split tender. |
-| **Sales Ledger** | `/app/sales` | Complete audit trail of finalized sales, payment methods breakdown, and safe voiding with automatic stock re-entry. |
-| **Thermal Receipt** | `/pos/receipt/:id` | Print-ready receipt ticket with itemized tax breakdown, payment method distribution, and change calculation. |
-| **Products & Inventory** | `/app/products` | Catalog management with SKU, barcodes, tax rates, cost vs. retail pricing, categories, and inventory logs. |
-| **Cash Shifts & Audits** | `/app/cash` | Shift openings with starting float, mid-shift cash drops/payouts, and end-of-day drawer reconciliation. |
-| **Customers & Receivables** | `/app/contacts` | Customer directory, debt logs, contact information, and CRM sync. |
-| **Team Management** | `/app/settings` | Multi-role user management (`Owner`, `Admin`, `Cashier`) with secure email invitations. |
-| **Developer API & Keys** | `/app/settings` | REST API keys for external POS hardware, eCommerce synchronization, and webhooks. |
+| **Punto de Venta (POS)** | `/pos` | Terminal de cobro pantalla completa, atajos de teclado, búsqueda y división de pagos. |
+| **Panel de Control** | `/app` | Métricas en vivo de ventas diarias, estado de caja, alertas de stock bajo y tickets recientes. |
+| **Turnos y Arqueos de Caja** | `/app/cash` | Apertura con fondo inicial, registro de retiros/ingresos y conciliación ciega de cierre. |
+| **Productos y Stock** | `/app/products` | Gestión de catálogo, códigos de barra, costos, precios de venta y control de inventario. |
+| **Historial de Ventas** | `/app/sales` | Auditoría de comprobantes emitidos, reimpresión y anulación con reintegro automático a stock. |
+| **Clientes y Cuenta Corriente** | `/app/contacts` | Padrón de clientes y seguimiento de saldos y créditos. |
 
 ---
 
-## 🛡️ Reliability & Commercial Safety Guarantees
+## 🛠️ Stack Tecnológico
 
-1. 💰 **Integer-Cent Monetary Math (Zero Float Drift):** All money values are strictly stored and computed as integer cents (`BigInt`), completely eliminating JavaScript floating-point rounding errors (`0.1 + 0.2 !== 0.3`).
-2. 🔒 **Server-Enforced Pricing:** The client only sends product IDs and quantities. Live prices, active discounts, and tax rates are resolved strictly on the server at execution time.
-3. ⚡ **All-or-Nothing Atomic Transactions:** Stock checking, inventory deduction, sequential receipt numbering, and payment records execute within a single database transaction. If the connection drops midway, the transaction aborts and no state is corrupted.
-4. 🔁 **Idempotent Payment Submissions:** Every checkout request bears an idempotency key. If a cashier double-taps the pay button or the network blinks, the system returns the original completed receipt without charging twice.
-5. 🔢 **Zero-Gap Sequential Receipt Numbers:** Receipt numbers are monotonically incremented per workspace without skipped gaps.
-6. 🔐 **Enterprise Security:** Passwords hashed via memory-hard `scrypt` ($N=2^{15}, r=8, p=3$), sessions protected by `__Host-` cookies with SHA-256 database tokens, and DB-backed rate limiters.
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology | Details |
-|---|---|---|
-| **Framework** | Next.js 16 (App Router) | Server Components, Turbopack, Server Actions |
-| **Language** | TypeScript 5 | Strict mode with exhaustive type coverage |
-| **Styling** | Tailwind CSS 4 | Custom dark mode palette, CSS variables for multi-theme switching |
-| **Database** | PostgreSQL (Neon) | Serverless Postgres with pooled connections |
-| **ORM** | Prisma | Schema migrations, typed client, and connection management |
-| **Validation** | Zod | Robust schema validation for POS payloads and imports |
-| **Spreadsheet Engine** | XLSX (SheetJS) | High-performance streaming parser for Excel catalog imports |
-| **Testing** | Node.js Test Runner + tsx | Automated unit testing for monetary calculations and sale math |
+- **Frontend & Backend**: Next.js 16 (App Router, Server Actions) + React 19
+- **Lenguaje**: TypeScript (tipado estricto extremo)
+- **Estilos**: Tailwind CSS 4 (soporte de temas cromáticos, modo oscuro y claro)
+- **Base de Datos**: PostgreSQL Serverless en Neon
+- **ORM**: Prisma ORM con pooler PgBouncer
+- **Validaciones**: Zod (esquemas de cobro, productos y migraciones)
+- **Motor Excel**: SheetJS (XLSX) para importaciones de catálogo
+- **Internacionalización**: Multilingüe nativo (Español, Inglés, Portugués, Chino)
 
 ---
 
-## 🚀 Quickstart & Local Setup
+## ⚡ Prueba Rápida (Sin Registro)
 
-### Prerequisites
-- **Node.js** v20.9+
-- A **PostgreSQL** database (a free project on [Neon.tech](https://neon.tech) works immediately)
+Podés probar el sistema completo en producción con **1-Click**:
+- **[Entrar como Invitado en Modo Demo](https://milesi-erp.vercel.app/demo)** (ingresa directo a `/app` con caja y productos cargados).
+- O desde la pantalla de login en [milesi-erp.vercel.app/login](https://milesi-erp.vercel.app/login) tocando **"Entrar como Invitado"**.
 
-### Installation Steps
+---
+
+## 🚀 Instalación Local
 
 ```bash
-# 1. Clone the repository
+# 1. Clonar el repositorio
 git clone https://github.com/AgustinMilesi/retail.git
 cd retail
 
-# 2. Install dependencies
+# 2. Instalar dependencias
 npm install
 
-# 3. Setup environment variables
-cp .env.example .env        # On Windows PowerShell: Copy-Item .env.example .env
+# 3. Configurar entorno
+cp .env.example .env
 
-# 4. Run database migrations
-npx prisma migrate dev --name init
-
-# 5. Start development server
+# 4. Generar cliente Prisma y correr
+npx prisma generate
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ---
 
-## ⚙️ Environment Variables
-
-| Variable | Required | Description | Example |
-|---|:---:|---|---|
-| `DATABASE_URL` | Yes | Neon pooled connection string (`-pooler.`) for Next.js runtime & queries | `postgresql://user:pass@ep-xyz-pooler.region.aws.neon.tech/erp?sslmode=require` |
-| `DIRECT_URL` | Yes | Neon direct unpooled connection string for Prisma migrations & schema changes | `postgresql://user:pass@ep-xyz.region.aws.neon.tech/erp?sslmode=require` |
-| `APP_URL` | Yes | Public application URL (e.g. `https://milesi-erp.vercel.app`) | `http://localhost:3000` / `https://milesi-erp.vercel.app` |
-| `APP_TIMEZONE` | No | Default business timezone | `America/Argentina/Buenos_Aires` |
-| `RESEND_API_KEY` | No (Dev) | API key from [Resend](https://resend.com) for team invites & password resets | `re_123456789` (prints to console in dev if omitted) |
-| `EMAIL_FROM` | Yes | Sender email for transactional messages | `Retail ERP <onboarding@resend.dev>` |
-
----
-
-## 🔌 REST API for Developers
-
-External POS scanners, webshops, or ERP integrations authenticate using Bearer tokens:
-
-```http
-Authorization: Bearer cs_your_api_key_here
-```
-
-### Endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/v1/products` | Query products by name, SKU, or barcode |
-| `GET` | `/api/v1/sales` | Paginated sales log with itemized breakdowns |
-| `GET` | `/api/v1/contacts` | Search customer and debtor directory |
-| `POST` | `/api/v1/contacts` | Create or update customer profiles externally |
-
----
-
-## 🧪 Testing & Code Quality
-
-The codebase enforces strict test suites, linting, and type checking:
-
-```bash
-# Typecheck TypeScript definitions
-npm run typecheck
-
-# Lint codebase
-npm run lint
-
-# Run mathematical & monetary unit tests
-npm test
-```
-
----
-
-## ⭐ Show Your Support
-
-If you find this project useful or interesting, please give it a **Star** on GitHub! It helps more developers discover the ecosystem.
-
-[![Star on GitHub](https://img.shields.io/static/v1?label=Star%20Repo&message=%E2%AD%90&color=yellow&style=for-the-badge&logo=github)](https://github.com/AgustinMilesi/retail)
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
+### 🔗 Otros Proyectos
+- [📥 Customer Inbox SaaS](https://github.com/AgustinMilesi/inbox) — Bandeja de entrada multi-inquilino y formularios embebibles.
+- [🌐 OneCargo Logistics](https://github.com/AgustinMilesi/cargo) — Sistema operativo de fletes internacionales y aduana.
+- [📬 Contact Portal](https://github.com/AgustinMilesi/contact) — Portal de contacto y captura de leads con validación Zod.
