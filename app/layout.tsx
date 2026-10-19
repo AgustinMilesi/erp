@@ -21,6 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#0a0f1f] text-slate-50">
+        {/* Skip to Content for Keyboard Users (WCAG 2.2 SC 2.4.1) */}
+        <a href="#main-content" className="sr-only skip-link">
+          Saltar al contenido principal / Skip to main content
+        </a>
         <PreferencesProvider>
           {children}
           <Toaster position="top-right" theme="dark" richColors />
