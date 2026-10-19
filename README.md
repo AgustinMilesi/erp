@@ -1,10 +1,10 @@
 # 💳 Retail Engine & Point of Sale (POS)
 
-Sistema de gestión comercial y punto de venta (**POS**) de alto rendimiento en la nube. Diseñado para operaciones minoristas exigentes: cobro ultra veloz con lector de código de barras, turnos y arqueos ciegos de caja, inventario atómico sin riesgo de sobreventas e impresión de tickets térmicos.
+A fast, cloud-based retail point of sale (**POS**) and store management system. Engineered for busy retail environments: sub-second barcode checkout, enforced cash drawer shifts with blind audits, atomic stock deductions (zero overselling), and instant thermal receipt printing.
 
 <p align="left">
-  <a href="https://milesi-erp.vercel.app"><img src="https://img.shields.io/badge/Demo%20en%20Vivo-milesi--erp.vercel.app-f43f5e?style=for-the-badge&logo=vercel" alt="Live Demo" /></a>
-  <a href="https://milesi-erp.vercel.app/demo"><img src="https://img.shields.io/badge/Acceso%20Demo%201--Click-Invitado-10b981?style=for-the-badge&logo=shield" alt="1-Click Demo" /></a>
+  <a href="https://milesi-erp.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-milesi--erp.vercel.app-f43f5e?style=for-the-badge&logo=vercel" alt="Live Demo" /></a>
+  <a href="https://milesi-erp.vercel.app/demo"><img src="https://img.shields.io/badge/1--Click%20Demo%20Access-Guest%20Mode-10b981?style=for-the-badge&logo=shield" alt="1-Click Demo" /></a>
   <img src="https://img.shields.io/badge/Next.js-16.4-black?style=for-the-badge&logo=next.js" alt="Next.js" />
   <img src="https://img.shields.io/badge/React-19.3-20232a?style=for-the-badge&logo=react" alt="React 19" />
   <img src="https://img.shields.io/badge/TypeScript-5.0-3178c6?style=for-the-badge&logo=typescript" alt="TypeScript" />
@@ -14,73 +14,73 @@ Sistema de gestión comercial y punto de venta (**POS**) de alto rendimiento en 
 
 ---
 
-## 🎯 ¿Para qué sirve?
+## 🎯 What is it for?
 
-- **Operación en caja sin demoras**: Terminal de cobro pensada para teclado físico o escáner de barras, con soporte para pagos mixtos (efectivo, transferencia, tarjeta) y cálculo exacto de cambio.
-- **Control financiero estricto**: No permite ventas sin un turno de caja abierto. Al cerrar el turno, el cajero realiza un arqueo ciego y el sistema audita faltantes o sobrantes de forma automática.
-- **Inventario consistente y transaccional**: Deducciones de stock inmediatas en base de datos bajo transacciones atómicas seguras (`BigInt` en centavos para eliminar errores de redondeo de punto flotante).
-- **Emisión de tickets térmicos**: Recibos listos para imprimir en impresoras térmicas comerciales estándar de 58mm y 80mm.
-- **Importador de catálogos**: Carga masiva de artículos y listas de precios desde planillas Excel (`.xlsx`, `.xls`) o backups JSON.
+- **Fast cashier checkout**: Optimized for physical barcode scanners and full keyboard control. Supports cash, cards, bank transfers, split payments, and automatic change calculation.
+- **Strict cash shift audits**: Cashiers cannot complete sales without opening a register shift. At shift close, they perform a blind count; the system automatically audits discrepancies against calculated sales.
+- **Atomic inventory safety**: Stock is decremented in real time using atomic database transactions. Currency values are stored in integer cents (`BigInt`) to eliminate floating-point rounding bugs.
+- **Thermal receipt printing**: Instant receipt generation formatted for standard 58mm and 80mm commercial thermal printers.
+- **Bulk catalog imports**: Import thousands of products and price lists directly from Excel spreadsheets (`.xlsx`, `.xls`) or JSON files.
 
 ---
 
-## ✨ Módulos Principales
+## ✨ Core Modules
 
-| Módulo | Ruta | Funcionalidad |
+| Module | Route | Capabilities |
 |---|---|---|
-| **Punto de Venta (POS)** | `/pos` | Terminal de cobro pantalla completa, atajos de teclado, búsqueda y división de pagos. |
-| **Panel de Control** | `/app` | Métricas en vivo de ventas diarias, estado de caja, alertas de stock bajo y tickets recientes. |
-| **Turnos y Arqueos de Caja** | `/app/cash` | Apertura con fondo inicial, registro de retiros/ingresos y conciliación ciega de cierre. |
-| **Productos y Stock** | `/app/products` | Gestión de catálogo, códigos de barra, costos, precios de venta y control de inventario. |
-| **Historial de Ventas** | `/app/sales` | Auditoría de comprobantes emitidos, reimpresión y anulación con reintegro automático a stock. |
-| **Clientes y Cuenta Corriente** | `/app/contacts` | Padrón de clientes y seguimiento de saldos y créditos. |
+| **POS Terminal** | `/pos` | Fullscreen cashier terminal with fast barcode lookup, cart controls, and split payments. |
+| **Command Center** | `/app` | Live sales metrics, daily revenue, active cash register status, and low-stock alerts. |
+| **Cash Shifts & Audits** | `/app/cash` | Shift openings with starting cash float, mid-shift drops, and blind closing audits. |
+| **Products & Stock** | `/app/products` | Catalog management, SKU barcodes, cost vs. retail pricing, and inventory logs. |
+| **Sales Ledger** | `/app/sales` | Complete audit trail of past sales, receipt reprinting, and safe voiding with automatic stock return. |
+| **Customers & Receivables** | `/app/contacts` | Customer directory, balance tracking, and store credit ledgers. |
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Tech Stack
 
 - **Frontend & Backend**: Next.js 16 (App Router, Server Actions) + React 19
-- **Lenguaje**: TypeScript (tipado estricto extremo)
-- **Estilos**: Tailwind CSS 4 (soporte de temas cromáticos, modo oscuro y claro)
-- **Base de Datos**: PostgreSQL Serverless en Neon
-- **ORM**: Prisma ORM con pooler PgBouncer
-- **Validaciones**: Zod (esquemas de cobro, productos y migraciones)
-- **Motor Excel**: SheetJS (XLSX) para importaciones de catálogo
-- **Internacionalización**: Multilingüe nativo (Español, Inglés, Portugués, Chino)
+- **Language**: TypeScript (strict typing throughout)
+- **Styling**: Tailwind CSS 4 (dark mode, light mode, and color themes)
+- **Database**: PostgreSQL Serverless (Neon) with PgBouncer connection pooling
+- **ORM**: Prisma ORM
+- **Validation**: Zod (POS payloads, products, and checkout actions)
+- **Spreadsheet Engine**: SheetJS (XLSX) for catalog imports
+- **Localization**: Multi-language support (English, Spanish, Portuguese, Chinese)
 
 ---
 
-## ⚡ Prueba Rápida (Sin Registro)
+## ⚡ Quick Test (No Registration Needed)
 
-Podés probar el sistema completo en producción con **1-Click**:
-- **[Entrar como Invitado en Modo Demo](https://milesi-erp.vercel.app/demo)** (ingresa directo a `/app` con caja y productos cargados).
-- O desde la pantalla de login en [milesi-erp.vercel.app/login](https://milesi-erp.vercel.app/login) tocando **"Entrar como Invitado"**.
+Try the full cashier workflow instantly:
+- **[1-Click Demo Login](https://milesi-erp.vercel.app/demo)** (opens `/app` immediately with an active register and sample products).
+- Or visit [milesi-erp.vercel.app/login](https://milesi-erp.vercel.app/login) and click **"Entrar como Invitado (Modo Demo)"**.
 
 ---
 
-## 🚀 Instalación Local
+## 🚀 Local Setup
 
 ```bash
-# 1. Clonar el repositorio
+# 1. Clone the repository
 git clone https://github.com/AgustinMilesi/retail.git
 cd retail
 
-# 2. Instalar dependencias
+# 2. Install dependencies
 npm install
 
-# 3. Configurar entorno
+# 3. Configure environment variables
 cp .env.example .env
 
-# 4. Generar cliente Prisma y correr
+# 4. Generate Prisma client & start development server
 npx prisma generate
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-### 🔗 Otros Proyectos
-- [📥 Customer Inbox SaaS](https://github.com/AgustinMilesi/inbox) — Bandeja de entrada multi-inquilino y formularios embebibles.
-- [🌐 OneCargo Logistics](https://github.com/AgustinMilesi/cargo) — Sistema operativo de fletes internacionales y aduana.
-- [📬 Contact Portal](https://github.com/AgustinMilesi/contact) — Portal de contacto y captura de leads con validación Zod.
+### 🔗 Other Projects
+- [📥 Customer Inbox SaaS](https://github.com/AgustinMilesi/inbox) — Multi-tenant customer inquiry inbox and embeddable forms.
+- [🌐 OneCargo Logistics](https://github.com/AgustinMilesi/cargo) — International freight forwarding, customs clearance, and container tracking.
+- [📬 Contact Portal](https://github.com/AgustinMilesi/contact) — Minimalist contact form and lead gateway with Zod validation.
