@@ -51,3 +51,7 @@ prisma/*.db-journal
 .neon
 .vercel
 .env*
+
+# Local agent & skills
+.agents/
+skills-lock.json
