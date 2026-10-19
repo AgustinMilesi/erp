@@ -99,6 +99,65 @@ export async function loginAction(input: unknown): Promise<ActionResult> {
   return ok(undefined, { redirectTo: "/app" });
 }
 
+export async function guestLoginAction(): Promise<ActionResult> {
+  let user = await db.user.findFirst({
+    where: {
+      memberships: {
+        some: {
+          organization: {
+            products: { some: {} },
+          },
+        },
+      },
+    },
+    select: { id: true },
+  });
+
+  if (!user) {
+    user = await db.user.findFirst({ select: { id: true } });
+  }
+
+  if (!user) {
+    const passwordHash = await hashPassword("GuestDemo2026!");
+    user = await db.user.create({
+      data: {
+        name: "Invitado Demo",
+        email: "demo@milesi-erp.com",
+        passwordHash,
+        memberships: {
+          create: {
+            role: "OWNER",
+            organization: {
+              create: {
+                name: "Retail Demo Express",
+                slug: slugify("Retail Demo Express"),
+                notifyEmail: "demo@milesi-erp.com",
+                currency: "ARS",
+                showDecimals: false,
+                timezone: "America/Argentina/Buenos_Aires",
+                enabledModules: [
+                  "overview",
+                  "pos",
+                  "sales",
+                  "products",
+                  "debtors",
+                  "expenses",
+                  "cash",
+                  "settings",
+                ],
+              },
+            },
+          },
+        },
+      },
+      select: { id: true },
+    });
+  }
+
+  await createSession(user.id);
+  return ok("Acceso demo activado", { redirectTo: "/app" });
+}
+
 export async function logoutAction() {
   await destroySession();
   redirect("/login");

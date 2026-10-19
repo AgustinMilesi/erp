@@ -44,7 +44,16 @@ export default function Home() {
         <div className="grid md:grid-cols-5 gap-12 md:gap-20 items-center">
           <div className="md:col-span-3 space-y-8">
             <Headline light={["Sistema ágil de", "Punto de Venta,"]} bold="listo para operar." />
-            <div className="pt-6 flex flex-wrap items-center gap-6">
+            <div className="pt-6 flex flex-wrap items-center gap-4">
+              <Link
+                href="/demo"
+                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm shadow-[0_4px_18px_rgba(16,185,129,0.35)] transition flex items-center gap-2 group"
+              >
+                <span>✨ Entrar como Invitado</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-950/20 px-2 py-0.5 rounded-full">
+                  1-Click Demo
+                </span>
+              </Link>
               <Link href="/register" className={ui.button}>
                 Crear cuenta
               </Link>
