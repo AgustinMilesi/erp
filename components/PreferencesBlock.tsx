@@ -54,7 +54,7 @@ export function PreferencesBlock({ compact = false }: { compact?: boolean }) {
               onClick={() => setMode("dark")}
               className={`flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 mode === "dark"
-                  ? "bg-[#5E48E8] text-white shadow-xs"
+                  ? "bg-[var(--primary-accent)] text-[#0A0E14] shadow-xs"
                   : "text-[#72729A] hover:text-[#18182E]"
               }`}
             >
@@ -84,7 +84,7 @@ export function PreferencesBlock({ compact = false }: { compact?: boolean }) {
                 onClick={() => setTheme(item.id)}
                 className={`size-7 rounded-full transition-all cursor-pointer ${item.colorClass} ${
                   theme === item.id
-                    ? "scale-115 ring-2 ring-offset-2 ring-[#5E48E8] shadow-md"
+                    ? "scale-115 ring-2 ring-offset-2 ring-[var(--primary-accent)] shadow-md"
                     : "opacity-60 hover:opacity-100 hover:scale-105"
                 }`}
                 title={item.name}
@@ -106,7 +106,7 @@ export function PreferencesBlock({ compact = false }: { compact?: boolean }) {
                 onClick={() => setLocale(l.code)}
                 className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-all cursor-pointer ${
                   locale === l.code
-                    ? "bg-[#5E48E8] text-white font-bold shadow-xs"
+                    ? "bg-[var(--primary-accent)] text-[#0A0E14] font-bold shadow-xs"
                     : "text-[#72729A] hover:text-[#18182E] hover:bg-white"
                 }`}
               >

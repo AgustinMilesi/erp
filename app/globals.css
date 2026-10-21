@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Default Theme: Clay Violet */
-  --primary-accent: #6852f6;
-  --primary-accent-hover: #5538ea;
-  --primary-accent-gradient: linear-gradient(135deg, #6852f6 0%, #5538ea 100%);
-  --primary-accent-shadow: rgba(85, 56, 234, 0.35);
-  --primary-accent-rgb: 104, 82, 246;
+  /* Default Theme: VOUT Cyber-Lime */
+  --primary-accent: #c6f827;
+  --primary-accent-hover: #b4e518;
+  --primary-accent-gradient: linear-gradient(135deg, #c6f827 0%, #a3d915 100%);
+  --primary-accent-shadow: rgba(198, 248, 39, 0.35);
+  --primary-accent-rgb: 198, 248, 39;
+  --primary-accent-text: #0a0e14;
 
-  /* Light Canvas Defaults */
-  --bg-page: #eef0fa;
-  --bg-card: #ffffff;
-  --bg-card-subtle: #f8f9fe;
-  --bg-hover: #f3f2fd;
-  --text-main: #18182e;
-  --text-muted: #72729a;
-  --border-card: #eae9f6;
-  --border-subtle: #f1f0fa;
+  /* Default Canvas: Deep Obsidian Charcoal */
+  --bg-page: #0a0e14;
+  --bg-card: #121824;
+  --bg-card-subtle: #182030;
+  --bg-hover: #1e293b;
+  --text-main: #ffffff;
+  --text-muted: #94a3b8;
+  --border-card: #1e293b;
+  --border-subtle: #141c2c;
 }
 
 /* ==============================================================================
@@ -25,19 +26,27 @@
 [data-mode="dark"],
 .dark {
   color-scheme: dark;
-  --bg-page: #0d0f17;
-  --bg-card: #151824;
-  --bg-card-subtle: #1c2030;
-  --bg-hover: #22273b;
-  --text-main: #f1f3f9;
-  --text-muted: #8b92a5;
-  --border-card: #262b3d;
-  --border-subtle: #1e2232;
+  --bg-page: #0a0e14;
+  --bg-card: #121824;
+  --bg-card-subtle: #182030;
+  --bg-hover: #1e293b;
+  --text-main: #ffffff;
+  --text-muted: #94a3b8;
+  --border-card: #1e293b;
+  --border-subtle: #141c2c;
 }
 
 /* ==============================================================================
    Color Themes (Palettes)
    ============================================================================== */
+[data-theme="lime"] {
+  --primary-accent: #c6f827;
+  --primary-accent-hover: #b4e518;
+  --primary-accent-gradient: linear-gradient(135deg, #c6f827 0%, #a3d915 100%);
+  --primary-accent-shadow: rgba(198, 248, 39, 0.35);
+  --primary-accent-rgb: 198, 248, 39;
+  --primary-accent-text: #0a0e14;
+}
 [data-theme="violet"] {
   --primary-accent: #6852f6;
   --primary-accent-hover: #5538ea;

@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import type { Locale, TranslationDict } from "@/lib/i18n";
 import { translations } from "@/lib/i18n";
 
-export type Theme = "violet" | "rose" | "emerald" | "amber" | "indigo" | "cyan";
+export type Theme = "lime" | "violet" | "rose" | "emerald" | "amber" | "indigo" | "cyan";
 export type Mode = "light" | "dark";
 
 export const THEMES: { id: Theme; name: string; colorClass: string; hex: string }[] = [
+  { id: "lime", name: "VOUT Cyber-Lime", colorClass: "bg-[#c6f827]", hex: "#c6f827" },
   { id: "violet", name: "Clay Violet", colorClass: "bg-[#6852f6]", hex: "#6852f6" },
   { id: "indigo", name: "Electric Indigo", colorClass: "bg-[#6366f1]", hex: "#6366f1" },
   { id: "rose", name: "Rose Neon", colorClass: "bg-[#f43f5e]", hex: "#f43f5e" },
@@ -48,7 +49,7 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
       const saved = localStorage.getItem("erp-theme") as Theme | null;
       if (saved && THEMES.some((t) => t.id === saved)) return saved;
     }
-    return "violet";
+    return "lime";
   });
 
   const [locale, setLocaleState] = useState<Locale>(() => {
