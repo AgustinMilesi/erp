@@ -58,7 +58,7 @@ export default async function RegisterPage() {
           <div className="p-3.5 rounded-2xl bg-[#0F1520] border border-[#1E293B] flex items-center gap-2.5">
             <span className="size-2 rounded-full bg-[#C6F827] animate-pulse" />
             <p className="text-[11px] text-[#94A3B8] leading-tight">
-              <strong className="text-white">Interconectividad total:</strong> Podrás iniciar sesión con esta misma cuenta en <strong className="text-[#C6F827]">VOUT Pocket</strong>.
+              <strong className="text-white">Interconectividad total:</strong> Podrás iniciar sesión con esta misma cuenta en <strong className="text-[#C6F827]">VOUT</strong>.
             </p>
           </div>
 

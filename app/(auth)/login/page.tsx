@@ -51,7 +51,7 @@ export default async function LoginPage() {
             <div>
               <h1 className="text-2xl font-black text-white tracking-tight">Accedé a tu Cuenta VOUT</h1>
               <p className="text-xs text-[#94A3B8] mt-1 leading-relaxed">
-                Tu llave digital unificada. La misma cuenta que utilizás en <strong className="text-white">VOUT Pocket</strong>, <strong className="text-white">VOUT Cargo</strong> y <strong className="text-white">VOUT Inbox</strong>.
+                Tu llave digital unificada. La misma cuenta que utilizás en <strong className="text-white">VOUT</strong>, <strong className="text-white">VOUT Cargo</strong> y <strong className="text-white">VOUT Inbox</strong>.
               </p>
             </div>
           </div>
