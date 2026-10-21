@@ -34,7 +34,7 @@ export function CashOpenCard({
           <span className="size-2 rounded-full bg-amber-500" />
           Caja actualmente cerrada
         </div>
-        <h2 className="text-xl sm:text-2xl font-extrabold text-[#18182E] tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-[var(--text-main,#FFFFFF)] tracking-tight">
           Comenzar Nuevo Turno de Caja
         </h2>
         <p className="text-sm text-[#72729A]">
@@ -72,7 +72,7 @@ export function CashOpenCard({
                 key={preset.value}
                 type="button"
                 onClick={() => setAmountStr(preset.value)}
-                className="px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[#F8F9FE] hover:bg-[#EEF0FA] text-[#18182E] border border-[#EAE9F6] transition shadow-xs cursor-pointer"
+                className="px-3 py-1.5 rounded-full text-xs font-mono font-bold bg-[var(--bg-card-subtle,#0F1520)] hover:bg-[var(--bg-hover,#1e293b)] text-[var(--text-main,#ffffff)] border border-[var(--border-card,#1E293B)] transition shadow-xs cursor-pointer"
               >
                 {preset.label}
               </button>
@@ -242,7 +242,7 @@ export function CashMovementCard() {
               key={chip}
               type="button"
               onClick={() => setReason(chip)}
-              className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[#F8F9FE] hover:bg-[#EEF0FA] text-[#18182E] border border-[#EAE9F6] transition shadow-xs cursor-pointer"
+              className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--bg-card-subtle,#0F1520)] hover:bg-[var(--bg-hover,#1e293b)] text-[var(--text-main,#ffffff)] border border-[var(--border-card,#1E293B)] transition shadow-xs cursor-pointer"
             >
               + {chip}
             </button>
@@ -287,22 +287,22 @@ export function CashCloseCard({
   return (
     <div className="clay-card p-6 sm:p-7 space-y-6 rounded-3xl">
       <div className="space-y-1">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#EEF0FA] text-[#5E48E8] border border-[#EAE9F6]">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--primary-accent)]/15 text-[var(--primary-accent)] border border-[var(--primary-accent)]/30">
           Fin de turno / Arqueo final
         </div>
-        <h3 className="text-xl font-extrabold text-[#18182E]">
+        <h3 className="text-xl font-extrabold text-[var(--text-main,#FFFFFF)]">
           Cerrar Caja y Control de Efectivo
         </h3>
-        <p className="text-xs text-[#72729A]">
+        <p className="text-xs text-[var(--text-muted,#94A3B8)]">
           Al terminar el día o cambiar de cajero, contá los billetes y monedas que tenés en el cajón y cargalo aquí para comprobar que todo coincida.
         </p>
       </div>
 
       {/* Target expected cash display */}
-      <div className="p-4 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-[var(--bg-card-subtle,#0F1520)] border border-[var(--border-card,#1E293B)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <span className="text-xs text-[#72729A] block font-medium">Efectivo esperado según el sistema:</span>
-          <span className="text-2xl font-mono font-black text-[#18182E] tracking-tight">
+          <span className="text-xs text-[var(--text-muted,#94A3B8)] block font-medium">Efectivo esperado según el sistema:</span>
+          <span className="text-2xl font-mono font-black text-[var(--text-main,#FFFFFF)] tracking-tight">
             {money(expectedCents)}
           </span>
         </div>

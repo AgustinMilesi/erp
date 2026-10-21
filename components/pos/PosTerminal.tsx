@@ -582,15 +582,15 @@ export function PosTerminal({
                 onClick={() => setActiveTabId(tab.id)}
                 className={`flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs uppercase tracking-[0.15em] font-bold transition-all duration-200 select-none border ${
                   isActive
-                    ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white border-transparent shadow-[0_10px_24px_rgba(85,56,234,0.35)] -translate-y-0.5 active:scale-95 cursor-pointer"
-                    : "bg-white text-[#72729A] hover:text-[#18182E] hover:bg-[#F8F9FE] border-[#EAE9F6] shadow-xs hover:shadow-sm cursor-pointer"
+                    ? "bg-[var(--primary-accent)] text-[var(--primary-accent-text,#0a0e14)] border-transparent shadow-[0_10px_24px_var(--primary-accent-shadow)] -translate-y-0.5 active:scale-95 cursor-pointer font-black"
+                    : "bg-[var(--bg-card,#121824)] text-[var(--text-muted,#94a3b8)] hover:text-[var(--text-main,#ffffff)] hover:bg-[var(--bg-hover,#1e293b)] border-[var(--border-card,#1E293B)] shadow-xs hover:shadow-sm cursor-pointer"
                 }`}
               >
                 <span>{tab.label}</span>
                 {countDisplay > 0 && (
                   <span
                     className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-black ${
-                      isActive ? "bg-white/25 text-white" : "bg-[#5E48E8]/10 text-[#5E48E8]"
+                      isActive ? "bg-black/20 text-inherit" : "bg-[var(--primary-accent)]/15 text-[var(--primary-accent)]"
                     }`}
                   >
                     {countDisplay}
@@ -628,7 +628,7 @@ export function PosTerminal({
                 }}
                 autoFocus
                 placeholder="Nombre, código de barra o SKU..."
-                className="w-full bg-[#F8F9FE] border border-[#EAE9F6] focus:border-[#5E48E8] focus:bg-white focus:ring-2 focus:ring-[#5E48E8]/10 rounded-full px-5 py-3 text-sm text-[#18182E] placeholder:text-[#72729A] outline-none transition-all"
+                className="w-full bg-[var(--bg-card-subtle,#0F1520)] border border-[var(--border-card,#1E293B)] focus:border-[var(--primary-accent)] focus:ring-2 focus:ring-[var(--primary-accent-shadow)] rounded-full px-5 py-3 text-sm text-[var(--text-main,#ffffff)] placeholder:text-[var(--text-muted,#94a3b8)] outline-none transition-all"
               />
 
               <div className="flex items-center gap-2">
@@ -644,7 +644,7 @@ export function PosTerminal({
                         handleAddClick();
                       }
                     }}
-                    className="w-full bg-[#F8F9FE] border border-[#EAE9F6] focus:border-[#5E48E8] focus:bg-white rounded-full py-2.5 px-3 text-center font-bold font-mono text-sm text-[#18182E] outline-none transition placeholder:text-[#72729A] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full bg-[var(--bg-card-subtle,#0F1520)] border border-[var(--border-card,#1E293B)] focus:border-[var(--primary-accent)] rounded-full py-2.5 px-3 text-center font-bold font-mono text-sm text-[var(--text-main,#ffffff)] outline-none transition placeholder:text-[var(--text-muted,#94a3b8)] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     placeholder="Cant / gr"
                     title="Cantidad o gramos (ej: 100, 250, 500, 1000)"
                   />
@@ -652,7 +652,7 @@ export function PosTerminal({
                 <button
                   type="button"
                   onClick={handleAddClick}
-                  className="flex-1 py-2.5 px-5 bg-gradient-to-r from-[#6852F6] to-[#5538EA] hover:-translate-y-0.5 active:scale-95 text-white font-bold rounded-full transition-all text-xs uppercase tracking-wider shadow-[0_8px_20px_rgba(85,56,234,0.32)] flex items-center justify-center gap-2 cursor-pointer"
+                  className="flex-1 py-2.5 px-5 bg-[var(--primary-accent)] hover:-translate-y-0.5 active:scale-95 text-[var(--primary-accent-text,#0a0e14)] font-black rounded-full transition-all text-xs uppercase tracking-wider shadow-[0_8px_20px_var(--primary-accent-shadow)] flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>+ Agregar al Pedido</span>
                 </button>
@@ -681,29 +681,29 @@ export function PosTerminal({
                       }}
                       className={`group flex items-center justify-between p-3.5 rounded-2xl border text-xs cursor-pointer transition-all select-none ${
                         isSelected
-                          ? "border-[#5E48E8] bg-[#F4F3FF] shadow-sm ring-2 ring-[#5E48E8]/20"
-                          : "border-[#EAE9F6] hover:border-[#5E48E8]/40 bg-white hover:bg-[#F8F9FE] shadow-xs hover:shadow-sm hover:-translate-y-0.5"
+                          ? "border-[var(--primary-accent)] bg-[var(--primary-accent)]/10 shadow-sm ring-2 ring-[var(--primary-accent)]/30"
+                          : "border-[var(--border-card,#1E293B)] hover:border-[var(--primary-accent)]/40 bg-[var(--bg-card,#121824)] hover:bg-[var(--bg-hover,#1e293b)] shadow-xs hover:shadow-sm hover:-translate-y-0.5"
                       } ${isOut ? "opacity-40 cursor-not-allowed" : "active:scale-[0.99]"}`}
                     >
                       <div className="min-w-0 pr-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <p className="text-[#18182E] font-bold group-hover:text-[#5E48E8] transition truncate">
+                          <p className="text-[var(--text-main,#ffffff)] font-bold group-hover:text-[var(--primary-accent)] transition truncate">
                             {p.name}
                           </p>
                           {isWeight && (
-                            <span className="text-[10px] px-2 py-0.5 bg-[#5E48E8]/10 text-[#5E48E8] rounded-full font-bold border border-[#5E48E8]/20">
+                            <span className="text-[10px] px-2 py-0.5 bg-[var(--primary-accent)]/15 text-[var(--primary-accent)] rounded-full font-bold border border-[var(--primary-accent)]/30">
                               x Kilo
                             </span>
                           )}
                           {p.size && (
-                            <span className="text-[10px] px-2 py-0.5 bg-[#EEF0FA] text-[#72729A] rounded-full font-mono">
+                            <span className="text-[10px] px-2 py-0.5 bg-[var(--bg-card-subtle,#0F1520)] text-[var(--text-muted,#94A3B8)] rounded-full font-mono">
                               {p.size}
                             </span>
                           )}
                         </div>
                       </div>
                       <div className="text-right whitespace-nowrap">
-                        <span className="text-[#5E48E8] font-extrabold font-mono block text-sm">
+                        <span className="text-[var(--primary-accent)] font-extrabold font-mono block text-sm">
                           {money(p.priceCents)}{isWeight ? <span className="text-[10px] font-normal text-[#72729A]">/kg</span> : ""}
                         </span>
                         {p.trackStock && (
@@ -746,18 +746,18 @@ export function PosTerminal({
 
             {activeTab.lines.length === 0 ? (
               <div className="text-center py-20 space-y-3">
-                <div className="size-14 rounded-3xl bg-[#EEF0FA] flex items-center justify-center mx-auto text-[#72729A] shadow-inner-xs">
+                <div className="size-14 rounded-3xl bg-[var(--bg-card-subtle,#0F1520)] flex items-center justify-center mx-auto text-[var(--text-muted,#94a3b8)] shadow-inner-xs">
                   <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
                 </div>
-                <p className="text-[#18182E] text-xs uppercase tracking-wider font-bold">Pedido vacío</p>
-                <p className="text-xs text-[#72729A]">
+                <p className="text-[var(--text-main,#ffffff)] text-xs uppercase tracking-wider font-bold">Pedido vacío</p>
+                <p className="text-xs text-[var(--text-muted,#94a3b8)]">
                   Agregá productos del catálogo o escaneá un código
                 </p>
               </div>
             ) : (
-              <ul className="divide-y divide-[#EAE9F6] max-h-[460px] overflow-y-auto pr-1">
+              <ul className="divide-y divide-[var(--border-card,#1E293B)] max-h-[460px] overflow-y-auto pr-1">
                 {activeTab.lines.map((item, idx) => {
                   const isWeight = item.saleType === "WEIGHT";
                   const lineTotal = Math.round(
@@ -857,10 +857,10 @@ export function PosTerminal({
         <div className="lg:col-span-4 space-y-4">
           <div className="clay-card p-6 space-y-6 relative overflow-hidden">
             {/* Total Grande */}
-            <div className="flex items-baseline justify-between border-b border-[#EAE9F6] pb-4">
+            <div className="flex items-baseline justify-between border-b border-[var(--border-card,#1E293B)] pb-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#72729A]">Total a Cobrar</p>
-                <p className="text-4xl sm:text-5xl font-black text-[#18182E] tracking-tight font-mono mt-1">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--text-muted,#94A3B8)]">Total a Cobrar</p>
+                <p className="text-4xl sm:text-5xl font-black text-[var(--text-main,#ffffff)] tracking-tight font-mono mt-1">
                   {money(totals.totalCents)}
                 </p>
               </div>
@@ -871,7 +871,7 @@ export function PosTerminal({
                     value={activeTab.discount}
                     onChange={(e) => updateActiveTab({ discount: e.target.value })}
                     placeholder="Desc. $"
-                    className="w-full bg-[#F8F9FE] border border-[#EAE9F6] rounded-xl focus:border-[#5E48E8] text-xs text-[#18182E] text-right outline-none py-1.5 px-2 placeholder:text-[#72729A] font-mono transition"
+                    className="w-full bg-[var(--bg-card-subtle,#0F1520)] border border-[var(--border-card,#1E293B)] rounded-xl focus:border-[var(--primary-accent)] text-xs text-[var(--text-main,#ffffff)] text-right outline-none py-1.5 px-2 placeholder:text-[var(--text-muted,#94A3B8)] font-mono transition"
                     title="Descuento en pesos"
                   />
                 </div>
@@ -880,7 +880,7 @@ export function PosTerminal({
 
             {/* Selector de Método de Pago Directo */}
             <div className="space-y-2.5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#72729A]">Método de Pago</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--text-muted,#94A3B8)]">Método de Pago</p>
 
               <div className="grid grid-cols-3 gap-2">
                 {[
@@ -920,8 +920,8 @@ export function PosTerminal({
                       onClick={() => updateActiveTab({ paymentMethod: m.id })}
                       className={`py-3 px-2 rounded-2xl text-xs uppercase tracking-wider font-bold transition-all flex flex-col items-center justify-center gap-1.5 select-none border cursor-pointer ${
                         isSelected
-                          ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white border-transparent shadow-[0_8px_20px_rgba(85,56,234,0.3)] -translate-y-0.5"
-                          : "bg-white text-[#72729A] border-[#EAE9F6] hover:text-[#18182E] hover:bg-[#F8F9FE] shadow-xs"
+                          ? "bg-[var(--primary-accent)] text-[var(--primary-accent-text,#0a0e14)] border-transparent shadow-[0_8px_20px_var(--primary-accent-shadow)] -translate-y-0.5 font-black"
+                          : "bg-[var(--bg-card-subtle,#0F1520)] text-[var(--text-muted,#94A3B8)] border-[var(--border-card,#1E293B)] hover:text-[var(--text-main,#ffffff)] hover:bg-[var(--bg-hover,#1e293b)] shadow-xs"
                       }`}
                     >
                       {m.icon}
@@ -938,11 +938,11 @@ export function PosTerminal({
                 type="button"
                 disabled={activeTab.lines.length === 0 || busy}
                 onClick={() => handleQuickCharge()}
-                className="w-full py-4 px-6 bg-gradient-to-r from-[#6852F6] to-[#5538EA] hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-40 disabled:hover:translate-y-0 text-white font-extrabold text-sm uppercase tracking-[0.15em] rounded-full transition-all shadow-[0_12px_28px_rgba(85,56,234,0.35)] flex items-center justify-between cursor-pointer"
+                className="w-full py-4 px-6 bg-[var(--primary-accent)] hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-40 disabled:hover:translate-y-0 text-[var(--primary-accent-text,#0a0e14)] font-black text-sm uppercase tracking-[0.15em] rounded-full transition-all shadow-[0_12px_28px_var(--primary-accent-shadow)] flex items-center justify-between cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <span>Cobrar</span>
-                  <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-white/20">
+                  <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-black/20 text-inherit">
                     {activeTab.paymentMethod === "CASH"
                       ? "Efectivo"
                       : activeTab.paymentMethod === "TRANSFER"
@@ -1077,10 +1077,10 @@ export function PosTerminal({
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18182E]/40 backdrop-blur-md animate-in fade-in duration-200">
-            <div className="clay-card max-w-lg w-full p-6 sm:p-7 space-y-5 rounded-3xl border border-[#EAE9F6] shadow-2xl max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-[#EAE9F6] pb-3">
-                <p className="text-base font-extrabold text-[#18182E] uppercase tracking-wider flex items-center gap-2">
-                  <svg className="size-4 text-[#5E48E8]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="clay-card max-w-lg w-full p-6 sm:p-7 space-y-5 rounded-3xl bg-[var(--bg-card,#121824)] border border-[var(--border-card,#1E293B)] shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-[var(--border-card,#1E293B)] pb-3">
+                <p className="text-base font-extrabold text-[var(--text-main,#ffffff)] uppercase tracking-wider flex items-center gap-2">
+                  <svg className="size-4 text-[var(--primary-accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="1" x2="12" y2="23" />
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
@@ -1089,7 +1089,7 @@ export function PosTerminal({
                 <button
                   type="button"
                   onClick={() => setShowSplitModal(false)}
-                  className="text-[#72729A] hover:text-[#18182E] p-1 cursor-pointer"
+                  className="text-[var(--text-muted,#94A3B8)] hover:text-[var(--text-main,#ffffff)] p-1 cursor-pointer"
                 >
                   <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -1098,9 +1098,9 @@ export function PosTerminal({
                 </button>
               </div>
 
-              <div className="flex items-baseline justify-between bg-[#F8F9FE] p-4 rounded-2xl border border-[#EAE9F6]">
+              <div className="flex items-baseline justify-between bg-[var(--bg-card-subtle,#0F1520)] p-4 rounded-2xl border border-[var(--border-card,#1E293B)]">
                 <span className={ui.label}>Total a Cubrir</span>
-                <span className="text-2xl font-black text-[#5E48E8] font-mono">{money(totals.totalCents)}</span>
+                <span className="text-2xl font-black text-[var(--primary-accent)] font-mono">{money(totals.totalCents)}</span>
               </div>
 
               <div className="space-y-4">
@@ -1240,7 +1240,7 @@ export function PosTerminal({
                   type="button"
                   disabled={busy || !isCovered || debtorMissing}
                   onClick={handleConfirmSplit}
-                  className="flex-1 py-3 px-4 rounded-full text-xs uppercase tracking-wider font-extrabold text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] shadow-[0_8px_20px_rgba(85,56,234,0.32)] hover:-translate-y-0.5 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-center"
+                  className="flex-1 py-3 px-4 rounded-full text-xs uppercase tracking-wider font-black text-[var(--primary-accent-text,#0a0e14)] bg-[var(--primary-accent)] shadow-[0_8px_20px_var(--primary-accent-shadow)] hover:-translate-y-0.5 active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer text-center"
                 >
                   Confirmar Cobro
                 </button>
@@ -1253,7 +1253,7 @@ export function PosTerminal({
       {/* 4. Modal de Venta Registrada con Éxito */}
       {doneSale && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#18182E]/40 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="clay-card max-w-sm w-full p-8 text-center space-y-6 rounded-3xl border border-[#EAE9F6] shadow-2xl">
+          <div className="clay-card max-w-sm w-full p-8 text-center space-y-6 rounded-3xl bg-[var(--bg-card,#121824)] border border-[var(--border-card,#1E293B)] shadow-2xl">
             <div className="size-16 rounded-3xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-xs">
               <svg className="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -1261,17 +1261,17 @@ export function PosTerminal({
             </div>
 
             <div className="space-y-1">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#72729A]">Venta Registrada</p>
-              <p className="text-2xl font-black text-[#18182E]">Ticket #{doneSale.number}</p>
-              <p className="text-3xl font-black text-[#5E48E8] font-mono mt-1">{money(doneSale.totalCents)}</p>
-              <p className="text-xs text-[#72729A]">{doneSale.methodLabel}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--text-muted,#94A3B8)]">Venta Registrada</p>
+              <p className="text-2xl font-black text-[var(--text-main,#ffffff)]">Ticket #{doneSale.number}</p>
+              <p className="text-3xl font-black text-[var(--primary-accent)] font-mono mt-1">{money(doneSale.totalCents)}</p>
+              <p className="text-xs text-[var(--text-muted,#94A3B8)]">{doneSale.methodLabel}</p>
             </div>
 
             <div className="flex flex-col gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={() => setDoneSale(null)}
-                className="w-full py-3.5 px-5 rounded-full text-xs uppercase tracking-wider font-bold text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] shadow-[0_8px_20px_rgba(85,56,234,0.32)] hover:-translate-y-0.5 active:scale-95 transition cursor-pointer"
+                className="w-full py-3.5 px-5 rounded-full text-xs uppercase tracking-wider font-black text-[var(--primary-accent-text,#0a0e14)] bg-[var(--primary-accent)] shadow-[0_8px_20px_var(--primary-accent-shadow)] hover:-translate-y-0.5 active:scale-95 transition cursor-pointer"
               >
                 Siguiente Venta
               </button>
@@ -1280,7 +1280,7 @@ export function PosTerminal({
                 <Link
                   href={`/pos/receipt/${doneSale.id}`}
                   target="_blank"
-                  className="w-full py-2.5 px-4 rounded-full text-xs font-bold text-[#72729A] hover:text-[#18182E] bg-white border border-[#EAE9F6] hover:bg-[#F8F9FE] shadow-xs transition text-center block"
+                  className="w-full py-2.5 px-4 rounded-full text-xs font-bold text-[var(--text-muted,#94A3B8)] hover:text-[var(--text-main,#ffffff)] bg-[var(--bg-card-subtle,#0F1520)] border border-[var(--border-card,#1E293B)] hover:bg-[var(--bg-hover,#1e293b)] shadow-xs transition text-center block"
                 >
                   Ver / Imprimir Recibo
                 </Link>

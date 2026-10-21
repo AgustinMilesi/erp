@@ -22,7 +22,7 @@ export function PreferencesControls() {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-xs uppercase tracking-wider text-[#72729A] hover:text-[#5E48E8] transition-all py-1.5 px-3 rounded-xl bg-white border border-[#EAE9F6] shadow-xs hover:shadow-sm select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5E48E8]"
+        className="flex items-center gap-2 text-xs uppercase tracking-wider text-[var(--text-muted,#94A3B8)] hover:text-[var(--primary-accent)] transition-all py-1.5 px-3 rounded-xl bg-[var(--bg-card,#121824)] border border-[var(--border-card,#1E293B)] shadow-xs hover:shadow-sm select-none cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-accent)]"
         title="Personalización y preferencias"
         aria-label="Abrir panel de preferencias"
         aria-expanded={open}
@@ -30,7 +30,7 @@ export function PreferencesControls() {
       >
         {/* Minimalist mode icon: Sun / Moon */}
         {mode === "dark" ? (
-          <svg className="size-3.5 text-[#72729A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="size-3.5 text-[var(--text-muted,#94A3B8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -39,7 +39,7 @@ export function PreferencesControls() {
             />
           </svg>
         ) : (
-          <svg className="size-3.5 text-[#72729A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="size-3.5 text-[var(--text-muted,#94A3B8)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -51,16 +51,16 @@ export function PreferencesControls() {
 
         {/* Color accent dot */}
         <span
-          className="size-2 rounded-full shadow-xs"
+          className="size-2 rounded-full shadow-xs ring-1 ring-white/20"
           style={{ backgroundColor: THEMES.find((x) => x.id === theme)?.hex }}
         />
 
         {/* Minimalist language code label */}
-        <span className="font-mono font-bold text-[11px] text-[#18182E]">{locale.toUpperCase()}</span>
+        <span className="font-mono font-bold text-[11px] text-[var(--text-main,#FFFFFF)]">{locale.toUpperCase()}</span>
 
         {/* Chevron down */}
         <svg
-          className={`size-3 text-[#72729A] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`size-3 text-[var(--text-muted,#94A3B8)] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -73,20 +73,20 @@ export function PreferencesControls() {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           {/* Opens DOWNWARDS below the header button */}
-          <div role="dialog" aria-label="Panel de preferencias" className="absolute right-0 top-full mt-2 w-64 p-4 rounded-3xl bg-white/95 border border-[#EAE9F6] backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.18)] z-50 space-y-4 animate-smooth-in">
+          <div role="dialog" aria-label="Panel de preferencias" className="absolute right-0 top-full mt-2 w-64 p-4 rounded-3xl bg-[var(--bg-card,#121824)] border border-[var(--border-card,#1E293B)] shadow-2xl z-50 space-y-4 animate-smooth-in">
             {/* Mode selection: Claro / Oscuro */}
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-[#72729A] font-bold mb-2">
+              <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted,#94A3B8)] font-bold mb-2">
                 {t.mode || "Aspecto"}
               </p>
-              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
+              <div className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-[var(--bg-card-subtle,#0F1520)] border border-[var(--border-card,#1E293B)]">
                 <button
                   type="button"
                   onClick={() => setMode("light")}
                   className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     mode === "light"
-                      ? "bg-white text-[#18182E] shadow-xs"
-                      : "text-[#72729A] hover:text-[#18182E]"
+                      ? "bg-[var(--primary-accent)] text-[var(--primary-accent-text,#0A0E14)] shadow-xs"
+                      : "text-[var(--text-muted,#94A3B8)] hover:text-[var(--text-main,#FFFFFF)]"
                   }`}
                 >
                   <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,8 +105,8 @@ export function PreferencesControls() {
                   onClick={() => setMode("dark")}
                   className={`flex items-center justify-center gap-2 py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     mode === "dark"
-                      ? "bg-[#5E48E8] text-white shadow-xs"
-                      : "text-[#72729A] hover:text-[#18182E]"
+                      ? "bg-[var(--primary-accent)] text-[var(--primary-accent-text,#0A0E14)] shadow-xs"
+                      : "text-[var(--text-muted,#94A3B8)] hover:text-[var(--text-main,#FFFFFF)]"
                   }`}
                 >
                   <svg className="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,8 +123,8 @@ export function PreferencesControls() {
             </div>
 
             {/* Color Accent Themes */}
-            <div className="border-t border-[#EAE9F6] pt-3">
-              <p className="text-[10px] uppercase tracking-wider text-[#72729A] font-bold mb-2.5">
+            <div className="border-t border-[var(--border-card,#1E293B)] pt-3">
+              <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted,#94A3B8)] font-bold mb-2.5">
                 {t.theme || "Color de Acento"}
               </p>
               <div className="flex items-center justify-between gap-2 px-1">
@@ -135,7 +135,7 @@ export function PreferencesControls() {
                     onClick={() => setTheme(item.id)}
                     className={`size-6 rounded-full transition-all cursor-pointer ${item.colorClass} ${
                       theme === item.id
-                        ? "scale-125 ring-2 ring-offset-2 ring-[#5E48E8] shadow-sm"
+                        ? "scale-125 ring-2 ring-offset-2 ring-[var(--primary-accent)] ring-offset-[var(--bg-card,#121824)] shadow-sm"
                         : "opacity-60 hover:opacity-100 hover:scale-110"
                     }`}
                     title={item.name}
@@ -145,8 +145,8 @@ export function PreferencesControls() {
             </div>
 
             {/* Language Selection */}
-            <div className="border-t border-[#EAE9F6] pt-3">
-              <p className="text-[10px] uppercase tracking-wider text-[#72729A] font-bold mb-2.5">
+            <div className="border-t border-[var(--border-card,#1E293B)] pt-3">
+              <p className="text-[10px] uppercase tracking-wider text-[var(--text-muted,#94A3B8)] font-bold mb-2.5">
                 {t.language || "Idioma"}
               </p>
               <div className="grid grid-cols-2 gap-1.5">
@@ -157,8 +157,8 @@ export function PreferencesControls() {
                     onClick={() => setLocale(l.code)}
                     className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs transition-all cursor-pointer ${
                       locale === l.code
-                        ? "bg-[#5E48E8] text-white font-bold shadow-xs"
-                        : "text-[#72729A] hover:text-[#18182E] hover:bg-[#F3F2FD]"
+                        ? "bg-[var(--primary-accent)] text-[var(--primary-accent-text,#0A0E14)] font-bold shadow-xs"
+                        : "text-[var(--text-muted,#94A3B8)] hover:text-[var(--text-main,#FFFFFF)] hover:bg-[var(--bg-hover,#1E293B)]"
                     }`}
                   >
                     <span>{l.label}</span>

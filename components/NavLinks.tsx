@@ -125,8 +125,8 @@ export function NavLinks({ items, onItemClick }: { items: Item[]; onItemClick?: 
             onClick={onItemClick}
             className={`flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider transition-all duration-200 select-none ${
               active
-                ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white shadow-[0_8px_20px_rgba(85,56,234,0.32)] -translate-y-0.5"
-                : "text-[#72729A] hover:text-[#18182E] hover:bg-[#F3F2FD] border border-transparent hover:border-[#EAE9F6]"
+                ? "bg-[var(--primary-accent)] text-[var(--primary-accent-text,#0a0e14)] shadow-[0_8px_20px_var(--primary-accent-shadow)] font-black -translate-y-0.5"
+                : "text-[var(--text-muted,#94a3b8)] hover:text-[var(--text-main,#ffffff)] hover:bg-[var(--bg-hover,#1e293b)] border border-transparent hover:border-[var(--border-card,#1e293b)]"
             }`}
           >
             <span className="flex items-center gap-2.5 truncate">
