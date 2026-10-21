@@ -19,15 +19,17 @@ export default async function LoginPage() {
       {/* Top Bar */}
       <header className="w-full max-w-5xl mx-auto flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="size-9 rounded-xl bg-[#C6F827] flex items-center justify-center text-[#0A0E14] font-black text-lg shadow-[0_0_20px_rgba(198,248,39,0.35)] group-hover:scale-105 transition-transform">
-            V
+          <div className="size-9 rounded-xl bg-[#0A0E14] border border-[#1E293B] flex items-center justify-center shadow-[0_0_15px_rgba(198,248,39,0.3)] group-hover:scale-105 transition-transform shrink-0">
+            <span className="font-black text-lg bg-gradient-to-br from-[#C6F827] via-[#10B981] to-[#00FF88] bg-clip-text text-transparent flex items-baseline leading-none select-none pl-0.5">
+              V<span className="text-[11px] font-black text-[#C6F827] ml-0.5">r</span>
+            </span>
           </div>
           <div className="flex flex-col">
             <span className="font-black tracking-wider text-white text-base leading-tight">
               VOUT <span className="text-[#C6F827] font-semibold">Retail</span>
             </span>
             <span className="text-[10px] uppercase tracking-widest text-[#94A3B8] font-bold">
-              Ecosystem by Agustin Milesi
+              Autonomous Cloud Ecosystem
             </span>
           </div>
         </Link>
