@@ -90,7 +90,7 @@ export default async function SalesPage({
               href={href(1, filter.value)}
               className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-200 select-none border cursor-pointer ${
                 active
-                  ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white border-transparent shadow-[0_8px_20px_rgba(85,56,234,0.32)] -translate-y-0.5"
+                  ? "bg-gradient-to-r from-[#C6F827] to-[#10B981] text-[#0A0E14] font-black border-transparent shadow-[0_8px_20px_rgba(198,248,39,0.32)] -translate-y-0.5"
                   : "bg-white text-[#72729A] hover:text-[#18182E] hover:bg-[#F8F9FE] border-[#EAE9F6] shadow-xs"
               }`}
             >
@@ -109,7 +109,7 @@ export default async function SalesPage({
           </div>
           <p className="text-[#18182E] font-bold text-base">{t.noSalesEmpty}</p>
           <p className="text-xs text-[#72729A]">
-            <Link href="/app/pos" className="text-[#5E48E8] font-bold hover:underline">
+            <Link href="/app/pos" className="text-[#C6F827] font-bold hover:underline">
               {t.openPosFirst}
             </Link>
           </p>
@@ -124,7 +124,7 @@ export default async function SalesPage({
                   className="flex items-center justify-between gap-4 py-4 hover:bg-[#F8F9FE] px-3 rounded-2xl transition group"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="size-10 rounded-2xl bg-[#EEF0FA] text-[#5E48E8] group-hover:bg-[#5E48E8] group-hover:text-white flex items-center justify-center text-sm font-bold transition shadow-xs">
+                    <div className="size-10 rounded-2xl bg-[#0A0E14] border border-[#1E293B] text-[#C6F827] group-hover:border-[#C6F827]/60 group-hover:shadow-[0_0_12px_rgba(198,248,39,0.3)] flex items-center justify-center text-sm font-bold transition shadow-xs">
                       <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M9 12h6m-6 4h4m-8 4h16a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v14a1 1 0 001 1z" />
                       </svg>
@@ -132,7 +132,7 @@ export default async function SalesPage({
                     <span className="min-w-0">
                       <span
                         className={`block font-bold text-sm truncate ${
-                          sale.status === "VOIDED" ? "text-[#72729A] line-through" : "text-[#18182E] group-hover:text-[#5E48E8] transition"
+                          sale.status === "VOIDED" ? "text-[#72729A] line-through" : "text-[#18182E] group-hover:text-[#C6F827] transition"
                         }`}
                       >
                         {t.saleNumber}{sale.number}

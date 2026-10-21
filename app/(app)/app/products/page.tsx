@@ -110,7 +110,7 @@ export default async function ProductsPage({
                 <li key={p.id}>
                   <Link href={`/app/products/${p.id}`} className="flex items-center justify-between gap-4 py-3.5 px-3 rounded-2xl hover:bg-[#F8F9FE] transition group">
                     <span className="min-w-0">
-                      <span className={`flex items-center flex-wrap gap-1.5 truncate ${p.active ? "text-[#18182E] font-bold group-hover:text-[#5E48E8]" : "text-[#72729A]"}`}>
+                      <span className={`flex items-center flex-wrap gap-1.5 truncate ${p.active ? "text-[#18182E] font-bold group-hover:text-[#C6F827]" : "text-[#72729A]"}`}>
                         <span>{p.name}</span>
                         {p.saleType === "WEIGHT" && (
                           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
@@ -169,9 +169,9 @@ export default async function ProductsPage({
         <div className="space-y-8 pt-4">
           {/* Manual Add Product Form */}
           <details className="clay-card p-6 sm:p-7 rounded-3xl">
-            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] font-bold text-[#18182E] hover:text-[#5E48E8] transition flex items-center justify-between">
+            <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] font-bold text-[#18182E] hover:text-[#C6F827] transition flex items-center justify-between">
               <span>{t.addAProduct}</span>
-              <span className="text-[#5E48E8] font-bold text-xs">+ Abrir</span>
+              <span className="text-[#C6F827] font-bold text-xs">+ Abrir</span>
             </summary>
             <div className="pt-6"><ProductForm categories={categories} /></div>
           </details>

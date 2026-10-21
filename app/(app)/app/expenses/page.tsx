@@ -162,7 +162,7 @@ export default async function ExpensesPage({
               href={href(1, opt)}
               className={`px-3.5 py-1.5 rounded-full font-mono text-xs font-bold transition select-none cursor-pointer ${
                 limit === opt
-                  ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white shadow-xs"
+                  ? "bg-gradient-to-r from-[#C6F827] to-[#10B981] text-[#0A0E14] font-black shadow-xs"
                   : "bg-white text-[#72729A] hover:text-[#18182E] hover:bg-[#F8F9FE] border border-[#EAE9F6] shadow-xs"
               }`}
             >
@@ -214,7 +214,7 @@ export default async function ExpensesPage({
                       {e.description}
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#EEF0FA] text-[#5E48E8] border border-[#EAE9F6]">
+                      <span className="text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#C6F827]/10 text-[#C6F827] border border-[#C6F827]/20">
                         {e.category}
                       </span>
                     </td>
@@ -277,7 +277,7 @@ export default async function ExpensesPage({
                           href={href(item)}
                           className={`size-8 rounded-full flex items-center justify-center font-mono text-xs font-bold transition select-none cursor-pointer ${
                             item === page
-                              ? "bg-gradient-to-r from-[#6852F6] to-[#5538EA] text-white shadow-xs"
+                              ? "bg-gradient-to-r from-[#C6F827] to-[#10B981] text-[#0A0E14] font-black shadow-xs"
                               : "bg-white text-[#72729A] hover:bg-[#F8F9FE] hover:text-[#18182E] border border-[#EAE9F6]"
                           }`}
                         >
@@ -305,9 +305,9 @@ export default async function ExpensesPage({
       {/* Record Expense Form */}
       {manage && (
         <details className="clay-card p-6 sm:p-7 rounded-3xl">
-          <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] font-bold text-[#18182E] hover:text-[#5E48E8] transition flex items-center justify-between">
+          <summary className="cursor-pointer text-xs uppercase tracking-[0.15em] font-bold text-[#18182E] hover:text-[#C6F827] transition flex items-center justify-between">
             <span>Registrar Nuevo Gasto o Factura</span>
-            <span className="text-[#5E48E8] font-bold text-xs">+ Abrir formulario</span>
+            <span className="text-[#C6F827] font-bold text-xs">+ Abrir formulario</span>
           </summary>
           <div className="pt-6">
             <ActionForm action={saveExpense} className="space-y-4">

@@ -182,10 +182,10 @@ export function AppShell({
           </button>
 
           <div className="flex items-center gap-2.5">
-            <span className="size-9 rounded-2xl bg-[var(--primary-accent)] text-[var(--primary-accent-text,#0A0E14)] flex items-center justify-center shadow-[0_4px_12px_var(--primary-accent-shadow)] shrink-0 font-bold">
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+            <span className="size-9 rounded-2xl bg-[#0A0E14] border border-[#1E293B] flex items-center justify-center shadow-[0_0_15px_rgba(198,248,39,0.25)] shrink-0">
+              <span className="font-black text-lg bg-gradient-to-br from-[#C6F827] via-[#10B981] to-[#00FF88] bg-clip-text text-transparent flex items-baseline leading-none select-none pl-0.5">
+                V<span className="text-[11px] font-black text-[#C6F827] ml-0.5">r</span>
+              </span>
             </span>
             <span className="text-[var(--text-main,#FFFFFF)] font-black text-base sm:text-lg tracking-tight truncate max-w-[200px] sm:max-w-xs">
               {organizationName}

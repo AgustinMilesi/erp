@@ -5,17 +5,14 @@ import { useRouter } from "next/navigation";
 import type { Locale, TranslationDict } from "@/lib/i18n";
 import { translations } from "@/lib/i18n";
 
-export type Theme = "lime" | "violet" | "rose" | "emerald" | "amber" | "indigo" | "cyan";
+export type Theme = "lime" | "mint" | "emerald" | "jade";
 export type Mode = "light" | "dark";
 
 export const THEMES: { id: Theme; name: string; colorClass: string; hex: string }[] = [
-  { id: "lime", name: "VOUT Cyber-Lime", colorClass: "bg-[#c6f827]", hex: "#c6f827" },
-  { id: "violet", name: "Clay Violet", colorClass: "bg-[#6852f6]", hex: "#6852f6" },
-  { id: "indigo", name: "Electric Indigo", colorClass: "bg-[#6366f1]", hex: "#6366f1" },
-  { id: "rose", name: "Rose Neon", colorClass: "bg-[#f43f5e]", hex: "#f43f5e" },
-  { id: "emerald", name: "Emerald", colorClass: "bg-[#10b981]", hex: "#10b981" },
-  { id: "amber", name: "Amber Gold", colorClass: "bg-[#f59e0b]", hex: "#f59e0b" },
-  { id: "cyan", name: "Cyber Cyan", colorClass: "bg-[#06b6d4]", hex: "#06b6d4" },
+  { id: "lime", name: "Cyber Lime", colorClass: "bg-[#c6f827]", hex: "#c6f827" },
+  { id: "mint", name: "Electric Mint", colorClass: "bg-[#00ff88]", hex: "#00ff88" },
+  { id: "emerald", name: "Neon Emerald", colorClass: "bg-[#10b981]", hex: "#10b981" },
+  { id: "jade", name: "Forest Jade", colorClass: "bg-[#059669]", hex: "#059669" },
 ];
 
 export type TranslationKeys = keyof (typeof translations)["es"];
