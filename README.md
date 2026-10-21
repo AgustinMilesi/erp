@@ -1,4 +1,4 @@
-# 💳 Retail Engine & Point of Sale (POS)
+# 💳 VOUT Retail — Cloud Retail Engine & Point of Sale (POS)
 
 A fast, cloud-based retail point of sale (**POS**) and store management system. Engineered for busy retail environments: sub-second barcode checkout, enforced cash drawer shifts with blind audits, atomic stock deductions (zero overselling), and instant thermal receipt printing.
 
@@ -80,8 +80,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-### 🔗 Other Projects
-- [📥 Customer Inbox SaaS](https://github.com/AgustinMilesi/inbox) — Multi-tenant customer inquiry inbox and embeddable forms.
-- [🌐 OneCargo Logistics](https://github.com/AgustinMilesi/cargo) — International freight forwarding, customs clearance, and container tracking.
-- [📱 PocketExpenses](https://github.com/AgustinMilesi/expenses) — Mobile cost and subscription tracker with React Native & NativeWind.
-- [📬 Contact Portal](https://github.com/AgustinMilesi/contact) — Minimalist contact form and lead gateway with Zod validation.
+### ⚡ The VOUT Software Ecosystem
+- [📱 VOUT Pocket](https://github.com/AgustinMilesi/expenses) — Mobile cost, subscription, and micro-spending tracker with React Native.
+- [📥 VOUT Inbox](https://github.com/AgustinMilesi/inbox) — Multi-tenant customer inquiry inbox and embeddable forms.
+- [🚢 VOUT Cargo](https://github.com/AgustinMilesi/cargo) — International freight forwarding, customs clearance, and container tracking.
+- [📬 VOUT Connect](https://github.com/AgustinMilesi/contact) — Minimalist contact form and lead gateway with Zod validation.
