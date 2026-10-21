@@ -192,7 +192,7 @@ export default async function DebtorsPage({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-xs text-[#72729A] font-bold group-hover/folder:text-[#5E48E8] transition">
+                <div className="flex items-center gap-2 text-xs text-[#72729A] font-bold group-hover/folder:text-[var(--primary-accent)] transition">
                   <span className="group-open/folder:hidden">Abrir carpeta</span>
                   <span className="hidden group-open/folder:inline">Minimizar carpeta</span>
                   <span className="text-[#72729A] group-open/folder:rotate-180 transition-transform">

@@ -1,7 +1,7 @@
 export function PosIcon() {
   return (
-    <div className="w-14 h-14 rounded-full bg-rose-400 flex items-center justify-center shadow-lg shadow-rose-400/20">
-      <svg className="w-7 h-7 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <div className="w-14 h-14 rounded-2xl bg-[var(--primary-accent)] text-[var(--primary-accent-text)] flex items-center justify-center shadow-[var(--primary-accent-shadow)]">
+      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -14,4 +14,3 @@ export function PosIcon() {
 }
 
 export const MailIcon = PosIcon;
-

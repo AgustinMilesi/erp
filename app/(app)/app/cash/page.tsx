@@ -82,7 +82,7 @@ export default async function CashPage() {
 
             <Link
               href="/app/pos"
-              className="px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-gradient-to-r from-[#6852F6] to-[#5538EA] hover:-translate-y-0.5 active:scale-95 transition shadow-[0_8px_20px_rgba(85,56,234,0.32)] flex items-center gap-2 select-none"
+              className="px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider text-[var(--primary-accent-text)] bg-[var(--primary-accent)] hover:-translate-y-0.5 active:scale-95 transition shadow-[var(--primary-accent-shadow)] flex items-center gap-2 select-none"
             >
               Ir al Punto de Venta (POS) →
             </Link>
@@ -183,7 +183,7 @@ export default async function CashPage() {
                 <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#F8F9FE] border border-[#EAE9F6]">
                   <div className="flex items-center gap-2">
                     <span className="text-[#18182E] font-bold">Tarjetas Débito / Crédito</span>
-                    <span className="text-[10px] text-[#5E48E8] font-mono font-bold">(en posnet)</span>
+                    <span className="text-[10px] text-[var(--primary-accent)] font-mono font-bold">(en posnet)</span>
                   </div>
                   <span className="font-mono font-black text-[#18182E]">{money(summary.byMethod.CARD)}</span>
                 </div>
