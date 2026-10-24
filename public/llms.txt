@@ -1,0 +1,24 @@
+# VOUT Retail · Cloud POS & Store Management Engine
+> High-throughput Cloud Point of Sale, multi-store inventory audits, and blind cash drawer shifts.
+
+## Overview
+VOUT Retail is an enterprise-grade retail store engine designed for physical store velocity. Built with Next.js 16, React 19, and Neon Serverless PostgreSQL.
+
+## Core Capabilities
+- Barcode scanner checkout with instant SKU lookups (<10ms)
+- Blind cash drawer shifts with automated discrepancy reporting
+- Thermal receipt printing (80mm standard ESC/POS format)
+- Atomic multi-item sales transactions with stock deduction
+- Customer credit ledger and debtor payment schedules
+
+## Live Demo & Endpoints
+- Production Live URL: https://milesi-erp.vercel.app
+- 1-Click Guest Access: https://milesi-erp.vercel.app/demo
+- POS Terminal: https://milesi-erp.vercel.app/pos
+- Source Code: https://github.com/AgustinMilesi/retail
+
+## Technical Stack
+- Next.js 16 (App Router, Turbopack) + React 19
+- Tailwind CSS v4 + TypeScript 5
+- Prisma ORM 6 on Neon Serverless PostgreSQL
+- Creator: Agustín Milesi (https://github.com/AgustinMilesi)
