@@ -13,14 +13,18 @@ export function CookieBanner() {
         const timer = setTimeout(() => setVisible(true), 800);
         return () => clearTimeout(timer);
       }
-    } catch (_) {}
+    } catch {
+      // Ignored: localStorage not accessible
+    }
   }, []);
 
   const handleConsent = (level: "all" | "essential") => {
     try {
       localStorage.setItem("vout-cookie-consent", level);
       document.cookie = `vout-cookie-consent=${level}; path=/; max-age=31536000; SameSite=Lax`;
-    } catch (_) {}
+    } catch {
+      // Ignored: localStorage not accessible
+    }
     setVisible(false);
   };
 
